@@ -1,0 +1,10 @@
+%ul#latest
+	- @inspections.each do |inspection|
+		%li
+			%h4= link_to inspection.name, inspection
+			%p= full_address(inspection)
+			%p.rating
+				%strong Rating:
+				%span.hidden
+					= "#{inspection.rating} stars"
+				= image_tag "rating#{inspection.rating}home.png", :alt => ''

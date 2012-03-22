@@ -1,0 +1,11 @@
+<% title "New Upload" %>
+
+<%= form_for @upload do |f| %>
+  <%= f.error_messages %>
+  <p>
+  	<%= f.file_field :upload_file %>
+  </p>
+  <p><%= f.submit %></p>
+<% end %>
+
+

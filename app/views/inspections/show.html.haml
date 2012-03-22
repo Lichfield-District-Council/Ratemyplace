@@ -1,0 +1,135 @@
+- @extras = capture do
+	= javascript_include_tag "leaflet"
+	= stylesheet_link_tag "leaflet"
+	<!--[if lte IE 8]>
+	= stylesheet_link_tag "leaflet.ie"
+	<![endif]-->
+	= javascript_tag do
+		= "var lat = " + @inspection.lat.to_json
+		= "var lng = " + @inspection.lng.to_json
+	= javascript_include_tag "map"
+	= javascript_include_tag "show"
+- title "#{@inspection.name} in #{@inspection.town} - Food Safety Star Rating | Ratemyplace", false
+.row
+	#leftcol.span8
+		- if @inspection.published == false
+			.alert.alert-error
+				%strong Unpublished
+		- if session[:user_id]
+			.well
+				= link_to '<i class="icon-pencil icon-white"></i>'.html_safe + ' Edit', { :controller => "inspections", :action => "edit", :id => @inspection }, :class => 'btn btn-primary'
+				= link_to '<i class="icon-print icon-white"></i>'.html_safe + ' Print Certificate', { :controller => "inspections", :action => "certificate", :id => @inspection, :format => :pdf }, :class => 'btn btn-info'
+		.rating
+			= image_tag "http://ratings.food.gov.uk/App_Themes/default/images/scores/small/sfhrsweb#{@inspection.rating}.jpg", :alt => ''
+		- if @inspection.image_file_name != nil
+			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
+		%h2= @inspection.name
+		%p.address= full_address(@inspection)
+		%p
+			%strong Inspected on:
+			= @inspection.date.strftime("%d/%m/%Y")
+		%p
+			%strong Reference:
+			= "#{@council.code}-#{@inspection.id}" 
+			
+		%p
+			%strong Local Authority:
+			= @council.name
+		%h3 
+			Scores
+			%a{"data-toggle" => "modal", :href => "#how"} How are these calculated?
+
+		#how.modal.hide.fade{"style" => "display:none;"}
+			.modal-header
+				%a.close{"data-dismiss" => "modal"} x
+				%h3 How the award was calculated
+			.modal-body
+				%p At the end of each inspection the business is given a score called a food hazard rating. This reflects (amongst other things) how well the business complies with food law and how much confidence we have in the food operators ability to manage the business safely. The higher hazard rating, the higher the risk and the more often inspections are carried out.
+				%p The premises recieves a score in three areas. The lower the score the better the premises is in terms of legal compliance and the more stars that will be rewarded. Stars are awarded as follows:
+				%ul
+					%li 0 - 5 points - 5 Stars
+					%li 10 - 15 points - 4 Stars
+					%li 20 - 25 points - 3 Stars
+					%li 30 - 35 points - 2 Stars
+					%li 40 - 45 points - 1 Star
+					%li 45 + - No Stars
+
+		%p
+			%strong Food Hygiene and Safety:
+			= showrating(@inspection.hygiene, "hygiene")
+		%p
+			%strong Structure and Cleaning:
+			= showrating(@inspection.structure, "structure")
+		%p
+			%strong Confidence in Management:
+			= showrating(@inspection.confidence, "confidence")
+		%p
+			%strong Rating:
+			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating}"
+		- if @inspection.report_file_name != nil
+			%p
+				%strong Inspection Report:
+				= link_to 'Download inspection report', @inspection.report.url
+				= @inspection.reportsize
+				= image_tag "pdf.png", :alt => "PDF file"
+		- if @inspection.tradingstandards == true
+			%p
+				%strong Trading Standards Compliance [
+				%a{"data-toggle" => "modal", :href => "#trading"} What's this?
+				]
+				= image_tag "tradingstandards.png", :alt => "Trading standards compliance tick"
+				
+			#trading.modal.hide.fade{"style" => "display:none;"}
+				.modal-header
+					%a.close{"data-dismiss" => "modal"} x
+					%h3 Trading standards compliance
+				.modal-body
+					%p Businesses are offered a Trading Standards Compliance Certificate when they are found to be complying with relevant Trading Standards law during an inspection.
+					%p During an inspection checks are made to ensure that menu descriptions of food are not misleading, prices are appropriately displayed and that equipment used for serving beer wine and spirits is accurate, along with other checks for legal compliance.
+					%p 
+						For more information on Trading Standards, visit the 
+						%a{:href => 'http://www.staffordshire.gov.uk/business/tradingstandards/home.aspx'} Trading Standards section of the Staffordshire County Council Website.
+
+		%h3 Contacts
+		- if @inspection.tel
+			%p
+				%strong Tel:
+				= @inspection.tel
+		- if @inspection.email
+			%p
+				%strong Email:
+				= mail_to @inspection.email, @inspection.email
+		- if @inspection.website
+			%p
+				%strong Website:
+				= link_to @inspection.website, (@inspection.website.include?("http://") ? @inspection.website : "http://" + @inspection.website)
+		
+		%h3 Comments
+		= disqus_thread.html_safe
+			
+				
+	.span4#rightcol
+		%h3 Location
+		#mapcontainer
+			#map
+		
+		%h3 Display this score online
+		#scorewidget
+			%p.blurb If you are the owner of this business, you can also display your score on your website, simply copy the code below and paste it onto your website.
+			%textarea= "<script src='#{request.protocol + request.host_with_port + "/inspections/" + @inspection.slug}.js' type='text/javascript'></script>"
+			%p.preview
+				%a.btn.btn-primary.btn-large{:href => "#preview", "data-toggle" => "modal"} Preview your badge 
+
+		#preview.modal.hide.fade{"style" => "display:none;"}
+			.modal-header
+				%a.close{"data-dismiss" => "modal"} x
+				%h3 Preview of your badge
+			.modal-body
+				#widgetpreview
+					="<script src='#{request.protocol + request.host_with_port + "/inspections/" + @inspection.slug}.js' type='text/javascript'></script>".html_safe
+		
+		%h3 Tags
+		#tags
+			%ul.tags
+				- @tags.each do |tag|
+					%li= tag.tag

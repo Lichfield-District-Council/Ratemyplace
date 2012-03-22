@@ -1,0 +1,169 @@
+=javascript_include_tag "form.js"
+=javascript_include_tag "autocomplete.js"
+=form_for(@inspection, :html => {:class => 'form-horizontal'}) do |f|
+	- if @inspection.errors.any?
+		.alert.alert-error
+			%h4.alert-heading= pluralize(@inspection.errors.count, "error") + " prevented this inspection from being saved:"
+			
+			%ul
+				- @inspection.errors.full_messages.each do |msg|
+					%li= msg
+	
+	%fieldset
+		- if params[:action] == "edit" && @inspection.appeal == true
+			.alert.alert-error#appealnote
+				%h3.alert-heading Premises is in appeal
+				%br
+				%p
+					%a.btn.btn-success#accept
+						%i.icon-white.icon-ok
+						Accept appeal
+					= link_to '<i class="icon-white icon-remove"></i> Reject appeal'.html_safe, {:controller => 'inspections', :action => 'rejectappeal', :id => @inspection}, {confirm: 'Are you sure you reject this appeal and publish this inspection on the website?', :class => 'btn btn-danger delete'}
+
+			= f.hidden_field :appeal, :value => 1, :id => 'appeal'
+				
+		.control-group 
+			= f.label :name
+			.controls
+				= f.text_field :name, :class => 'span6', :autocomplete => 'off'
+		.control-group 
+			= f.label :operator
+			.controls
+				= f.text_field :operator
+		.control-group 
+			= f.label :council
+			.controls
+				= collection_select(:inspection, :councilid, Council.all, :id, :name, {:prompt => '--Please Select--'})
+		.control-group 
+			= f.label :category
+			.controls
+				= select :inspection, :category, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit"], {:prompt => '--Please Select--'}
+		.control-group 
+			= f.label :scope
+			.controls
+				= select :inspection, :scope, ["Included", "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
+		- if @inspection.address1.length == 0
+			#findaddress.well
+				%h3 Find address
+				.control-group
+					%label{:for => "address"} Postcode
+					.controls
+						%input{:name => "postcode", :id => "postcode"}
+						%button{:id => "searchaddress", :class => "btn-primary"} Go!
+						= image_tag "ajax-loader.gif", :alt => "", :class => "hidden", :id => "loading"
+			#results.hidden.well
+				%h3 Select Address
+		#address{:class => @addressclass}
+			.control-group 
+				= f.label :address1
+				.controls
+					= f.text_field :address1
+			.control-group 
+				= f.label :address2
+				.controls
+					= f.text_field :address2
+			.control-group 
+				= f.label :address3
+				.controls
+					= f.text_field :address3					
+			.control-group 
+				= f.label :address4
+				.controls
+					= f.text_field :address4
+			.control-group 
+				= f.label :town
+				.controls
+					= f.text_field :town
+			.control-group 
+				= f.label :postcode
+				.controls
+					= f.text_field :postcode
+			= f.hidden_field :lat
+			= f.hidden_field :lng
+			= f.hidden_field :uprn			
+					
+		.control-group 
+			= f.label :hours, "Opening Times"
+			.controls
+				= f.text_area :hours, :rows => 7
+		.control-group 
+			= f.label :tel
+			.controls
+				= f.text_field :tel
+		.control-group 
+			= f.label :email
+			.controls
+				= f.text_field :email
+		.control-group 
+			= f.label :website
+			.controls
+				= f.text_field :website
+		.control-group 
+			= f.label :tags, 'Tags (comma separated)'
+			.controls
+				= text_field_tag :tags, @tags			
+		.control-group 
+			= f.label :hygiene, 'Food Hygiene and Safety'
+			.controls
+				= select :inspection, :hygiene, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
+		.control-group 
+			= f.label :structure, 'Structure and Cleaning'
+			.controls
+				= select :inspection, :structure, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
+		.control-group 
+			= f.label :confidence, 'Confidence in Management'
+			.controls
+				= select :inspection, :confidence, [0, 5, 10, 20, 30], {:prompt => '--Please Select--'}
+		#rating
+			- if !@inspection.rating.nil?
+				.control-group
+					= f.label :rating
+					.controls
+						- if @inspection.rating > 0
+							%span= image_tag "#{@inspection.rating}stars.png"	
+						- else
+							%strong No Stars
+		= f.hidden_field :rating
+		
+		.control-group
+			= f.label :date, 'Date inspected'
+			.controls
+				= date_select(:inspection, :date, {:order => [:day, :month, :year]}, {:class => 'span2'})
+				= hidden_field_tag :olddate, @inspection.date
+
+		.control-group 
+			= f.label :image
+			.controls
+				= f.file_field :image
+		.control-group 
+			= f.label :report
+			.controls
+				= f.file_field :report
+		.control-group 
+			= f.label :menu
+			.controls
+				= f.file_field :menu
+		.control-group 
+			= f.label :tradingstandards, 'Trading Standards Compliance'
+			.controls
+				= select :inspection, :tradingstandards, {"No" => 0, "Yes" => 1}, {:prompt => '--Please Select--'}		
+		.control-group 
+			= f.label :healthy, 'Healthy Options Award?'
+			.controls
+				= select :inspection, :healthy, {"No" => 0, "Yes" => 1}, {:prompt => '--Please Select--' }
+		.control-group
+			- if params[:action] == "edit" && @inspection.appeal != true && @inspection.published == false
+				.controls
+					%a.btn.btn-danger#appeals
+						%i.icon-white.icon-exclamation-sign
+						Start appeals procedure
+				.control-group#appealdate.hidden
+					= f.label :appealdate, 'Date of appeal'
+					.controls
+						= date_select(:inspection, :appealdate, {:order => [:day, :month, :year]}, {:class => 'span2'})
+						= f.hidden_field :appeal, :value => 0, :id => 'appeal'
+							
+		.form-actions
+			- if params[:action] == "edit"
+				= link_to("Delete", @inspection, :method => :delete, :class => 'action', confirm: 'Are you sure you want to delete this business?', :class => 'btn btn-danger delete')
+			= f.submit "Submit", :class => "btn btn-primary"

@@ -1,0 +1,30 @@
+inspection do
+	detail do
+		id @inspection.id
+		name @inspection.name
+		url "/inspections/#{@inspection.slug}"
+		address full_address(@inspection)
+		postcode @inspection.postcode
+		lat @inspection.lat
+		lng @inspection.lng
+		opening_times @inspection.hours
+		email @inspection.email
+		website @inspection.website
+	end
+	authority do
+		name @council.name
+		snac @council.snac
+	end
+	inspection do
+		inspection_date @inspection.date
+		hygiene @inspection.hygiene
+		structure @inspection.structure
+		confidence @inspection.confidence
+		rating @inspection.rating
+		report @inspection.report.url
+	end
+	other do
+		trading_standards @inspection.tradingstandards
+		healthy_options @inspection.healthy
+	end
+end

@@ -1,0 +1,12 @@
+class UrlShortener
+	
+	def self.shorten(url)
+		require 'bitly'
+	
+		Bitly.use_api_version_3
+		bitly = Bitly.new({YOUR-BITLY-USERNAME}, {YOUR-BITLY-API-KEY}') 
+
+		bitly.shorten(url)
+	end
+	
+end

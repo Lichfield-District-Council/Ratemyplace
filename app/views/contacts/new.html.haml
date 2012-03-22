@@ -1,0 +1,47 @@
+- title "Contact Us", false
+.row#fullwidth
+	.span12
+	
+		%h2 Contact Us
+		
+		= form_for(@contact, :html => {:class => 'form-horizontal'}) do |f|
+			- if @contact.errors.any?
+				.alert.alert-error
+					%h4.alert-heading= pluralize(@contact.errors.count, "error") + " prevented your message from being sent:"
+					
+					%ul
+						- @contact.errors.full_messages.each do |msg|
+							%li= msg
+			%fieldset
+				.control-group 
+					= f.label "Your name"
+					.controls
+						= f.text_field :name
+						
+				.control-group 
+					= f.label "Your email address"
+					.controls
+						= f.text_field :email
+						
+				.control-group 
+					= f.label "Business name"
+					.controls
+						= f.text_field :business
+						
+				.control-group 
+					= f.label "Address"
+					.controls
+						= f.text_area :address, :rows => 6, :class => 'span4'
+						
+				.control-group 
+					= f.label "Your message"
+					.controls
+						= f.text_area :message, :rows => 6, :class => 'span4'
+						
+				.control-group 
+					= f.label "What council does your comment relate to?"
+					.controls
+						= collection_select(:contact, :council, Council.all, :id, :name, {:include_blank => 'No particular council'})
+	
+				.form-actions
+					= f.submit "Submit", :class => "btn btn-primary btn-large"

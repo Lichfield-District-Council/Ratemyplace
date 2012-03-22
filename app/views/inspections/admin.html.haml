@@ -1,0 +1,11 @@
+- title "Admin Home", false
+.row#main
+	.span12
+		%h2 Admin Home
+		
+		%p= "Welcome <strong>#{@user.username}</strong>, you are logged in".html_safe
+		
+		%ul#actions
+			%li= link_to 'Add a new premises', { :controller => "inspections", :action => "new" }, {:class => "add"}
+			%li= link_to 'Edit an existing premises', { :controller => "inspections", :action => "editsearch" }, {:class => "edit"}
+			%li= link_to 'Download certificate', { :controller => "inspections", :action => "certificatesearch" }, {:class => "download"}

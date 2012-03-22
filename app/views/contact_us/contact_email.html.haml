@@ -1,0 +1,18 @@
+!!!
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body{:style => "font: 0.8em/1.5em Helvetica, Arial, sans-serif"}
+    %h1{:style => "margin: 7px 0; font-size: 1.7em;"} Ratemyplace contact form
+    %p
+      Someone has submitted a contact form via the Ratemyplace website. Their details are as follows:
+    %p
+      = "<strong>Name:</strong> #{@mail.name}<br />".html_safe
+      = "<strong>Email:</strong> #{@mail.email}<br />".html_safe
+      = "<strong>Business:</strong> #{@mail.business}<br />".html_safe if @mail.business.length > 0
+      = "<strong>Address:</strong> #{@mail.address}<br />".html_safe if @mail.address.length > 0
+    %p
+      %strong Message:
+      %br/
+      = @mail.message
+      

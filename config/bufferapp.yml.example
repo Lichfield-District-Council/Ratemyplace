@@ -1,0 +1,7 @@
+development:
+  token: YOUR_BUFFER_TOKEN
+  id: THE_ID_FOR_YOUR_BUFFER_ACCOUNT
+
+production:
+  token: YOUR_BUFFER_TOKEN
+  id: THE_ID_FOR_YOUR_BUFFER_ACCOUNT

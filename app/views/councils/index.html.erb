@@ -1,0 +1,35 @@
+<h1>Listing councils</h1>
+
+<table>
+  <tr>
+    <th>String</th>
+    <th>String</th>
+    <th>Text</th>
+    <th>Text</th>
+    <th>Text</th>
+    <th>Text</th>
+    <th>Text</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @councils.each do |council| %>
+  <tr>
+    <td><%= council.string %></td>
+    <td><%= council.string %></td>
+    <td><%= council.text %></td>
+    <td><%= council.text %></td>
+    <td><%= council.text %></td>
+    <td><%= council.text %></td>
+    <td><%= council.text %></td>
+    <td><%= link_to 'Show', council %></td>
+    <td><%= link_to 'Edit', edit_council_path(council) %></td>
+    <td><%= link_to 'Destroy', council, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Council', new_council_path %>

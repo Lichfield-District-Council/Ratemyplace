@@ -1,0 +1,24 @@
+<%= form_for @user do |f| %>
+  <%= f.error_messages %>
+  <p>
+    <%= f.label :username %><br />
+    <%= f.text_field :username %>
+  </p>
+  <p>
+    <%= f.label :email, "Email Address" %><br />
+    <%= f.text_field :email %>
+  </p>
+  <p>
+  	<%= f.label :councilid, "Council" %><br />
+  	<%= collection_select(:user, :councilid, Council.all, :id, :name, {:prompt => '--Please Select--'}) %>
+  </p>
+  <p>
+    <%= f.label :password %><br />
+    <%= f.password_field :password %>
+  </p>
+  <p>
+    <%= f.label :password_confirmation, "Confirm Password" %><br />
+    <%= f.password_field :password_confirmation %>
+  </p>
+  <p><%= f.submit (@user.new_record? ? "Add user" : "Update user"), :class => 'btn-large btn-primary' %></p>
+<% end %>

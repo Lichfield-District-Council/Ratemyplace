@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0, maximum-scale=1.0" />
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_include_tag "application" %>
+    <%= @extras %>
+    <%= csrf_meta_tag %>
+    <%= yield(:head) %>
+  </head>
+  <body>
+    <div class="container">
+		<div id="header">
+			<a href="#nav" id="navskip" class="btn">
+	            <i class="icon-align-justify icon-white"></i>
+            </a>
+			<h1><a href="/">Ratemyplace</a></h1>
+			<p class="intro">The one stop shop for information on Food Safety</p>
+			
+			<form accept-charset="UTF-8" action="/inspections/search" id="search" method="get">
+				<input name="utf8" type="hidden" value="✓" />
+      			<input class="span3" id="q_name_cont" name="q[name_cont]" size="30" type="text" placeholder="Search for a business…" /><button type="submit">Search</button>
+			</form>
+		</div>
+	 <div id="main">
+      <% flash.each do |name, msg| %>
+        <%= content_tag :div, msg, :id => "flash_#{name}", :class => "alert alert-success" %>
+      <% end %>
+      <%= content_tag :h2, yield(:title) if show_title? %>
+      <%= yield %>
+ 	 <nav role="navigation">	
+		<ul id="nav">
+			<li><a href="/">Home</a></li>
+			<li><a href="/about">About</a></li>
+			<li><a href="/inspections/search">Search</a></li>
+			<li><a href="/inspections/a-z">A to Z</a></li>
+			<li><a href="/links">Links</a></li>
+			<li><a href="/contact-us">Contact us</a></li>
+			<li><a href="/faq">FAQ</a></li>
+			<li><a href="/link-to-us">Link to us</a></li>
+			
+			<ul class="extra">
+				<li><a href="/api"><strong>API</strong></a></li>
+				<li><a href="http://www.twitter.com/ratemyplace"><img src="/assets/twitter.png" /></a></li>
+				<li><a href="/inspections.rss"><img src="/assets/rss.png" /></a></li>
+			</ul>
+		</ul>
+	</nav>
+     </div>
+     <div id="footer" class="span12">
+     	<h5>Ratemyplace is supported by:</h5>
+     	<ul id="supporters">
+     		<li><%= link_to image_tag('cannock.png', :alt => 'Cannock Chase Council'), '/councils/cannock-chase-district-council' %></li>
+     		<li><%= link_to image_tag('eaststaffs.png', :alt => 'East Staffordshire Borough Council'), '/councils/east-staffordshire-borough-council' %></li>
+     		<li><%= link_to image_tag('lichfield.png', :alt => 'Lichfield District Council'), '/councils/lichfield-district-council' %></li>
+     		<li><%= link_to image_tag('southstaffs.png', :alt => 'South Staffordshire Council'), '/councils/south-staffordshire-council' %></li>
+     		<li><%= link_to image_tag('stafford.png', :alt => 'Stafford Borough Council'), '/councils/stafford-borough-council' %></li>
+     		<li><%= link_to image_tag('highpeak.png', :alt => 'High Peak Borough Council'), '/councils/high-peak-borough-council' %></li>
+     		<li><%= link_to image_tag('moorlands.png', :alt => 'Staffordshire Moorlands District Council'), '/councils/staffordshire-moorlands-district-council' %></li>
+     		<li><%= link_to image_tag('tamworth.png', :alt => 'Tamworth Borough Councill'), '/councils/tamworth-borough-council' %></li>
+     	</ul>
+     </div>
+    </div>
+  </body>
+</html>

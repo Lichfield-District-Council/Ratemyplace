@@ -1,0 +1,13 @@
+Ratemyplace contact form
+= "========================"
+
+Someone has submitted a contact form via the Ratemyplace website. Their details are as follows:
+
+= "Name: #{@mail.name}"
+= "Email: #{@mail.email}"
+= "Business: #{@mail.business}" if @mail.business.length > 0
+= "Address: #{@mail.address}" if @mail.address.length > 0
+
+Message:
+
+= @mail.message

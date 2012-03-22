@@ -1,0 +1,15 @@
+- if @error
+	.alert.alert-error
+		%h4.alert-heading= "There were " + pluralize(@error.errors.count, "error") + " for " + @error.name 
+			
+		%ul
+			- @error.errors.full_messages.each do |msg|
+				%li= msg
+
+- if @inspections.count > 0
+	%p= "#{pluralize(@inspections.count, 'inspection')} identified!"
+	%ul
+		- @inspections.each do |inspection|
+			%li
+				= inspection.name
+				= link_to inspection.name, edit_inspection_path(inspection), html_options => {:class => 'btn-primary'}

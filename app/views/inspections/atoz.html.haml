@@ -1,0 +1,27 @@
+- if params[:council]
+- title "A to Z for #{@council.name}", false
+
+	.row#fullwidth
+		.span12
+			%h2= "A to Z for #{@council.name}"
+			%ul.nav.nav-pills
+				- ("A".."Z").each do |letter|
+					- if letter == params[:letter]
+						%li.active
+							= link_to letter, "/inspections/a-z/#{@council.slug}/#{letter}"
+					- else
+						%li
+							= link_to letter, "/inspections/a-z/#{@council.slug}/#{letter}"
+			%ul
+				- @inspections.each do |inspection|
+					%li= link_to inspection.name, inspection
+
+- else
+	- title "A to Z of premises", false
+	.row#fullwidth
+		.span12
+			%h2 A to Z of Premises
+			%p To see an A-Z of businesses in your area, click your local council's name below:
+			%ul
+				- @councils.each do |council|
+					%li= link_to council.name, "/inspections/a-z/#{council.slug}/A"

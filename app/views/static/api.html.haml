@@ -1,0 +1,68 @@
+- title "API", false
+.row#main
+	.span12
+		%h2 API
+		
+		%p If you are a web developer, you can access Ratemyplace data programatically in a variety of ways, allowing you to plug Ratemyplace data into your own website. 
+		
+		%h3 API Documentation
+		
+		%h4 Search
+		
+		%p This returns basic information about all premises that fit the search criteria, including the name of the premises, link to the premises page, the town or village the premises is in, the local authority and the rating.
+		
+		%h5 Arguments
+		
+		%dl
+			%dt
+				%code 
+					name 
+				(optional)
+			%dd The name (or part of the name) of the business (or businesses) you are looking for
+			
+			%dt
+				%code 
+					category
+				(optional)
+			%dd 
+				The category of the business (or businesses) you are looking for. One of the following:
+				%ul
+					%li Primary Producers
+					%li Manufacturers and Packers
+					%li Importers/Exporters
+					%li Distributors/Transporters
+					%li Supermarket/Hypermarket
+					%li Small retailer
+					%li Retailer - other
+					%li Restaurant/Cafe/Canteen
+					%li Hotel/Guest house
+					%li Pub/Club
+					%li Take-away
+					%li Caring premises
+					%li School/College
+					%li Mobile food unit
+			
+			%dt
+				%code
+					council
+				(optional)
+			%dd
+				The ID of the council that has inspected the business (or businesses) you are looking for. One of the following:
+				%ul
+					- Council.all.each do |council|
+						%li= "#{council.id} = #{council.name}"
+						
+			%dt
+				%code 
+					town 
+				(optional)
+			%dd The town or village (or part of) that the business (or businesses) you are looking for is in
+			
+			%dt
+				%code 
+					rating 
+				(optional)
+			%dd The rating that the business (or businesses) you are looking for has been awarded (between 1 and 5)
+			
+		
+		%pre.prettyprint= "http://www.ratemyplace.org.uk/inspections/search.json?name=<strong>{name}</strong>&category=&councilid=&town=&rating=".html_safe

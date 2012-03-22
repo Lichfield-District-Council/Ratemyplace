@@ -1,0 +1,91 @@
+- @extras = capture do
+	= javascript_include_tag "geo.min"
+	= javascript_include_tag "geo"
+	<![endif]-->
+- if params[:q]
+- @extras = capture do
+	= javascript_include_tag "geo.min"
+	= javascript_include_tag "geo"
+	= javascript_include_tag "leaflet"
+	= stylesheet_link_tag "leaflet"
+	<!--[if lte IE 8]>
+	= stylesheet_link_tag "leaflet.ie"
+	<![endif]-->
+	= javascript_tag do
+		points = new Array()
+		- num = 1
+		- @inspections.each do |inspection|
+			= "points[#{num}] = {lat: #{inspection.lat.to_json}, lng: #{inspection.lng.to_json}, name: '#{inspection.name.gsub(/['"\\\x0]/,'\\\\\0')}', url: '#{url_for(inspection)}', rating: #{inspection.rating} }"
+			- num = num + 1	
+	= javascript_include_tag "searchmap"				
+- title "Search Results", false
+	.row
+		#resultview.span7
+			%h2 Search Results
+			- if @inspections.length == 0
+				%p
+					%strong Sorry, there were no results for your search
+			- else
+			
+				%table.table.table-bordered#searchresults
+					%thead
+						%tr
+							%th.mapicon
+							%th Name
+							%th Town / Village
+							%th Rating
+					- num = 1
+					- @inspections.each do |inspection|
+						- @council = Council.find(inspection.councilid)
+						%tr
+							%td.mapicon= image_tag "#{num}.png"
+							%td= link_to inspection.name, inspection
+							%td= inspection.town
+							%td
+								%span.hidden
+									= "#{inspection.rating} stars"
+								= image_tag "rating#{inspection.rating}.png", :alt => ''
+						- num = num + 1
+				.pagination-centered= will_paginate @inspections, :inner_window => 2, :outer_window => 0
+		.span5#rightcol.searchmap
+			%h3 Map
+			#mapcontainer
+				#searchmap
+- else
+	- title "Search", false
+	.row
+		#leftcol.span8
+			%h2 Advanced Search
+			= search_form_for @search, :url => search_inspections_path,  :html => { :class => "form-horizontal well" } do |f|
+				%fieldset
+					.control-group 
+						= f.label :name_cont, "Business name:", :for => "name"
+						.controls
+							= f.text_field :name_cont, :id => "name"
+					.control-group 
+						= f.label :category_eq, "Business type:" 
+						.controls
+							= f.select :category_eq, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit"], {:prompt => '--Please Select--'}
+					.control-group 
+						=f.label :councilid_eq, "Local Authority:"
+						.controls
+							=f.select(:councilid_eq, Council.all.collect {|p| [ p.name, p.id ] }, {:prompt => '--Please Select--'})
+					.control-group 
+						=f.label :town_eq, "Town / Village:"
+						.controls
+							= f.text_field :town_cont
+					.control-group 
+						= f.label :rating_eq, "Rating:"
+						.controls
+							= f.select :rating_eq, {"5 Stars" => 5, "4 Stars" => 4, "3 Stars" => 3, "2 Stars" => 2, "1 Stars" => 1, "No Stars" => 0}, {:prompt => '--Please Select--'}
+						= hidden_field_tag :lat, :id => 'lat'
+						= hidden_field_tag :lng, :id => 'lng'
+					.control-group#geo.hidden
+						= label_tag :nearest, "Show businesses near me"
+						.controls
+							= check_box_tag :nearest
+					.form-actions
+						= f.submit "Search", :class => "btn-primary icon-search", :name => nil
+		.span4#rightcol
+			%h3 Latest additions
+			= render :partial => "latest"

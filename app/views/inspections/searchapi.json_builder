@@ -1,0 +1,13 @@
+results do
+	total @inspections.count
+	current_page @inspections.current_page
+	per_page @inspections.per_page
+	inspections @inspections do |inspection|
+		name inspection.name
+		uri url_for :only_path => false, :controller => 'inspections', :action => 'show', :id => inspection.slug
+		address full_address(inspection)
+		town inspection.town
+		councilname Council.find(inspection.councilid).name
+		rating inspection.rating
+	end
+end
