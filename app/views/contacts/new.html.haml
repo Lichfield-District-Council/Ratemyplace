@@ -4,6 +4,8 @@
 	
 		%h2 Contact Us
 		
+		%p To get in touch with ratemyplace, please use the online form below:
+		
 		= form_for(@contact, :html => {:class => 'form-horizontal'}) do |f|
 			- if @contact.errors.any?
 				.alert.alert-error
@@ -13,15 +15,31 @@
 						- @contact.errors.full_messages.each do |msg|
 							%li= msg
 			%fieldset
-				.control-group 
-					= f.label "Your name"
-					.controls
-						= f.text_field :name
-						
-				.control-group 
-					= f.label "Your email address"
-					.controls
-						= f.text_field :email
+				- if @contact.errors.messages[:name].nil?
+					.control-group 
+						= f.label "Your name"
+						.controls
+							= f.text_field :name
+							%span.help-inline Required
+				- else
+					.control-group.error
+						= f.label "Your name"
+						.controls
+							= f.text_field :name
+							%span.help-inline Required
+
+				- if @contact.errors.messages[:email].nil?
+					.control-group
+						= f.label "Your email address"
+						.controls
+							= f.text_field :email
+							%span.help-inline Required
+				- else
+					.control-group.error
+						= f.label "Your email address"
+						.controls
+							= f.text_field :email
+							%span.help-inline Required
 						
 				.control-group 
 					= f.label "Business name"
@@ -33,10 +51,18 @@
 					.controls
 						= f.text_area :address, :rows => 6, :class => 'span4'
 						
-				.control-group 
-					= f.label "Your message"
-					.controls
-						= f.text_area :message, :rows => 6, :class => 'span4'
+				- if @contact.errors.messages[:message].nil?
+					.control-group 
+						= f.label "Your message"
+						.controls
+							= f.text_area :message, :rows => 6, :class => 'span4'
+							%span.help-inline Required
+				- else
+					.control-group.error
+						= f.label "Your message"
+						.controls
+							= f.text_area :message, :rows => 6, :class => 'span4'
+							%span.help-inline Required
 						
 				.control-group 
 					= f.label "What council does your comment relate to?"
