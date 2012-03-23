@@ -11,7 +11,7 @@
 	= javascript_include_tag "show"
 - title "#{@inspection.name} in #{@inspection.town} - Food Safety Star Rating | Ratemyplace", false
 .row
-	#leftcol.span8
+	#leftcol.span8.hreview
 		- if @inspection.published == false
 			.alert.alert-error
 				%strong Unpublished
@@ -23,11 +23,14 @@
 			= image_tag "http://ratings.food.gov.uk/App_Themes/default/images/scores/small/sfhrsweb#{@inspection.rating}.jpg", :alt => ''
 		- if @inspection.image_file_name != nil
 			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
-		%h2= @inspection.name
-		%p.address= full_address(@inspection)
+		.item.vcard
+			%h2.fn.org= @inspection.name
+			%p.address.adr= full_address(@inspection)
 		%p
-			%strong Inspected on:
-			= @inspection.date.strftime("%d/%m/%Y")
+			%strong 
+				Inspected on:
+			%span.dtreviewed{:title => @inspection.date} 
+				= @inspection.date.strftime("%d/%m/%Y")
 		%p
 			%strong Reference:
 			= "#{@council.code}-#{@inspection.id}" 
@@ -65,6 +68,7 @@
 			= showrating(@inspection.confidence, "confidence")
 		%p
 			%strong Rating:
+			%span.rating.hidden = @inspection.rating
 			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating}"
 		- if @inspection.report_file_name != nil
 			%p
@@ -91,15 +95,15 @@
 						%a{:href => 'http://www.staffordshire.gov.uk/business/tradingstandards/home.aspx'} Trading Standards section of the Staffordshire County Council Website.
 
 		%h3 Contacts
-		- if @inspection.tel
+		- if @inspection.tel.length > 0
 			%p
 				%strong Tel:
 				= @inspection.tel
-		- if @inspection.email
+		- if @inspection.email.length > 0
 			%p
 				%strong Email:
 				= mail_to @inspection.email, @inspection.email
-		- if @inspection.website
+		- if @inspection.website.length > 0
 			%p
 				%strong Website:
 				= link_to @inspection.website, (@inspection.website.include?("http://") ? @inspection.website : "http://" + @inspection.website)

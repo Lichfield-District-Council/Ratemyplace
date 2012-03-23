@@ -44,6 +44,11 @@ Ratemyplace::Application.routes.draw do
   # Contact stuff
   
   match 'contact-us' => 'contacts#new'
+  
+  # Legacy redirects
+  
+  match 'view/:id/:name' => 'inspections#redirect',  :defaults=>{:format=>'html'}
+  match 'widget.php' => 'inspections#redirect',  :defaults=>{:format=>'js'}
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

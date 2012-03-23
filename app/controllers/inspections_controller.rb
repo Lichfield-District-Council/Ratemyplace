@@ -39,6 +39,15 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	end
   end
   
+  def redirect
+  	@inspection = Inspection.find(params[:id])
+  	
+  	respond_to do |format|
+  		format.html { redirect_to inspection_url(@inspection), :status=>:moved_permanently }
+  		format.js { redirect_to inspection_url(@inspection, :format => 'js'), :status=>:moved_permanently }
+  	end
+  end
+  
   # GET /inspections/search
   def search
 	if params[:q]

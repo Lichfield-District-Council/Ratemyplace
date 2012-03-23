@@ -168,6 +168,7 @@ body {
 					color: #000;
 					text-shadow: #a5c469 1px 1px 1px;
 					filter: Shadow(Color=#bbb, Direction=125, Strength=1);
+					text-decoration: none;
 				}
 			}
 			
@@ -199,9 +200,19 @@ body {
 		
 		a {
 			color: @headings;
+			text-decoration: underline;
+		}
+		
+		a:hover {
+			color: #000;
 		}
 		
 		.btn {
+			color: #fff;
+			text-decoration: none;
+		}
+		
+		.btn:hover {
 			color: #fff;
 		}
 		
@@ -217,6 +228,10 @@ body {
 		#reportimage {
 			float: right;
 			margin: 0 0 14px 10px;
+		}
+		
+		.alert {
+			margin: 9px 0 0 0 !important;
 		}
 		
 		#leftcol {
@@ -274,6 +289,41 @@ body {
 			
 			.nav-pills a:hover {
 				background-color: #bed86f;
+			}
+			
+			dt {
+				font-size: 1.3em;
+				font-weight: bold;
+				cursor: pointer;
+				padding: 7px;
+				.full-border-radius(5px, 5px, 0px, 0px);
+				.buttonBackground(#fbfbeb, #FBFACC);
+				color: #4d4d4d;
+				border: 1px solid #ddd;
+				text-decoration: underline;
+			}
+			
+			dt:hover {
+				color: #000;
+			}
+			
+			dd {
+				margin: 0 0 7px 0;
+				padding: 0;
+				
+				.inner {
+					margin: 7px 0;
+					padding: 0;
+					font-size: 1.1em;
+					color: #4d4d4d;
+					line-height: 1.7em;
+					.full-border-radius(0px, 0px, 5px, 5px);
+					border-left: 1px solid #ddd;
+					border-right: 1px solid #ddd;
+					border-bottom: 1px solid #ddd;
+					margin: 0 0 10px 0;
+					padding: 0 7px;
+				}
 			}
 		}
 		
@@ -560,6 +610,11 @@ body {
 							
 							a {
 								color: @headings;
+								text-decoration: none;
+							}
+							
+							a:hover {
+								color: #000;
 							}
 						}
 						
@@ -626,6 +681,11 @@ body {
 							a {
 								font-size: 1.1em;
 								color: @headings;
+								text-decoration: none;
+							}
+							
+							a:hover {
+								color: #000;
 							}
 						}
 						
