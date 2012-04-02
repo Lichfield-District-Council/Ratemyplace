@@ -76,8 +76,8 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	end
     
   	@search = Inspection.search(query)
-  	if params[:nearest] == 1 
-  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).within(5, :origin => [params[:lat], params[:lng]]).order("distance ASC")
+  	if params[:distance]
+  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
   	else
   		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10)
   	end

@@ -1,5 +1,5 @@
 - title "API", false
-.row#main
+.row#fullwidth
 	.span12
 		%h2 API
 		
@@ -7,62 +7,112 @@
 		
 		%h3 API Documentation
 		
-		%h4 Search
+		%h3 Search
 		
 		%p This returns basic information about all premises that fit the search criteria, including the name of the premises, link to the premises page, the town or village the premises is in, the local authority and the rating.
 		
-		%h5 Arguments
+		%p Formats available are .json or .xml
 		
-		%dl
-			%dt
-				%code 
-					name 
-				(optional)
-			%dd The name (or part of the name) of the business (or businesses) you are looking for
-			
-			%dt
-				%code 
-					category
-				(optional)
-			%dd 
-				The category of the business (or businesses) you are looking for. One of the following:
-				%ul
-					%li Primary Producers
-					%li Manufacturers and Packers
-					%li Importers/Exporters
-					%li Distributors/Transporters
-					%li Supermarket/Hypermarket
-					%li Small retailer
-					%li Retailer - other
-					%li Restaurant/Cafe/Canteen
-					%li Hotel/Guest house
-					%li Pub/Club
-					%li Take-away
-					%li Caring premises
-					%li School/College
-					%li Mobile food unit
-			
-			%dt
-				%code
-					council
-				(optional)
-			%dd
-				The ID of the council that has inspected the business (or businesses) you are looking for. One of the following:
-				%ul
-					- Council.all.each do |council|
-						%li= "#{council.id} = #{council.name}"
-						
-			%dt
-				%code 
-					town 
-				(optional)
-			%dd The town or village (or part of) that the business (or businesses) you are looking for is in
-			
-			%dt
-				%code 
-					rating 
-				(optional)
-			%dd The rating that the business (or businesses) you are looking for has been awarded (between 1 and 5)
-			
+		%h4 Example
 		
-		%pre.prettyprint= "http://www.ratemyplace.org.uk/inspections/search.json?name=<strong>{name}</strong>&category=&councilid=&town=&rating=".html_safe
+		%pre.prettyprint= "http://www.ratemyplace.org.uk/inspections/search.json?name=mcdonalds&category=Take-away&council=3&town=cannock&rating=5".html_safe
+		
+		%p.example
+			%a.btn.btn-primary{:href => "http://www.ratemyplace.org.uk/inspections/search.json?name=mcdonalds&category=Take-away&council=3&town=cannock&rating=5"} View example
+		
+		%h4 Arguments
+		
+		%table.table.table-bordered.table-striped
+			%tr
+				%th Argument
+				%th Description
+			%tr
+				%td
+					%code name
+				%td The name (or part of the name) of the business (or businesses) you are looking for
+			%tr
+				%td
+					%code category
+				%td 
+					The category of the business (or businesses) you are looking for. One of the following:
+					%ul
+						%li Primary Producers
+						%li Manufacturers and Packers
+						%li Importers/Exporters
+						%li Distributors/Transporters
+						%li Supermarket/Hypermarket
+						%li Small retailer
+						%li Retailer - other
+						%li Restaurant/Cafe/Canteen
+						%li Hotel/Guest house
+						%li Pub/Club
+						%li Take-away
+						%li Caring premises
+						%li School/College
+						%li Mobile food unit
+			%tr
+				%td
+					%code council
+				%td
+					The ID of the council that has inspected the business (or businesses) you are looking for. One of the following:
+					%ul
+						- Council.all.each do |council|
+							%li= "#{council.id} = #{council.name}"
+			%tr
+				%td 
+					%code town 
+				%td The town or village (or part of) that the business (or businesses) you are looking for is in
+			
+			%tr
+				%td
+					%code rating 
+				%td The rating that the business (or businesses) you are looking for has been awarded (between 1 and 5)
+			
+			%tr
+				%td
+					%code distance
+				%td 
+					If 
+					%code lat
+					and
+					%code lng
+					are defined, returns premises that meet all of the above criteria within a distance of x miles
+			
+			%tr
+				%td
+					%code lat
+				%td
+					For use in conjunction with 
+					%code distance
+					and
+					%code lng
+					, the latitude of the point you are searching from
+					
+			%tr
+				%td
+					%code lng
+				%td
+					For use in conjunction with 
+					%code distance
+					and
+					%code lat
+					, the longitude of the point you are searching from
+				
+		
+		%h3 View
+		
+		%p 
+			Simply add 
+			%code 
+				= ".xml"
+			or 
+			%code 
+				= ".json"
+			to the url of any inspection to get the raw data for that inspection
+		
+		%h4 Example
+		
+		%pre http://www.ratemyplace.org.uk/inspections/mcdonalds-cannock.json
+
+		%p.example
+			%a.btn.btn-primary{:href => "http://www.ratemyplace.org.uk/inspections/mcdonalds-cannock.json"} View example
