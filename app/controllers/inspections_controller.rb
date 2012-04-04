@@ -1,6 +1,6 @@
 class InspectionsController < ApplicationController
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa]
+before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate]
 
   # GET /inspections
   # GET /inspections.json

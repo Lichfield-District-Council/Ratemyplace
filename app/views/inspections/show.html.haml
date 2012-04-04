@@ -47,15 +47,71 @@
 				%a.close{"data-dismiss" => "modal"} x
 				%h3 How the award was calculated
 			.modal-body
-				%p At the end of each inspection the business is given a score called a food hazard rating. This reflects (amongst other things) how well the business complies with food law and how much confidence we have in the food operators ability to manage the business safely. The higher hazard rating, the higher the risk and the more often inspections are carried out.
-				%p The premises recieves a score in three areas. The lower the score the better the premises is in terms of legal compliance and the more stars that will be rewarded. Stars are awarded as follows:
-				%ul
-					%li 0 - 5 points - 5 Stars
-					%li 10 - 15 points - 4 Stars
-					%li 20 - 25 points - 3 Stars
-					%li 30 - 35 points - 2 Stars
-					%li 40 - 45 points - 1 Star
-					%li 45 + - No Stars
+				%div
+					%p At the end of each inspection the business is given a food hazard rating. This reflects how well the business complies with food law and how much confidence we have in the food operator's ability to manage the business safely. The higher hazard rating, the higher the risk and the more often inspections are carried out.
+					%p The premises recieves a score in three areas. The lower the score the better the premises is in terms of legal compliance and the higher the rating. Ratings are awarded as follows:
+					
+					%table.table-condensed.table.table-bordered
+						%tr
+							%th{"scope" => "row"}
+								Total score
+							%th{"scope" => "col"}
+								0 -15
+							%th{"scope" => "col"}
+								20
+							%th{"scope" => "col"}
+								25 -30
+							%th{"scope" => "col"}
+								35 -40
+							%th{"scope" => "col"}
+								45 - 50
+							%th{"scope" => "col"}
+								> 50
+						%tr
+							%th{"scope" => "row"}
+								Additional scoring factor
+							%td
+								No score greater than 5
+							%td
+								No score greater than 10
+							%td
+								No score greater than 10
+							%td
+								No score greater than 15
+							%td
+								No score greater than 20
+							%td
+								-
+						%tr
+							%th{"scope" => "row"}
+								Food hygiene rating
+							%td
+								5
+							%td
+								4
+							%td
+								3
+							%td
+								2
+							%td
+								1
+							%td
+								0
+						%tr
+							%th
+								Descriptor
+							%td
+								Very good
+							%td
+								Good
+							%td
+								Generally satisfactory
+							%td
+								Improvement necessary
+							%td
+								Major improvement necessary
+							%td
+								Urgent improvement necessary
 
 		%p
 			%strong Food Hygiene and Safety:
@@ -70,6 +126,9 @@
 			%strong Rating:
 			%span.rating.hidden = @inspection.rating
 			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating}"
+			- if @inspection.revisit_requested === true
+				%em
+					Revisit requested
 		- if @inspection.report_file_name != nil
 			%p
 				%strong Inspection Report:

@@ -41,7 +41,7 @@
 		.control-group 
 			= f.label :scope
 			.controls
-				= select :inspection, :scope, ["Included", "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
+				= select :inspection, :scope, ["Included", "Included sensitive" "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
 		- if @inspection.address1.length == 0
 			#findaddress.well
 				%h3 Find address
@@ -101,7 +101,12 @@
 		.control-group 
 			= f.label :tags, 'Tags (comma separated)'
 			.controls
-				= text_field_tag :tags, @tags			
+				= text_field_tag :tags, @tags
+		- if params[:action] == "edit"
+			.control-group 
+				= f.label :revisit_requested, 'Revisit requested?'
+				.controls
+					= f.check_box :revisit_requested	
 		.control-group 
 			= f.label :hygiene, 'Food Hygiene and Safety'
 			.controls
@@ -119,10 +124,7 @@
 				.control-group
 					= f.label :rating
 					.controls
-						- if @inspection.rating > 0
-							%span= image_tag "#{@inspection.rating}stars.png"	
-						- else
-							%strong No Stars
+						%span= image_tag "rating#{@inspection.rating}.png"	
 		= f.hidden_field :rating
 		
 		.control-group

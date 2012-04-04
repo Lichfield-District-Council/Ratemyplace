@@ -107,6 +107,16 @@ class Inspection < ActiveRecord::Base
   		end
   	end
   	
+  	def self.getallcertificates
+  		@councils = Council.all
+  		@councils.each do |council|
+	  		@inspections = Inspection.where(:councilid => council.id)
+	  		@inspections.each do |inspection|
+	  			system "wget -P /Users/stuart/Desktop/Certificates/#{council.slug} http://localhost:3000/admin/certificate/#{inspection.slug}.pdf"
+	  		end
+	  	end
+  	end
+  	
   	def reportsize
   		size = self.report.size / 1000
   		return size.to_s + "kb"

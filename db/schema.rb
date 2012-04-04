@@ -11,9 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120229124342) do
+ActiveRecord::Schema.define(:version => 20120403094253) do
 
   create_table "addresses", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "contacts", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
@@ -83,6 +88,7 @@ ActiveRecord::Schema.define(:version => 20120229124342) do
     t.string   "internalid"
     t.date     "appealdate"
     t.boolean  "appeal"
+    t.boolean  "revisit_requested"
   end
 
   add_index "inspections", ["id"], :name => "index_inspections_on_id"

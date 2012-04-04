@@ -94,7 +94,4 @@ $(document).ready ->
 				
 			$('#inspection_rating').val(rating)
 		
-			if rating > 0
-		 	 $('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><span><img src='/assets/#{rating}stars.png' /></span></div></div></div>")
-		 	else
-		 	  $('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><strong>No stars</strong></div></div></div>")
+		 $('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><span><img src='/assets/rating#{rating}.png' /></span></div></div></div>")
