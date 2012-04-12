@@ -31,3 +31,7 @@ rails@lichfield-001.vm.brightbox.net
 balti-2000-tamworth.pdf
 
 wget-log
+
+config/environments/._development.rb
+
+config/environments/._production.rb

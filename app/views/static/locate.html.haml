@@ -1,0 +1,15 @@
+- @extras = capture do
+	= javascript_include_tag "geo.min"
+:javascript
+	$(document).ready(function() {
+		if (geo_position_js.init()) {
+		  return geo_position_js.getCurrentPosition(function(pos) {
+		    window.location = "/nearest?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude
+		  });
+		} else {
+			window.location = "/"
+		}
+	});
+.row#fullwidth
+	.span12
+		%h2 Locating...

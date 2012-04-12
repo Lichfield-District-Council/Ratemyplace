@@ -1,6 +1,6 @@
 class InspectionsController < ApplicationController
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate]
+before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :nearest]
 
   # GET /inspections
   # GET /inspections.json
@@ -97,6 +97,13 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	@inspections = Inspection.where(:councilid => @council.id)
   	stream = render_to_string(:template=>"inspections/fsa.builder" ) 
   	send_data(stream, :type => "text/xml", :filename => "#{@council.slug}.xml",:dispostion=>'inline',:status=>'200 OK') 
+  end
+  
+  def nearest
+  	inspection = Inspection.within(1, :origin => [params[:lat], params[:lng]]).order('distance asc').first
+  	respond_to do |format|
+  		format.html { redirect_to inspection_url(inspection) }
+  	end
   end
   
   # GET /admin

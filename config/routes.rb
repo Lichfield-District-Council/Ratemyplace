@@ -41,6 +41,10 @@ Ratemyplace::Application.routes.draw do
   match 'address/postcode/:postcode' => 'address#postcode'
   match 'address/uprn/:uprn' => 'address#uprn'
   
+  # Nearest
+  
+  match 'nearest' => 'inspections#nearest', :as => :nearest
+  
   # Contact stuff
   
   match 'contact-us' => 'contacts#new'
