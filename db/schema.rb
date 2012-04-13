@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120403094253) do
+ActiveRecord::Schema.define(:version => 20120413141619) do
 
   create_table "addresses", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -58,8 +58,8 @@ ActiveRecord::Schema.define(:version => 20120403094253) do
     t.integer  "structure",                              :null => false
     t.integer  "confidence",                             :null => false
     t.integer  "rating",                                 :null => false
-    t.string   "image"
-    t.string   "report"
+    t.string   "imageold"
+    t.string   "reportold"
     t.boolean  "tradingstandards"
     t.boolean  "healthy"
     t.string   "email"
@@ -87,7 +87,7 @@ ActiveRecord::Schema.define(:version => 20120403094253) do
     t.boolean  "published",           :default => false
     t.string   "internalid"
     t.date     "appealdate"
-    t.boolean  "appeal"
+    t.boolean  "appeal",              :default => false
     t.boolean  "revisit_requested"
   end
 

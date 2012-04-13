@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     if @user.save
-      redirect_to root_url, :notice => "User created!"
+      redirect_to '/admin', :notice => "User created!"
     else
       render :action => 'new'
     end
@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   def update
     @user = current_user
     if @user.update_attributes(params[:user])
-      redirect_to root_url, :notice => "Your profile has been updated."
+      redirect_to '/admin', :notice => "Your profile has been updated."
     else
       render :action => 'edit'
     end

@@ -135,6 +135,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   
   def admin
   	@user = current_user
+  	@council = Council.find(@user.councilid)
   end
   
   def editsearch 

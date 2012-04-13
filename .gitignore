@@ -6,6 +6,7 @@
 /config/initializers/twitter.rb
 /config/environments/production.rb
 /config/environments/development.rb
+/public/system/
 
 Capfile
 

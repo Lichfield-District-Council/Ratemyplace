@@ -9,3 +9,4 @@
 			%li= link_to 'Add a new premises', { :controller => "inspections", :action => "new" }, {:class => "add"}
 			%li= link_to 'Edit an existing premises', { :controller => "inspections", :action => "editsearch" }, {:class => "edit"}
 			%li= link_to 'Download certificate', { :controller => "inspections", :action => "certificatesearch" }, {:class => "download"}
+			%li= link_to 'Download FSA XML file', "/inspections/fsa/#{@council.slug}.xml", {:class => "fsa"}
