@@ -99,24 +99,6 @@ class Inspection < ActiveRecord::Base
   		BufferApp.new(BUFFER_CONFIG[:token], BUFFER_CONFIG[:id]).create("New Inspection: #{self.name} #{self.town} #{self.rating} stars #{"http://www.ratemyplace.org.uk/inspections/" + self.slug}", now)
   	end
   	
-  	def self.makelive
-  		@inspections = Inspection.where('DATEDIFF(NOW(), date) = 27 AND published = 0 AND appeal = 0')
-  		@inspections.each do |inspection|
-  			inspection.update_attributes(:published => 1)
-  			inspection.tweet
-  		end
-  	end
-  	
-  	def self.getallcertificates
-  		@councils = Council.all
-  		@councils.each do |council|
-	  		@inspections = Inspection.where(:councilid => council.id)
-	  		@inspections.each do |inspection|
-	  			system "wget -P /Users/stuart/Desktop/Certificates/#{council.slug} http://localhost:3000/admin/certificate/#{inspection.slug}.pdf"
-	  		end
-	  	end
-  	end
-  	
   	def reportsize
   		size = self.report.size / 1000
   		return size.to_s + "kb"

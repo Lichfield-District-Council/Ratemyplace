@@ -70,3 +70,12 @@ task :makelive => :environment do
 	end
 	puts "#{@inspections.count} inspections made live!"
 end
+
+desc "Update locations based on UPRN"
+task :locate => :environment do
+	inspections = Inspection.where('length(uprn) > 0')
+	inspections.each do |inspection|
+		address = Address.GetAddressFromUprn(inspection.uprn)
+		inspection.update_attributes(:lat => address[:lat], :lng => address[:lng]) rescue puts "UPRN not found for #{inspection.name}"
+	end
+end
