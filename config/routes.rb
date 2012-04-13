@@ -43,7 +43,7 @@ Ratemyplace::Application.routes.draw do
   
   # Nearest
   
-  match 'nearest' => 'inspections#nearest', :as => :nearest
+  match 'locate' => 'inspections#locate', :as => :locate
   
   # Contact stuff
   
@@ -53,6 +53,7 @@ Ratemyplace::Application.routes.draw do
   
   match 'view/:id/:name' => 'inspections#redirect',  :defaults=>{:format=>'html'}
   match 'widget.php' => 'inspections#redirect',  :defaults=>{:format=>'js'}
+  match 'api/api.php' => 'inspections#api'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

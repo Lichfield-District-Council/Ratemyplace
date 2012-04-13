@@ -1,6 +1,6 @@
 class InspectionsController < ApplicationController
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :nearest]
+before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api]
 
   # GET /inspections
   # GET /inspections.json
@@ -83,6 +83,25 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	end
   end
   
+  def api
+  	respond_to :xml, :json
+  	
+  	if params[:method] == "search"
+  		@search = Inspection.search({"name_cont" => params[:name], "councilid_eq" => params[:authority], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1})
+  		if params[:lat]
+  			@inspections = @search.result.within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
+  		else
+  			@inspections = @search.result
+  		end
+  	end
+  	
+  	if params[:format] == "json"
+  		render json: @inspections
+  	else
+  		render xml: @inspections
+  	end
+  end
+  
   def atoz
   	if params[:council]
   		@council = Council.find(params[:council])
@@ -99,11 +118,17 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	send_data(stream, :type => "text/xml", :filename => "#{@council.slug}.xml",:dispostion=>'inline',:status=>'200 OK') 
   end
   
-  def nearest
-  	inspection = Inspection.within(1, :origin => [params[:lat], params[:lng]]).order('distance asc').first
-  	respond_to do |format|
-  		format.html { redirect_to inspection_url(inspection) }
-  	end
+  def locate
+  	if params[:lat]
+	  	inspection = Inspection.within(1, :origin => [params[:lat], params[:lng]]).order('distance asc').first
+	  	respond_to do |format|
+	  		format.html { redirect_to inspection_url(inspection, :utm_source => 'qrcode', :utm_medium => 'qrcode', :utm_campaign => 'window_sticker') }
+	  	end
+	 else
+	  	respond_to do |format|
+	  		format.html { render :layout=>false }
+	  	end
+	 end
   end
   
   # GET /admin
