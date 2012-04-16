@@ -25,7 +25,7 @@
 			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
 		.item.vcard
 			%h2.fn.org= @inspection.name
-			%p.address.adr= full_address(@inspection)
+			%p.address.adr.label= full_address(@inspection)
 		%p
 			%strong 
 				Inspected on:
@@ -124,7 +124,8 @@
 			= showrating(@inspection.confidence, "confidence")
 		%p
 			%strong Rating:
-			%span.rating.hidden = @inspection.rating
+			%span.rating.hidden 
+				= @inspection.rating
 			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating}"
 			- if @inspection.revisit_requested === true
 				%em
