@@ -19,8 +19,8 @@
 			.well
 				= link_to '<i class="icon-pencil icon-white"></i>'.html_safe + ' Edit', { :controller => "inspections", :action => "edit", :id => @inspection }, :class => 'btn btn-primary'
 				= link_to '<i class="icon-print icon-white"></i>'.html_safe + ' Print Certificate', { :controller => "inspections", :action => "certificate", :id => @inspection, :format => :pdf }, :class => 'btn btn-info'
-		.rating
-			= image_tag "http://ratings.food.gov.uk/App_Themes/default/images/scores/small/sfhrsweb#{@inspection.rating}.jpg", :alt => ''
+		.rating{:class => "rating#{@inspection.rating}"}
+			= image_tag "fhrsweb#{@inspection.rating}.jpg", :alt => ''
 		- if @inspection.image_file_name != nil
 			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
 		.item.vcard
