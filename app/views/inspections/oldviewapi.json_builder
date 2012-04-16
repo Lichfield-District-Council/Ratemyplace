@@ -1,0 +1,29 @@
+detail do
+	name @inspection.name
+	id @inspection.id
+	address full_address(@inspection)
+	url "/inspections/#{@inspection.slug}"
+	postcode @inspection.postcode
+	coords "#{@inspection.lat},#{@inspection.lng}"
+	lat @inspection.lat
+	lng @inspection.lng
+	opening_times @inspection.hours
+	tel @inspection.tel
+	email @inspection.email
+	website @inspection.website
+	authority @council.name
+	reference "#{@council.code}-#{@inspection.id}"
+end
+inspection do
+	date @inspection.date.strftime("%d/%m/%Y")
+	hygiene @inspection.hygiene
+	structure @inspection.structure
+	confidence @inspection.confidence
+	rating @inspection.rating
+	ratingimage "http://www.ratemyplace.org.uk/assets/rating#{@inspection.rating}.png" 
+	report "http://www.ratemyplace.org.uk#{@inspection.report.url}"
+end
+other do
+	trading_standards @inspection.tradingstandards
+	healthy_options @inspection.healthy
+end

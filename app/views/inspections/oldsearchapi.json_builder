@@ -1,0 +1,12 @@
+results @inspections do |inspection|
+	name inspection.name
+	id inspection.id
+	link url_for :only_path => false, :controller => 'inspections', :action => 'show', :id => inspection.slug
+	address full_address(inspection)
+	town inspection.town
+	lat inspection.lat
+	lng inspection.lng
+	rating inspection.rating
+	ratingimage "http://www.ratemyplace.org.uk/assets/rating#{inspection.rating}.png"
+	authority Council.find(inspection.councilid).name
+end

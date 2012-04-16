@@ -84,21 +84,31 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   end
   
   def api
-  	respond_to :xml, :json
-  	
   	if params[:method] == "search"
+  		
   		@search = Inspection.search({"name_cont" => params[:name], "councilid_eq" => params[:authority], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1})
   		if params[:lat]
   			@inspections = @search.result.within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
   		else
   			@inspections = @search.result
   		end
+
+	  	if params[:format] == "json"
+	  		render "oldsearchapi.json_builder"
+	  	else
+	  		render "oldsearchapi.xml.builder"
+	  	end  		
   	end
   	
-  	if params[:format] == "json"
-  		render json: @inspections
-  	else
-  		render xml: @inspections
+  	if params[:method] == "view"
+  		@inspection = Inspection.find(params[:id])
+  		@council = Council.find(@inspection.councilid)
+  		
+  		 if params[:format] == "json"
+  			render "oldviewapi.json_builder"
+  		else
+  			render "oldviewapi.xml.builder"
+  		end
   	end
   end
   
