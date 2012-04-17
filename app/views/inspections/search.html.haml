@@ -19,14 +19,16 @@
 			- num = num + 1	
 	= javascript_include_tag "searchmap"				
 - title "Search Results", false
-	.row
-		#resultview.span7
-			%h2 Search Results
-			- if @inspections.length == 0
+	- if @inspections.length == 0
+		.row#fullwidth
+			.span12
+				%h2 Search Results
 				%p
 					%strong Sorry, there were no results for your search
-			- else
-			
+	- else
+		.row
+			#resultview.span7
+				%h2 Search Results
 				%table.table.table-bordered#searchresults
 					%thead
 						%tr
@@ -47,10 +49,10 @@
 								= image_tag "rating#{inspection.rating}.png", :alt => ''
 						- num = num + 1
 				.pagination-centered= will_paginate @inspections, :inner_window => 2, :outer_window => 0
-		.span5#rightcol.searchmap
-			%h3 Map
-			#mapcontainer
-				#searchmap
+			.span5#rightcol.searchmap
+				%h3 Map
+				#mapcontainer
+					#searchmap
 - else
 	- title "Search", false
 	.row

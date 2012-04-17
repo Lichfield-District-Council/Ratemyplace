@@ -86,12 +86,16 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   def api
   	if params[:method] == "search"
   		
-  		@search = Inspection.search({"name_cont" => params[:name], "councilid_eq" => params[:authority], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1})
-  		if params[:lat]
-  			@inspections = @search.result.within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
+  		if params[:top] == "true"
+  			@inspections = Inspection.where(:published => 1).order("date DESC").limit(10)
   		else
-  			@inspections = @search.result
-  		end
+	  		@search = Inspection.search({"name_cont" => params[:name], "councilid_eq" => params[:authority], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1})
+	  		if params[:lat]
+	  			@inspections = @search.result.within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
+	  		else
+	  			@inspections = @search.result
+	  		end
+		end
 
 	  	if params[:format] == "json"
 	  		render "oldsearchapi.json_builder"
