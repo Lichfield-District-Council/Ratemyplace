@@ -51,11 +51,9 @@
 				= f.label :rating_eq, "Rating:"
 				.controls
 					= f.select :rating_eq, {"5 Stars" => 5, "4 Stars" => 4, "3 Stars" => 3, "2 Stars" => 2, "1 Stars" => 1, "No Stars" => 0}, {:prompt => '--Please Select--'}
-				= hidden_field_tag :lat, :id => 'lat'
-				= hidden_field_tag :lng, :id => 'lng'
-			.control-group#geo.hidden
-				= label_tag :nearest, "Show businesses near me"
+			.control-group 
+				=f.label :published_eq, "Show only unpublished:"
 				.controls
-					= check_box_tag :nearest
+					= check_box_tag "q[published_eq]", "0"
 			.form-actions
 				= f.submit "Search", :class => "btn-primary icon-search", :name => nil
