@@ -79,3 +79,11 @@ task :locate => :environment do
 		inspection.update_attributes(:lat => address[:lat], :lng => address[:lng]) rescue puts "UPRN not found for #{inspection.name}"
 	end
 end
+
+desc "Upload FSA returns"
+task :fsaupload => :environment do
+	councils = Council.all
+	councils.each do |council|
+		system "wget -r -nv -P /tmp/ http://lichfield-001.vm.brightbox.net/inspections/fsa/#{council.slug}.xml && casperjs lib/fsaupload.js #{council.slug} 289 Lichsystad LichTe#T!"
+	end
+end
