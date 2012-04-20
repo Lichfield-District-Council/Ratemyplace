@@ -7,11 +7,17 @@
 		:javascript
 			$(document).ready(function() {
 				if (geo_position_js.init()) {
-				  return geo_position_js.getCurrentPosition(function(pos) {
-				    window.location = "/locate?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude
-				  });
+				  geo_position_js.getCurrentPosition(success, error,{enableHighAccuracy:true});
 				} else {
 					window.location = "/?utm_campaign=window_sticker&utm_medium=qrcode&utm_source=qrcode"
 				}
+				
+				function success(pos) {
+				    window.location = "/locate?lat=" + pos.coords.latitude + "&lng=" + pos.coords.longitude
+				 }
+				 
+				 function error(pos) {
+				 	window.location = "/?utm_campaign=window_sticker&utm_medium=qrcode&utm_source=qrcode"
+				 }
 			});
 	%body
