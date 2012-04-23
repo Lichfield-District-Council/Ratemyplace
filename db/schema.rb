@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120413141619) do
+ActiveRecord::Schema.define(:version => 20120423100146) do
 
   create_table "addresses", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(:version => 20120413141619) do
     t.date     "appealdate"
     t.boolean  "appeal",              :default => false
     t.boolean  "revisit_requested"
+    t.string   "foursquare_id"
   end
 
   add_index "inspections", ["id"], :name => "index_inspections_on_id"

@@ -236,6 +236,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	
 		if @inspection.rating == 5
 			@inspection.tweet('true')
+			@inspection.addfoursquaretip
 		end
 		
 		redirect_to @inspection, notice: 'Inspection was successfully created.'
@@ -265,6 +266,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       			@inspection.published = 1
       			@inspection.save
       			@inspection.tweet('true')
+      			@inspection.addfoursquaretip
       		end
       	end
       	

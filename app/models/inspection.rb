@@ -1,4 +1,7 @@
 class Inspection < ActiveRecord::Base
+	require 'httparty'
+	require 'json'
+	
 	belongs_to :council
 	has_many :tags
 	has_attached_file :image, :styles => { :medium => "300x300>", :thumb => "100x100>" }
@@ -39,8 +42,37 @@ class Inspection < ActiveRecord::Base
     	return address.join(seperator)
   	end
   	
-  	def self.getrating(hygiene, structure, confidence)
-  		stars = hygiene + structure + confidence
+  	def getfoursquareid
+  		result = JSON.parse HTTParty.get("https://api.foursquare.com/v2/venues/search?ll=#{self.lat},#{self.lng}&query=#{CGI::escape(self.name)}&radius=50&oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}").response.body
+  		if result["response"]["venues"].length == 0
+  			foursquare_id = nil
+  		else
+  			foursquare_id = result["response"]["venues"][0]["id"].split.join("\n")
+  		end
+  		self.update_attributes(:foursquare_id => foursquare_id)
+  		self.save
+  		
+  		rescue Exception => e
+  			puts "#{self.name} raised error"
+  	end
+  	
+  	def addfoursquaretip
+  		if self.foursquare_id == nil
+  			self.foursquare_id = self.getfoursquareid
+  		end
+  		
+  		text = "Food safety rating here is #{self.rating} out of 5"
+  		url = "http://www.ratemyplace.org.uk/inspections/#{self.slug}"
+  		
+  		options = {:query => { :venueId => self.foursquare_id, :text => text, :url => url }}
+  		HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options )
+  		
+  		rescue Exception => e
+  			puts "#{self.name} raised error #{e}"
+  	end
+  	
+  	def getrating
+  		stars = self.hygiene + self.structure + self.confidence
 		
 		if stars >=0 and stars <=15
 			if hygiene > 5 or structure > 5 or confidence > 5
@@ -91,6 +123,9 @@ class Inspection < ActiveRecord::Base
 		elsif  stars >= 50
 			rating = 0
 		end
+		
+		self.update_attributes(:rating => rating)
+  		self.save
 		
 		return rating
   	end

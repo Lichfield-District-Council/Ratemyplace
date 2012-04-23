@@ -61,14 +61,66 @@ task :certificates => :environment do
 	end
 end
 
-desc "Make inspections live"
-task :makelive => :environment do
-	@inspections = Inspection.where('DATEDIFF(NOW(), date) = 27 AND published = 0 AND appeal = 0')
-	@inspections.each do |inspection|
-		inspection.update_attributes(:published => 1)
-		inspection.tweet
+desc "Generate slugs"
+task :slugify => :environment do
+	Inspection.find_each(&:save)
+end
+
+desc "Update scores to new scheme"
+task :newrating => :environment do
+	inspections = Inspection.all
+	inspections.each do |inspection|
+		Inspection.getrating
 	end
-	puts "#{@inspections.count} inspections made live!"
+end
+
+desc "Get UPRNS"
+task :uprn => :environment do
+	inspections = Inspection.where(:uprn => nil)
+	inspections.each do |inspection|
+		options = []
+		["name", "address1", "postcode"].each do |i|
+			address = Address.GetAddressFromPostcode(inspection[i])
+			
+			if address.length == 1 && address[0][:postcode] == inspection.postcode
+				inspection.update_attributes(:uprn => address[0][:uprn])
+				inspection.save
+				print "\r\n#{inspection.name} #{inspection.address} updated automagically!\r\n"
+				break
+			end
+			
+			if address.length > 0
+				options << address
+				break
+			end
+		end
+		
+		if options.length > 0
+			num = 1
+			
+			print "\r\n#{inspection.name} #{inspection.address}\r\n"
+			print "-----------------------------------------------------------\r\n\r\n"
+			
+			options[0].each do |option|
+				print "#{num}: #{option[:address]}\r\n"
+				num += 1
+			end
+			
+			print "\r\nPlease enter the number of the correct address, the UPRN or x if address not present\r\n"
+			print "-------------------------------------------------------------------------------------------\r\n"
+			answer = STDIN.gets
+			if /^[\d]+(\.[\d]+){0,1}$/ === answer
+				if answer.length > 3
+					uprn = answer		
+				else
+					choice = answer.to_i - 1
+					uprn = options[0][choice][:uprn]
+				end
+				inspection.update_attributes(:uprn => uprn)
+				inspection.save
+			end
+		end
+	end
 end
 
 desc "Update locations based on UPRN"
@@ -80,6 +132,35 @@ task :locate => :environment do
 	end
 end
 
+namespace :foursquare do
+	desc "Get Foursquare venues"
+	task :venues => :environment do
+		inspections = Inspection.where(:foursquare_id => nil)
+		inspections.each do |inspection|
+			inspection.getfoursquareid
+		end
+	end
+	
+	task :tips => :environment do
+		inspections = Inspection.where("foursquare_id IS NOT NULL")
+		inspections.each do |inspection|
+			inspection.addfoursquaretip
+		end
+	end
+end
+
+desc "Make inspections live"
+task :makelive => :environment do
+	@inspections = Inspection.where('DATEDIFF(NOW(), date) = 27 AND published = 0 AND appeal = 0')
+	@inspections.each do |inspection|
+		inspection.update_attributes(:published => 1)
+		inspection.tweet
+		inspection.addfoursquaretip
+	end
+	puts "#{@inspections.count} inspections made live!"
+end
+
+
 desc "Upload FSA returns"
 task :fsaupload => :environment do
 	councils = Council.all
@@ -87,3 +168,4 @@ task :fsaupload => :environment do
 		system "wget -r -nv -P /tmp/ http://lichfield-001.vm.brightbox.net/inspections/fsa/#{council.slug}.xml && casperjs lib/fsaupload.js #{council.slug} 289 Lichsystad LichTe#T!"
 	end
 end
+
