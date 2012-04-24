@@ -1,5 +1,6 @@
 =javascript_include_tag "form.js"
 =javascript_include_tag "autocomplete.js"
+=javascript_include_tag "wysihat-dist.js"
 =form_for(@inspection, :html => {:class => 'form-horizontal'}) do |f|
 	- if @inspection.errors.any?
 		.alert.alert-error
@@ -50,7 +51,17 @@
 					.controls
 						%input{:name => "postcode", :id => "postcode"}
 						%button{:id => "searchaddress", :class => "btn-primary"} Go!
-						= image_tag "ajax-loader.gif", :alt => "", :class => "hidden", :id => "loading"
+						= image_tag "ajax-loader2.gif", :alt => "", :class => "hidden", :id => "loading"
+				.control-group
+					%label
+						%strong
+							or
+				.control-group
+					%label{:for => "uprn"} UPRN
+					.controls
+						%input{:name => "uprn", :id => "uprn"}
+						%button{:id => "searchuprn", :class => "btn-primary"} Go!
+						= image_tag "ajax-loader2.gif", :alt => "", :class => "hidden", :id => "loading2"
 			#results.hidden.well
 				%h3 Select Address
 		#address{:class => @addressclass}
@@ -74,7 +85,7 @@
 				= f.label :town
 				.controls
 					= f.text_field :town
-			.control-group 
+			.control-group#postcode_group 
 				= f.label :postcode
 				.controls
 					= f.text_field :postcode
@@ -85,6 +96,11 @@
 		.control-group 
 			= f.label :hours, "Opening Times"
 			.controls
+				.editor_toolbar
+					%a.btn.btn-small.bold{:href => "#"}
+						%i.icon-bold
+					%a.btn.btn-small.list{:href => "#"}
+						%i.icon-list
 				= f.text_area :hours, :rows => 7
 		.control-group 
 			= f.label :tel

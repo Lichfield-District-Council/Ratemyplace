@@ -1,7 +1,11 @@
 module InspectionsHelper
 
 	def full_address(inspection)
-		 address = [inspection.address1, inspection.address2, inspection.address3, inspection.address4, inspection.town, inspection.postcode].compact.reject { |s| s.empty? }
+		 if inspection.postcode != "Mobile"
+			 address = [inspection.address1, inspection.address2, inspection.address3, inspection.address4, inspection.town, inspection.postcode].compact.reject { |s| s.empty? }
+		else
+			address = [inspection.address1, inspection.address2, inspection.address3, inspection.address4, inspection.town].compact.reject { |s| s.empty? }
+		end
     	return address.join(", ")
 	end
 	

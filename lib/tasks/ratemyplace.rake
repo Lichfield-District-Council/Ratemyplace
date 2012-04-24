@@ -70,7 +70,7 @@ desc "Update scores to new scheme"
 task :newrating => :environment do
 	inspections = Inspection.all
 	inspections.each do |inspection|
-		Inspection.getrating
+		inspection.getrating
 	end
 end
 

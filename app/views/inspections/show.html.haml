@@ -1,13 +1,14 @@
 - @extras = capture do
-	= javascript_include_tag "leaflet"
-	= stylesheet_link_tag "leaflet"
-	<!--[if lte IE 8]>
-	= stylesheet_link_tag "leaflet.ie"
-	<![endif]-->
-	= javascript_tag do
-		= "var lat = " + @inspection.lat.to_json
-		= "var lng = " + @inspection.lng.to_json
-	= javascript_include_tag "map"
+	- if @inspection.postcode != "Mobile"
+		= javascript_include_tag "leaflet"
+		= stylesheet_link_tag "leaflet"
+		<!--[if lte IE 8]>
+		= stylesheet_link_tag "leaflet.ie"
+		<![endif]-->
+		= javascript_tag do
+			= "var lat = " + @inspection.lat.to_json
+			= "var lng = " + @inspection.lng.to_json
+		= javascript_include_tag "map"
 	= javascript_include_tag "show"
 - title "#{@inspection.name} in #{@inspection.town} - Food Safety Star Rating | Ratemyplace", false
 .row
@@ -25,6 +26,10 @@
 			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
 		.item.vcard
 			%h2.fn.org= @inspection.name
+			- if @inspection.postcode == "Mobile"
+				%p
+					%em
+						(Mobile premises)
 			%p.address.adr.label= full_address(@inspection)
 		%p
 			%strong 
@@ -153,6 +158,10 @@
 					%p 
 						For more information on Trading Standards, visit the 
 						%a{:href => 'http://www.staffordshire.gov.uk/business/tradingstandards/home.aspx'} Trading Standards section of the Staffordshire County Council Website.
+						
+		- if @inspection.hours.length > 0
+			%h3 Opening hours
+			= @inspection.hours.html_safe
 
 		%h3 Contacts
 		- if @inspection.tel.length > 0
@@ -173,9 +182,10 @@
 			
 				
 	.span4#rightcol
-		%h3 Location
-		#mapcontainer
-			#map
+		- if @inspection.postcode != "Mobile"
+			%h3 Location
+			#mapcontainer
+				#map
 		
 		%h3 Display this score online
 		#scorewidget
