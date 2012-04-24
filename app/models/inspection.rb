@@ -61,11 +61,18 @@ class Inspection < ActiveRecord::Base
   			self.foursquare_id = self.getfoursquareid
   		end
   		
+  		if self.foursquare_tip_id != nil
+  			HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}")
+  		end
+  		
   		text = "Food safety rating here is #{self.rating} out of 5"
   		url = "http://www.ratemyplace.org.uk/inspections/#{self.slug}"
   		
   		options = {:query => { :venueId => self.foursquare_id, :text => text, :url => url }}
-  		HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options )
+  		post = JSON.parse HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options ).response.body
+  		  		
+  		self.update_attributes(:foursquare_tip_id => post["response"]["tip"]["id"])
+  		self.save
   		
   		rescue Exception => e
   			puts "#{self.name} raised error #{e}"
