@@ -29,6 +29,8 @@ Ratemyplace::Application.routes.draw do
   match 'admin/new' => 'inspections#new', :as => :new
   match 'admin/editsearch' => 'inspections#editsearch', :as => :editsearch
   match 'admin/certificatesearch' => 'inspections#certificatesearch', :as => :certificatesearch
+  match 'admin/matchaddress' => 'inspections#matchaddress', :as => :matchaddress
+  match 'admin/updateaddress' => 'inspections#updateaddress', :via => [:put], :as => :updateaddress
   match 'admin/edit/:id' => 'inspections#edit', :as => :edit
   match 'admin/certificate/:id' => 'inspections#certificate', :as => :certificate
   match 'admin/profile' => 'users#edit', :as => :edit_current_user

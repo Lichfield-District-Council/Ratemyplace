@@ -15,6 +15,7 @@ class CouncilsController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @council }
+      format.js
     end
   end
 end

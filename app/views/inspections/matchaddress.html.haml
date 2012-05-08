@@ -1,0 +1,43 @@
+- content_for :head do
+	=javascript_include_tag "matchaddress.js"
+- title "Match address", false
+.row#fullwidth
+	.span12
+		%h2 Match address
+		- if @inspection[0] == nil
+			%h3
+				Nice! All done! :)
+		- else
+			%h3 
+				= "#{@inspection[0].name}, #{@inspection[0].address}"
+			%p Choose an address from the list below:
+			
+			= form_for @inspection[0], :url => :updateaddress do |f|
+				= f.hidden_field(:id)
+				%ul
+					- @addresses.each do |address|
+						%li
+							%label
+								= "#{address.fulladdress} "
+								= f.radio_button(:uprn, address.uprn.gsub(".00", "")) 
+				#findaddress.well
+					%h3 Not in the list?
+					.control-group
+						%label{:for => "address"} Search for address
+						.controls
+							%input{:name => "postcode", :id => "postcode"}
+							%button{:id => "searchaddress", :class => "btn-primary"} Go!
+							= image_tag "ajax-loader2.gif", :alt => "", :class => "hidden", :id => "loading"
+							
+				%ul
+					%li
+						.control-group
+							%label
+								There really is no address I can find (i.e. mobile premises etc)
+								= f.radio_button(:uprn, "x")
+							
+				#results.hidden.well
+					%h3 Select Address
+					
+				.form-actions
+					= f.submit "Submit", :class => "btn btn-primary"

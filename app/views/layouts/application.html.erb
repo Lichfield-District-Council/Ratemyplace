@@ -27,6 +27,7 @@
     <title><%= content_for?(:title) ? yield(:title) : "Untitled" %></title>
     <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
     <meta name="viewport" content="width=device-width,minimum-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <%= stylesheet_link_tag "application" %>
     <%= javascript_include_tag "application" %>
     <%= favicon_link_tag 'favicon.png', :type => 'image/png' %>
@@ -37,15 +38,16 @@
   <body>
     <div class="container">
 		<div id="header">
-			<a href="#nav" id="navskip" class="btn">
+			<a href="#nav" id="navskip" class="btn" tabindex="1">
 	            <i class="icon-align-justify icon-white"></i>
             </a>
-			<h1><a href="/">Ratemyplace</a></h1>
+			<h1><a href="/" tabindex="2">Ratemyplace</a></h1>
 			<p class="intro">The one stop shop for information on Food Safety</p>
 			
 			<form accept-charset="UTF-8" action="/inspections/search" id="search" method="get">
 				<input name="utf8" type="hidden" value="✓" />
-      			<input class="span3" id="q_name_cont" name="q[name_cont]" size="30" type="text" placeholder="Search for a business…" /><button type="submit">Search</button>
+				<label for="q_name_cont" class="clip">Search</label>
+      			<input class="span3" id="q_name_cont" name="q[name_cont]" size="30" type="text" placeholder="Search for a business…" tabindex="3" /><button type="submit" tabindex="4">Search</button>
 			</form>
 		</div>
 	 <div id="main">
@@ -56,19 +58,19 @@
       <%= yield %>
  	 <nav role="navigation">	
 		<ul id="nav">
-			<li><a href="/">Home</a></li>
-			<li><a href="/about">About</a></li>
-			<li><a href="/inspections/search">Search</a></li>
-			<li><a href="/inspections/a-z">A to Z</a></li>
-			<li><a href="/links">Links</a></li>
-			<li><a href="/contact-us">Contact us</a></li>
-			<li><a href="/faq">FAQ</a></li>
-			<li><a href="/link-to-us">Link to us</a></li>
+			<li><a href="/" tabindex="5">Home</a></li>
+			<li><a href="/about" tabindex="6">About</a></li>
+			<li><a href="/inspections/search" tabindex="7">Search</a></li>
+			<li><a href="/inspections/a-z" tabindex="8">A to Z</a></li>
+			<li><a href="/links" tabindex="9">Links</a></li>
+			<li><a href="/contact-us" tabindex="10">Contact us</a></li>
+			<li><a href="/faq" tabindex="11">FAQ</a></li>
+			<li><a href="/link-to-us" tabindex="12">Link to us</a></li>
 			
 			<ul class="extra">
-				<li><a href="/api"><strong>API</strong></a></li>
-				<li><a href="http://www.twitter.com/ratemyplace"><img src="/assets/twitter.png" /></a></li>
-				<li><a href="/inspections.rss"><img src="/assets/rss.png" /></a></li>
+				<li><a href="/api" tabindex="13"><strong>API</strong></a></li>
+				<li><a href="http://www.twitter.com/ratemyplace" tabindex="14"><img src="/assets/twitter.png" alt="Follow us on Twitter" /></a></li>
+				<li><a href="/inspections.rss" tabindex="15"><img src="/assets/rss.png" alt="RSS Feed" /></a></li>
 			</ul>
 		</ul>
 	</nav>

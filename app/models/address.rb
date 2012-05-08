@@ -4,6 +4,14 @@ class Address < ActiveRecord::Base
 	require 'easting_northing'
 	require 'pat'
 	
+	def latlng
+		latlng = EastingNorthing.eastingNorthingToLatLong(self.x, self.y)
+		results = Hash.new
+		results[:lat] = latlng["lat"]
+		results[:lng] = latlng["long"]
+		return results
+	end
+	
 	def self.GetAddressFromPostcode(postcode)
 	
 		postcode = CGI::escape(postcode)

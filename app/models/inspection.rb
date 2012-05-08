@@ -28,12 +28,13 @@ class Inspection < ActiveRecord::Base
 	  	return :qrcode => UrlShortener.shorten(url).short_url, :offset => 5
   	end
   	
-  	def buildtags
-  		if tags.length > 0
-		    taglist = params[:tags].split(",")
+  	def buildtags(tags)
+  		if tags != nil
+		    taglist = tags.split(",")
 		   	taglist.each { |tag|
 		    	self.tags.build({"tag" => tag.strip})
 		    }
+		    self.save
 	    end
   	end
   	
@@ -61,21 +62,40 @@ class Inspection < ActiveRecord::Base
   			self.foursquare_id = self.getfoursquareid
   		end
   		
-  		if self.foursquare_tip_id != nil
-  			HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}")
+  		if self.foursquare_id == nil
+	  		if self.foursquare_tip_id != nil
+	  			HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}")
+	  		end
+	  		
+	  		text = "Food safety rating here is #{self.rating} out of 5"
+	  		url = "http://www.ratemyplace.org.uk/inspections/#{self.slug}"
+	  		
+	  		options = {:query => { :venueId => self.foursquare_id, :text => text, :url => url }}
+	  		post = JSON.parse HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options ).response.body
+	  		  		
+	  		self.update_attributes(:foursquare_tip_id => post["response"]["tip"]["id"])
+	  		self.save
   		end
-  		
-  		text = "Food safety rating here is #{self.rating} out of 5"
-  		url = "http://www.ratemyplace.org.uk/inspections/#{self.slug}"
-  		
-  		options = {:query => { :venueId => self.foursquare_id, :text => text, :url => url }}
-  		post = JSON.parse HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options ).response.body
-  		  		
-  		self.update_attributes(:foursquare_tip_id => post["response"]["tip"]["id"])
-  		self.save
   		
   		rescue Exception => e
   			puts "#{self.name} raised error #{e}"
+  	end
+  	
+  	def ratingtext
+  		case self.rating
+  		when 0
+  			"Urgent improvement necessary"
+  		when 1
+  			"Major improvement necessary"
+  		when 2
+  			"Improvement necessary"
+  		when 3
+  			"Generally satisfactory"
+  		when 4
+  			"Good"
+  		when 5
+  			"Very good"
+  		end
   	end
   	
   	def getrating
@@ -127,7 +147,7 @@ class Inspection < ActiveRecord::Base
 			else
 				rating = 1
 			end
-		elsif  stars >= 50
+		elsif  stars > 50
 			rating = 0
 		end
 		

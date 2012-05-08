@@ -1,6 +1,10 @@
-=javascript_include_tag "form.js"
-=javascript_include_tag "autocomplete.js"
-=javascript_include_tag "wysihat-dist.js"
+- content_for :head do
+	=javascript_include_tag "selection.js"
+	=javascript_include_tag "wysihat-dist.js"
+	=javascript_include_tag "typeahead-fork.js"
+	=javascript_include_tag "autocomplete.js"
+	=javascript_include_tag "form.js"
+			
 =form_for(@inspection, :html => {:class => 'form-horizontal'}) do |f|
 	- if @inspection.errors.any?
 		.alert.alert-error
@@ -38,11 +42,11 @@
 		.control-group 
 			= f.label :category
 			.controls
-				= select :inspection, :category, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit"], {:prompt => '--Please Select--'}
+				= select :inspection, :category, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit", "Restaurant/Caterer – Others"], {:prompt => '--Please Select--'}
 		.control-group 
 			= f.label :scope
 			.controls
-				= select :inspection, :scope, ["Included", "Included sensitive" "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
+				= select :inspection, :scope, ["Included", "Included private", "Included sensitive", "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
 		- if @inspection.address1.length == 0
 			#findaddress.well
 				%h3 Find address
@@ -135,6 +139,10 @@
 			= f.label :confidence, 'Confidence in Management'
 			.controls
 				= select :inspection, :confidence, [0, 5, 10, 20, 30], {:prompt => '--Please Select--'}
+		.control-group 
+			= f.label :annex5, 'Annex 5 overall rating'
+			.controls
+				= f.text_field :annex5
 		#rating
 			- if !@inspection.rating.nil?
 				.control-group

@@ -1,0 +1,17 @@
+- title "Match address", false
+.row#fullwidth
+	.span12
+		%h2 Match address		
+		%h3 
+			= "#{@inspection[0].name}, #{@inspection[0].address}"
+		%p Choose an address from the list below:
+		
+		= form_for :inspection, :url => { :action => 'updateaddress' } do |f|
+			%ul
+				- @addresses.each do |address|
+					%li
+						%label
+							= "#{address.fulladdress} "
+							= f.radio_button(:uprn, address.uprn.gsub(".00", "")) 
+			.form-actions
+				= f.submit "Submit", :class => "btn btn-primary"

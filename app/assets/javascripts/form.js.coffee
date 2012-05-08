@@ -1,5 +1,3 @@
-//= require typeahead-fork
-
 $(document).ready ->
 
  editor = WysiHat.Editor.attach($('#inspection_hours'))
@@ -148,7 +146,7 @@ $(document).ready ->
 					rating = 0
 				else
 					rating = 1
-			else if  stars >= 50
+			else if  stars > 50
 				rating = 0
 				
 			$('#inspection_rating').val(rating)

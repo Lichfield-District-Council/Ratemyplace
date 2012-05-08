@@ -44,12 +44,14 @@
 						%p= entry.summary.html_safe
 			
 	#rightcol.span3	
-		%h3 Choose your council
+		%h3 
+			%label{:for => "id"}
+				Choose your council
 		#council
 			%form{:action => '/councils', :method => 'get'}
 				= select_tag :id, options_from_collection_for_select(Council.find(:all), :slug, :name),
   { :onchange => "this.form.submit();", :prompt => 'Choose your local council'}
 				= submit_tag "Search", :class => "btn-primary icon-search", :name => nil
 		
-		%h3 Latest Additions
+		%h3 Latest additions
 		= render :partial => "latest"		

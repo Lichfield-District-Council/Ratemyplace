@@ -16,6 +16,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       format.rss do
       	response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
       end
+      format.js
     end
   end
 
@@ -34,7 +35,14 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	      format.json
 	      format.xml
 	      format.js
-	      format.png { render Inspection.qrcode(request.url.gsub(/.png/, '')) }
+	      format.png { 
+	      	if params[:type] == "cert"
+	      		utm_campaign = "certificate"
+	      	else
+	      		utm_campaign = "usergenerated"
+	      	end
+	      	render Inspection.qrcode("http://www.ratemyplace.org.uk/inspections/#{@inspection.slug}?utm_source=qrcode&utm_medium=qrcode&utm_campaign=#{utm_campaign}") 
+	      	}
 	    end
 	end
   end
@@ -174,7 +182,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   def certificate
   	@inspection = Inspection.find(params[:id])
   	@council = Council.find(@inspection.councilid)
-  	system("curl http://lichfield-001.vm.brightbox.net/inspections/#{@inspection.slug}.png -o /tmp/#{@inspection.slug}.png")
+  	system("curl http://lichfield-001.vm.brightbox.net/inspections/#{@inspection.slug}.png?type=cert -o /tmp/#{@inspection.slug}.png")
   	@qrcode = "/tmp/#{@inspection.slug}.png"	
   	respond_to do |format|
   		format.pdf do
@@ -219,7 +227,9 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 
   # POST /inspections
   # POST /inspections.json
-  def create  	
+  def create 
+  	
+  	params[:inspection][:name] = params[:inspection][:name].titleize
 	@inspection = Inspection.new(params[:inspection])
 	
 	if @inspection.rating
@@ -232,7 +242,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 
 	if @inspection.save
 	
-		@inspection.buildtags
+		@inspection.buildtags(params[:inspection][:tags])
 	
 		if @inspection.rating == 5
 			@inspection.tweet('true')
@@ -249,12 +259,14 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   # PUT /inspections/1.json
   def update
 	@inspection = Inspection.find(params[:id])
+	  
+	  params[:inspection][:name] = params[:inspection][:name].titleize
 	
       if @inspection.update_attributes(params[:inspection])
       	      
 	    # Destroy old tags (to make sure all tags we're adding are fresh!)
     	Tag.destroy_all(:inspection_id => @inspection.id)
-    	@inspection.buildtags
+    	@inspection.buildtags(params[:inspection][:tags])
       	
       	newdate = Date::civil(params[:inspection]["date(1i)"].to_i, params[:inspection]["date(2i)"].to_i, params[:inspection]["date(3i)"].to_i)
       	
@@ -285,6 +297,29 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	@inspection.save
   	@inspection.tweet('true')
   	redirect_to @inspection, notice: 'The appeal was rejected and the inspection is now live.'
+  end
+
+  def matchaddress
+    @inspection = Inspection.where("uprn = '' OR uprn IS null").limit(1)
+    if @inspection[0] == nil
+    	redirect_to '/', notice: "Nice! All done! :)"
+    else
+		@addresses = Address.where("postcode = ? OR (fulladdress LIKE ? AND town = ?)", @inspection[0].postcode, "%#{@inspection[0].address1}%", @inspection[0].town)
+	end
+  end
+  
+  def updateaddress
+  	inspection = Inspection.find(params[:inspection][:id])
+  	if params[:inspection][:uprn] == "x"
+  		inspection.update_attributes(:uprn => "x")
+  	elsif params[:altuprn] != nil
+  		latlng = Address.where(:uprn => "#{params[:altuprn]}.00")[0].latlng
+  		inspection.update_attributes(:uprn => params[:altuprn], :lat => latlng[:lat], :lng => latlng[:lng])
+  	else
+	  	latlng = Address.where(:uprn => "#{params[:inspection][:uprn]}.00")[0].latlng
+  		inspection.update_attributes(:uprn => params[:inspection][:uprn], :lat => latlng[:lat], :lng => latlng[:lng])
+  	end
+  	redirect_to :matchaddress, notice: "Premises updated! Now, what's next?"
   end
 
   # DELETE /inspections/1

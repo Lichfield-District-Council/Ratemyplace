@@ -27,8 +27,11 @@ code, pre {
 border-radius: @topleft @topright @bottomright @bottomleft;
 }
 
-.hidden {
-	display: none;
+.clip {
+	position:absolute;
+	clip:rect(1px 1px 1px 1px);
+	display: block;
+	visibility: visible;
 }
 
 .btn-primary {
@@ -75,9 +78,13 @@ border-radius: @topleft @topright @bottomright @bottomleft;
 		}
 		
 		th.row {
-			vertical-align: top;
+			vertical-align: top !important;
 		}
 	}
+}
+
+.modal#how {
+	max-height: 550px;
 }
 
 #widgetpreview {
@@ -138,6 +145,10 @@ body {
 				.full-border-radius(5px, 0, 5px, 0);
 			}
 			
+			.placeholder {
+				color: #aaa;
+			}
+			
 			button {
 				.full-border-radius(0, 5px, 0, 5px);
 				background: #9bc13c url('/assets/searchicon.png') center no-repeat;
@@ -169,10 +180,8 @@ body {
 			list-style-type: none;
 			margin: 0;
 			.myGradient();
-			min-height: 44px;
+			height: 44px;
 			.border-radius(5px);
-			float: left;
-			clear: both;
 			width: 100%;
 			font-size: 1.2em;
 			position: relative;
@@ -209,6 +218,10 @@ body {
 		caption-side: top;
 		padding: 0 0 20px 0;
 		margin: 0;
+		
+		#resultview {
+			margin-top: 14px;
+		}
 		
 		h2 {
 			color: @headings;
@@ -286,6 +299,7 @@ body {
 				background-color: #fff;
 				padding: 0;
 			}
+			
 		}
 		
 		#fullwidth {
@@ -383,6 +397,14 @@ body {
 				.border-radius(5px);
 				position: relative;
 				z-index: 10;
+				
+				label {
+					color: #fff;
+					font-size: 18px;
+					display: inline;
+					line-height: 27px;
+					text-rendering: optimizelegibility;
+				}
 			}
 			
 			#latest {
@@ -497,7 +519,7 @@ body {
 		}
 		
 	#rightcol.searchmap {
-		margin-top: 50px;
+		margin-top: 64px;
 	}
 	
 	#actions {
@@ -1051,6 +1073,7 @@ body {
 			margin: 10px 0 !important;
 			float: none !important;
 			position: static !important;
+			height: auto !important;
 			
 			li {
 				display: block !important;
@@ -1154,6 +1177,11 @@ body {
 		
 	}
 	
+	.row {
+		margin: 0 5px;
+		padding: 0;
+	}
+	
 	#leftcol {
 		h2 {
 			font-size: 1.5em !important;
@@ -1161,6 +1189,10 @@ body {
 		p {
 			font-size: 1.1em !important;
 		}
+	}
+	
+	#rightcol {
+		width: 100%;
 	}
 	
 	.searchmap, .mapicon {

@@ -21,7 +21,7 @@
 				= link_to '<i class="icon-pencil icon-white"></i>'.html_safe + ' Edit', { :controller => "inspections", :action => "edit", :id => @inspection }, :class => 'btn btn-primary'
 				= link_to '<i class="icon-print icon-white"></i>'.html_safe + ' Print Certificate', { :controller => "inspections", :action => "certificate", :id => @inspection, :format => :pdf }, :class => 'btn btn-info'
 		.rating{:class => "rating#{@inspection.rating}"}
-			= image_tag "fhrsweb#{@inspection.rating}.jpg", :alt => ''
+			= image_tag "fhrsweb#{@inspection.rating}.jpg", :alt => "#{@inspection.ratingtext}"
 		- if @inspection.image_file_name != nil
 			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
 		.item.vcard
@@ -45,7 +45,7 @@
 			= @council.name
 		%h3 
 			Scores
-			%a{"data-toggle" => "modal", :href => "#how"} How are these calculated?
+			%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#how"} How are these calculated?
 
 		#how.modal.hide.fade{"style" => "display:none;"}
 			.modal-header
@@ -103,7 +103,7 @@
 							%td
 								0
 						%tr
-							%th
+							%th.row{"scope" => "row"}
 								Descriptor
 							%td
 								Very good
@@ -131,7 +131,8 @@
 			%strong Rating:
 			%span.rating.hidden 
 				= @inspection.rating
-			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating}"
+			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating} - #{@inspection.ratingtext}"
+			%em= "(#{@inspection.ratingtext})"
 			- if @inspection.revisit_requested === true
 				%em
 					Revisit requested
@@ -144,7 +145,7 @@
 		- if @inspection.tradingstandards == true
 			%p
 				%strong Trading Standards Compliance [
-				%a{"data-toggle" => "modal", :href => "#trading"} What's this?
+				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#trading"} What's this?
 				]
 				= image_tag "tradingstandards.png", :alt => "Trading standards compliance tick"
 				
