@@ -2,9 +2,9 @@ var txt = '';
 txt += '<link href="http://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet" type="text/css">'
 txt += <%= "'<div style=\"width:246px; height:205px; background: transparent url(#{request.protocol + request.host_with_port}/assets/widget/widgetbg.png) center no-repeat; font-family: \\'Ubuntu\\', Helvetica, Arial, sans-serif; position: relative; margin:0; padding: 0;\">';".html_safe %>
 txt += <%= "'<a href=\"#{request.protocol + request.host_with_port + "/inspections/" + @inspection.slug}\" style=\"display: block; width: 242px; height: 205px; position: absolute; left: 0; top: 0; margin:0; padding: 0;\"></a>'".html_safe %>
-txt += '<h3 style="text-align: center; color: #4E611E; padding-top: 70px; font-size: 17px; line-height: 1em; margin:0; background: none; border: none; border-radius: none; -webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none;">Food Safety Rating for Staffordshire</h3>'
-txt += '<p style="text-align: center; margin: 10px 0 10px 0;">'
-txt += <%= "'<img alt=\"\" src=\"#{request.protocol + request.host_with_port}/assets/rating#{@inspection.rating}.png\" />'".html_safe %>
+// txt += '<h3 style="text-align: center; color: #4E611E; padding-top: 70px; font-size: 17px; line-height: 1em; margin:0; background: none; border: none; border-radius: none; -webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none;">Food Safety Rating for Staffordshire</h3>'
+txt += '<p style="text-align: center; margin: 10px 0 10px 0; padding-top: 80px;">'
+txt += <%= "'<img alt=\"\" src=\"#{request.protocol + request.host_with_port}/assets/fhrsweb#{@inspection.rating}.jpg\" />'".html_safe %>
 txt += '</p>'
 txt += '<p style="text-align: center; margin: 0; padding: 0; font-size: 11px; line-height: 1em;"><%= @inspection.name %></p>'
 txt += '<p style="text-align: center; margin: 0; padding: 0; font-size: 11px; line-height: 1em;"><%= @inspection.address1 %>,<%= @inspection.town %></p>'

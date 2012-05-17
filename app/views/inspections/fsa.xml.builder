@@ -13,8 +13,8 @@ xml.inspections do
 			xml.confidenceinmanagementscore inspection.confidence
 			xml.hygieneandsafetyscore inspection.hygiene
 			xml.structuralscore inspection.structure
-			xml.businesstype "Pub/Club"
-			xml.status "Included"
+			xml.businesstype inspection.category
+			xml.status inspection.scope
 		end
 	end
 end

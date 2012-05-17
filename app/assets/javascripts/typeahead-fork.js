@@ -226,6 +226,29 @@
           e.preventDefault()
           setTimeout(function () { that.hide() }, 150)
           break
+        
+        case 188: // comma
+          if (this.$element.attr('id') == "tagwrapper") {
+	          var tag
+	          var val
+	          tag = this.$element.val().replace(",", "")
+	          this.$element.val('')
+	          if ($('#tags').val().length == 0) {
+	          	val = tag
+	          } else {
+	            val = $('#tags').val() + "," + tag
+	          }
+	          
+	          $('#tags').val(val)
+	          $('#addedtags').append("<span class='label label-info'><i class='icon-tag icon-white'></i><span>"+ tag +"</span><button class='delete'>×</button></span>")
+	          
+	          $(".delete").click(function() {
+	          	tag = $(this).parent().find('span').html()
+	          	$('#tags').val($('#tags').val().replace(tag, ""))
+	          	$(this).parent().remove()
+	          	return false
+	          })
+	       }
 
         default:
           this.lookup()

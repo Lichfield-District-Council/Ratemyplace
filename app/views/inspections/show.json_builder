@@ -4,9 +4,11 @@ inspection do
 		name @inspection.name
 		url "/inspections/#{@inspection.slug}"
 		address full_address(@inspection)
-		postcode @inspection.postcode
-		lat @inspection.lat
-		lng @inspection.lng
+		unless @inspection.scope = "Included and private"
+			postcode @inspection.postcode
+			lat @inspection.lat
+			lng @inspection.lng
+		end
 		opening_times @inspection.hours
 		email @inspection.email
 		website @inspection.website

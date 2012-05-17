@@ -1,12 +1,13 @@
 module InspectionsHelper
 
 	def full_address(inspection)
-		 if inspection.postcode != "Mobile"
+		 if inspection.scope != "Included and Private"
 			 address = [inspection.address1, inspection.address2, inspection.address3, inspection.address4, inspection.town, inspection.postcode].compact.reject { |s| s.empty? }
+			 return address.join(", ")
 		else
-			address = [inspection.address1, inspection.address2, inspection.address3, inspection.address4, inspection.town].compact.reject { |s| s.empty? }
+			address = inspection.town + " " + inspection.postcode.split(" ")[0]
+			return address
 		end
-    	return address.join(", ")
 	end
 	
 	def qr(inspection)

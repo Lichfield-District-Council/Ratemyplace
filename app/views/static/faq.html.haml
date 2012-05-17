@@ -1,69 +1,173 @@
 - title "Frequently Asked Questions", false
+- content_for :head do
+	:javascript
+		$(document).ready(function() {
+			if(window.location.hash) {
+				question = window.location.hash.replace("num", "q")
+				$(question).collapse('show')
+			}
+		});
 .row#fullwidth
 	.span12
 		%h2 Frequently Asked Questions
 	
 		%dl#faq
-			%dt{"data-toggle" => "collapse", "data-target" => "#q1"} What is Ratemyplace?
+			%dt#num1{"data-toggle" => "collapse", "data-target" => "#q1"} What is Ratemyplace?
 			%dd#q1.collapse.in 
-				.inner Ratemyplace is a partnership between 8 local authorities in Staffordshire and is designed to show how we feel businesses are run in accordance with their legal obligations under food law and where areas of improvements in food safety are possible. Ratemyplace has now aligned its scoring mechanism with the <a href="http://ratings.food.gov.uk/">National Food Hygiene Rating Scheme</a>. However, in addition to a hygiene rating score, Ratemyplace also has copies of inspection reports based on officers visits to businesses across Staffordshire. This will enable consumers to access information which is held about food premises registered with their Local Authorities.
+				.inner 
+					:markdown
+						Ratemyplace is a partnership between 8 local authorities in Staffordshire and is designed to show how we feel businesses are run in accordance with their legal obligations under food law and where areas of improvements in food safety are possible. 
+						
+						Ratemyplace has now aligned its scoring mechanism with the [National Food Hygiene Rating Scheme](http://ratings.food.gov.uk). However, in addition to a hygiene rating score, Ratemyplace also has copies of inspection reports based on officers visits to businesses across Staffordshire. This will enable consumers to access information which is held about food premises registered with their Local Authorities.
 				
-			%dt{"data-toggle" => "collapse", "data-target" => "#q2"} Is there the public support for a food safety rating scheme?
+			%dt#num2{"data-toggle" => "collapse", "data-target" => "#q2"} Is there the public support for a food safety rating scheme?
 			%dd#q2.collapse 
-				.inner Research by the Consumers Association in 2005 revealed that almost everybody (97 per cent) feels that they're entitled to know how their local restaurants score for hygiene. Seven out of eight (87 per cent) people want to see this information before they enter a restaurant - so called 'scores on doors' - and nine out of ten (90 per cent) think scores should be available online.
+				.inner 
+					:markdown			
+						Research by the Consumers Association in 2005 revealed that almost everybody (97 per cent) feels that they're entitled to know how their local restaurants score for hygiene. Seven out of eight (87 per cent) people want to see this information before they enter a restaurant - so called 'scores on doors' - and nine out of ten (90 per cent) think scores should be available online.
 				
-			%dt{"data-toggle" => "collapse", "data-target" => "#q3"} What type of business does Ratemyplace apply to?
+			%dt#num3{"data-toggle" => "collapse", "data-target" => "#q3"} What type of business does Ratemyplace apply to?
 			%dd#q3.collapse 
-				.inner It will apply to all registered food premises in Staffordshire Partner Councils areas that prepare, cook, serve or sell food. This includes premises like restaurants, supermarkets, farm shop, manufacturers etc.
+				.inner 
+					:markdown
+						Ratings are given to places where you can eat out such as restaurants, takeaways, cafés, sandwich shops, pubs, and hotels. Ratings are also given to schools, hospitals and residential care homes.
+						
+						Places where you shop for food such as supermarkets, bakeries, and delicatessens are also given a rating.
 			
-			%dt{"data-toggle" => "collapse", "data-target" => "#q4"} Are there any businesses not part of the scheme?
+			%dt#num4{"data-toggle" => "collapse", "data-target" => "#q4"} Are there any businesses not part of the scheme?
 			%dd#q4.collapse 
-				.inner Low risk businesses such a greengrocers not selling high risk food, newsagents selling sweets etc. that are not part of the inspection programme will not receive a star rating.
+				.inner 
+					:markdown
+						Low risk businesses such a greengrocers not selling high risk food, newsagents selling sweets etc. that are not part of the inspection programme will not receive a star rating.
 				
-			%dt{"data-toggle" => "collapse", "data-target" => "#q5"} How is Ratemyplace scored?
+			%dt#num5{"data-toggle" => "collapse", "data-target" => "#q5"} How is Ratemyplace scored?
 			%dd#q5.collapse
 				.inner
-					Food Authorities operate a system for prioritising the food hygiene inspections they carry out (<a href="http://www.food.gov.uk/multimedia/pdfs/codeofpracticeeng.pdf">Annex 5 Food Law Code of Practice</a>) At the end of each inspection, carried out by qualified and competent Environmental Health staff, the business is given a score called a food hazard rating. This reflects (amongst other things) how well the business complies with food law and how much confidence we have in the food operators ability to manage the business safely.
+					:markdown
+						A food safety officer inspects a business to check that it meets the requirements of food hygiene law. The officer is from the local authority where the business is located.
+						
+						At the inspection, the officer will check:
+						
+						* how hygienically the food is handled – how it is prepared, cooked, re-heated, cooled and stored
+						* the condition of the structure of the buildings – the cleanliness, layout, lighting, ventilation and other facilities
+						*how the business manages and records what it does to make sure food is safe
+						* the hygiene standards found at the time of inspection are then rated on a scale. At the bottom of the scale is ‘0’ – this means urgent improvement is required. At the top of the scale is ‘5’ – this means the hygiene standards are very good.
+						
+						The rating given shows how well the business does overall. The business may do better in some areas and less well in others and the rating takes this into account. This includes those areas that need improving the most.
+						
+						The officer will explain to the person who owns or manages the business what improvements need to be made and what action they can take to improve their hygiene rating.
 			
-			%dt{"data-toggle" => "collapse", "data-target" => "#q6"} What does the mean?
+			%dt#num6{"data-toggle" => "collapse", "data-target" => "#q6"} What do the different ratings mean?
 			%dd#q6.collapse 
-				.inner The more stars that are rewarded the better the premises are in terms of legal compliance and standards of hygiene. The score and star rating published through Ratemyplace scheme, represents the circumstances found by an officer of the inspecting local authority on the date of that inspection. This 'moment in time' score may not represent the overall, long-term food hygiene standards of the business or its food quality.
+				.inner
+					:markdown
+						The food hygiene rating reflects the hygiene standards found on the date of inspection by a food safety officer from the business’s local authority.
+						
+						A business can be given a rating from 0 - 5
+						
+						The hygiene standards found at the time of inspection are rated on a scale. At the bottom of the scale is ‘0’ – this means urgent improvement is required. At the top of the scale is ‘5’ – this means the hygiene standards are very good.
+						
+						A rating shows you how well the business is meeting the requirements of food hygiene law. It gives you an idea of what’s going on in the kitchen, or behind closed doors, so you can choose where you eat or buy food.
 				
-			%dt{"data-toggle" => "collapse", "data-target" => "#q7"} Where can I see the star rating scores for businesses?
+			%dt#num18{"data-toggle" => "collapse", "data-target" => "#q18"} How often will a restaurant or other food business be given a new rating?
+			%dd#q18.collapse 
+				.inner
+					:markdown
+						A new rating is given each time the business is inspected by a food safety officer from the local authority where the business is located.
+						
+						How often inspections take place depends on the risk to people’s health. The greater the risk, the more often the business is inspected.
+						
+						If the business owner or manager makes improvements to hygiene standards, the business can ask its local authority for a visit to be carried out before the date of the next planned inspection. This means these improvements can be checked and a new rating could be given.
+
+			%dt#num7{"data-toggle" => "collapse", "data-target" => "#q7"} Why are businesses with poor ratings not closed?
 			%dd#q7.collapse 
-				.inner The scheme is accessible through Ratemyplace web site or Links from individual Council's websites. Businesses may also display a Ratemyplace star rating certificate containing information about the inspection and the amount of stars awarded. However, there is no formal requirement to do so.
+				.inner
+					:markdown
+						Businesses given ratings of ‘0’ or ‘1’ must make urgent or major improvements to hygiene standards. The local authority food safety officer will use a number of enforcement tools as well as giving advice and guidance to make sure these improvements are made.
+						
+						If the officer finds that a business’s hygiene standards are very poor and there is an imminent risk to health – this means food is not safe to eat – the officer must take action to make sure that consumers are protected. This could mean prohibiting part of an operation or closing the business down.
+						
+			%dt#num15{"data-toggle" => "collapse", "data-target" => "#q15"}How can I find out what the rating is for a takeaway or other food business?
+			%dd#q15.collapse 
+				.inner
+					:markdown
+						If a takeaway or other food business has been given a rating, you can [search for it here](/search).
+						
+						When you eat out or shop for food, you might see a sticker in the window or on the door, or a certificate on display, showing you the hygiene rating for that business. Businesses are encouraged to display these stickers and certificates in a place where you can easily see them when you visit.
+						
+						These stickers and certificates will also show the date the hygiene standards were assessed by the local authority’s food safety officer.
+						
+						If you don’t see the rating at a takeaway or other food business, you can ask a member of staff if the business is in the scheme and what rating was given at the last inspection.
+
+			%dt#num16{"data-toggle" => "collapse", "data-target" => "#q16"}Does a food business have to show its rating?
+			%dd#q16.collapse 
+				.inner
+					:markdown
+						No, so if you see a business without a hygiene rating sticker or certificate, you’ll have to decide if you want to eat or buy food from there without knowing the hygiene standards.
+						
+						Putting a hygiene rating on show is a good advertisement for businesses that meet the requirements of food hygiene law.
+						
+						A good food hygiene rating is good for business.
 			
-			%dt{"data-toggle" => "collapse", "data-target" => "#q8"} Why isn't my local food premise on Ratemyplace website?
+			%dt#num8{"data-toggle" => "collapse", "data-target" => "#q8"} Why isn't my local food business on Ratemyplace website?
 			%dd#q8.collapse 
-				.inner If no inspection information is available on Ratemyplace website, then it may be because the business has not received its latest primary inspection or that details haven’t been uploaded yet.
+				.inner 
+					:markdown
+						If no inspection information is available on Ratemyplace website, then it may be because the business has not received its latest primary inspection or that details haven’t been uploaded yet.
 			
-			%dt{"data-toggle" => "collapse", "data-target" => "#q9"} What does the Trading Standards Compliance tick mean?
+			%dt#num9{"data-toggle" => "collapse", "data-target" => "#q9"} What does the Trading Standards Compliance tick mean?
 			%dd#q9.collapse 
-				.inner On Ratemyplace site you may see a 'green tick' by the words Trading Standards Compliance. Businesses are offered a Trading Standards Compliance Certificate when they are found to be complying with relevant Trading Standards law during an inspection.  During an inspection checks are made to ensure that menu descriptions of food are not misleading, prices are appropriately displayed and that equipment used for serving beer wine and spirits is accurate, along with other checks for legal compliance.  
+				.inner 
+					:markdown
+						On Ratemyplace site you may see a 'green tick' by the words Trading Standards Compliance. Businesses are offered a Trading Standards Compliance Certificate when they are found to be complying with relevant Trading Standards law during an inspection. 
+						
+						During an inspection checks are made to ensure that menu descriptions of food are not misleading, prices are appropriately displayed and that equipment used for serving beer wine and spirits is accurate, along with other checks for legal compliance.  
 				
-			%dt{"data-toggle" => "collapse", "data-target" => "#q10"} What other information appears on the website about the business?
+			%dt#num10{"data-toggle" => "collapse", "data-target" => "#q10"} What other information appears on the website about the business?
 			%dd#q10.collapse 
-				.inner On the website you will also find information such as contact telephone numbers and e-mail addresses for the business, as well as a location map.
+				.inner 
+					:markdown
+						On the website you will also find information such as contact telephone numbers and e-mail addresses for the business, as well as a location map.
 										
-			%dt{"data-toggle" => "collapse", "data-target" => "#q12"} What if a business disagrees with the star rating?
+			%dt#num12{"data-toggle" => "collapse", "data-target" => "#q12"} What if a business disagrees with the star rating?
 			%dd#q12.collapse 
-				.inner The rating is based on a professional officer’s inspection and will not normally be changed. However, if a business believes it has not been treated fairly, then an appeal can be made in writing either through the comments link on Ratemyplace web site or in writing to the appropriate Local Authority within 2 weeks of the inspection. This would then trigger a paper review of the inspection by a Senior Officer to confirm the accuracy of the risk rating.
-				
-			%dt{"data-toggle" => "collapse", "data-target" => "#q13"} How do I know if the certificate on display is	valid and genuine?
-			%dd#q13.collapse 
-				.inner Following a food hygiene inspection the previous	certificate will be collected by the inspecting officer and destroyed. Each	certificate has a unique	number on the front of the certificate. The	certficate remains the property of the issuing Council and can be withdrawn at	any time. In addition, the website will offer a list of food businesses	and their scores.
-			%dt{"data-toggle" => "collapse", "data-target" => "#q14"} Can I comment on the scheme?
+				.inner 
+					:markdown
+						The owner or manager of the business should talk to the local authority food safety officer that inspected the business about why the rating was given.
+						
+						If the business owner or manager still thinks that the rating is unfair or wrong, they can appeal in writing. To appeal, any food business can [download an appeal form](http://www.food.gov.uk/multimedia/worddocs/fhrsappealform.doc) and send it to their local authority’s lead officer for food within 14 days (this includes weekends and public holidays) of being told what their rating is.
+						
+						[Read more information about the appeal process](http://www.food.gov.uk/multimedia/pdfs/enforcement/fhrssafeguards.pdf).
+						
+						The owner or manager of the business also has a ‘right to reply’. This is different from an appeal. The owner or manager can download a [right to reply form](http://www.food.gov.uk/multimedia/worddocs/fhrsrighttoreplyform.doc) and send it to their local authority to tell the food safety officer how the business has improved hygiene, or to say if there were unusual circumstances at the time of the inspection. A business’s right to reply will be published online by the local authority with the business’s hygiene rating.
+						
+						[Read more information about the right to reply](http://www.food.gov.uk/multimedia/pdfs/enforcement/fhrssafeguards.pdf).
+
+			%dt#num19{"data-toggle" => "collapse", "data-target" => "#q19"}Can the owner of a business ask the local authority to re-visit to get a new rating?
+			%dd#q19.collapse 
+				.inner
+					:markdown
+						Yes, but only if the improvements to hygiene that the local authority food safety officer told the business about at the last inspection have been made.
+						
+						The owner or manager of the food business can only ask the local authority for a re-visit to be carried out once before the date of the next planned inspection.
+						
+						To ask for a re-visit, any food business can download a re-visit form and send it to their local authority. A business can search for its local authority here.
+						Read more information about how businesses can ask for a re-visit.
+						
+			%dt#num20{"data-toggle" => "collapse", "data-target" => "#q20"} I’m worried about the rating given to a shop where I’ve eaten and bought food. What should I do?
+			%dd#q20.collapse
+				.inner
+					:markdown
+						You should contact the local authority that gave the rating using our [contact form](/contact)
+						
+			%dt#num14{"data-toggle" => "collapse", "data-target" => "#q14"} Can I comment on the scheme?
 			%dd#q14.collapse
 				.inner
-					Food business operators and the public can comment on the scheme to their Local Authority using our
-					= succeed "." do
-						%a{:href => "contact.php"} contact form
+					:markdown
+						Food business operators and the public can comment on the scheme to their Local Authority using our [contact form](/contact-us)
 
-			%dt{"data-toggle" => "collapse", "data-target" => "#q15"} I want some more information about the scheme?
-			%dd#q15.collapse
+			%dt#num17{"data-toggle" => "collapse", "data-target" => "#q17"} I want some more information about the scheme?
+			%dd#q17.collapse
 				.inner
-					Contact your Local Environmental Health Department using our
-					%a{:href => "contact-us"} contact form
-					or visit our
-					= succeed "." do
-						%a{:href => "about"} about section
+					:markdown
+						Contact your Local Environmental Health Department using our [contact form](/contact-us)	or visit our [about section](/about)

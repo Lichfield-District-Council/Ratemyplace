@@ -1,0 +1,5 @@
+results do
+	tags @tags do |tag|
+		name tag.tag
+	end
+end

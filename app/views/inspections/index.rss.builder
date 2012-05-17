@@ -14,7 +14,7 @@ xml.rss "version" => "2.0", "xmlns:dc" => "http://purl.org/dc/elements/1.1/", "x
        if inspection.rating == 0
        	xml.description "<strong>No Stars</strong>"
        else
-       	xml.description image_tag("#{inspection.rating}stars.png") + "<br />#{inspection.rating} stars"
+       	xml.description image_tag("http://www.ratemyplace.org.uk/assets/" + "rating#{inspection.rating}.png", :alt => "#{inspection.rating} / 5") + "<br />#{inspection.rating} / 5"
        end
        xml.georss :featurename do
        	xml.text! full_address(inspection)

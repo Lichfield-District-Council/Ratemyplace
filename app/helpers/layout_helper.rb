@@ -7,6 +7,18 @@ module LayoutHelper
     content_for(:title) { h(page_title.to_s) }
     @show_title = show_title
   end
+  
+  def meta_description(text)
+  	content_for(:meta_description) { text.to_s }
+  end
+  
+  def meta_keywords(tags)
+  	t = []
+  	tags.each do |tag| 
+  		t << tag.tag.strip
+  	end
+  	content_for(:meta_keywords) { t.join(",") }
+  end
 
   def show_title?
     @show_title

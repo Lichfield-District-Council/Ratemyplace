@@ -2,3 +2,56 @@
 .row#fullwidth
 	.span12
 		%h2 Link to us
+		
+		%p You can link to Ratemyplace on your website or blog using bits of code known as 'widgets' which allow people to search for or view food safety inspection results directly from your site, there are two different types of widget:
+		
+		%h3 Show a score
+		
+		.well
+		
+			%p This allows you to show the score of any premises on your site. The code is given on the bottom right hand side of every inspection page. Simply go to the relevant page, and copy and paste the code provided (under the 'Owner of this business?' heading)
+		
+			%p
+				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#score"} 
+					View example
+				
+		#score.modal.hide.fade{"style" => "display:none;"}
+			.modal-header
+				%a.close{"data-dismiss" => "modal"} x
+				%h3 Example
+			.modal-body
+				%div{:style => "margin: 0 auto; width: 175px;"}
+					= "<script type=\"text/javascript\" src=\"http://lichfield-001.vm.brightbox.net/inspections/hazelwood-house-club-chase-terrace.js\"></script>".html_safe
+		
+		%h3 Latest inspections
+		
+		%p This shows the latest inspections, either for all councils, or for a given council. Simply copy and paste the code below into your website:
+		
+		.well
+			%h4 All councils
+		
+			%code
+				= "<script type=\"text/javascript\" src=\"http://www.ratemyplace.org.uk/widget/all.js\"></script>"
+		
+		- councils = Council.all
+		- councils.each do |council|
+			
+			.well
+				%h4= council.name
+				%code
+					= "<script type=\"text/javascript\" src=\"http://www.ratemyplace.org.uk/widget/#{council.slug}.js\"></script>"
+		
+		%p
+			%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#latest"} 
+				View example
+				
+		#latest.modal.hide.fade{"style" => "display:none;"}
+			.modal-header
+				%a.close{"data-dismiss" => "modal"} x
+				%h3 Example
+			.modal-body
+				%div{:style => "margin: 0 auto; width: 175px;"}
+					= "<script type=\"text/javascript\" src=\"http://lichfield-001.vm.brightbox.net/widget/lichfield-district-council.js\"></script>".html_safe
+		
+		
+				

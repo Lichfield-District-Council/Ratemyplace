@@ -42,11 +42,11 @@
 		.control-group 
 			= f.label :category
 			.controls
-				= select :inspection, :category, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit", "Restaurant/Caterer – Others"], {:prompt => '--Please Select--'}
+				= select :inspection, :category, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit", "Restaurants and Caterers - Other"], {:prompt => '--Please Select--'}
 		.control-group 
 			= f.label :scope
 			.controls
-				= select :inspection, :scope, ["Included", "Included private", "Included sensitive", "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
+				= select :inspection, :scope, ["Included", "Included and Private", "Included  Sensitive", "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
 		- if @inspection.address1.length == 0
 			#findaddress.well
 				%h3 Find address
@@ -121,7 +121,12 @@
 		.control-group 
 			= f.label :tags, 'Tags (comma separated)'
 			.controls
-				= text_field_tag :tags, @tags
+				= text_field_tag :tagwrapper, "", { :autocomplete => 'off' }
+				= hidden_field_tag :tags, @tags
+				#addedtags
+					- if @tags
+						- @tags.split(",").each do |tag|
+							= "<span class='label label-info'><i class='icon-tag icon-white'></i><span>#{tag}</span><button class='delete'>×</button></span>".html_safe
 		- if params[:action] == "edit"
 			.control-group 
 				= f.label :revisit_requested, 'Revisit requested?'

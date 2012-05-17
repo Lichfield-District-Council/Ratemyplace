@@ -5,7 +5,7 @@ namespace :upload do
 	
 	desc "Upload reports"
 	task :reports => :environment do
-		inspections = Inspection.where("report_file_name" => nil)
+		inspections = Inspection.all
 		issues = []
 		inspections.each do |inspection|
 			if inspection.reportold.length > 0
@@ -77,7 +77,7 @@ end
 
 desc "Make non live premises live"
 task :live => :environment do
-	@inspections = Inspection.where('DATEDIFF(NOW(), date) > 27')
+	@inspections = Inspection.where('DATEDIFF(NOW(), date) > 27 AND scope != "Sensitive"')
 	@inspections.each do |inspection|
 		inspection.update_attributes(:published => 1)
 	end
@@ -183,7 +183,7 @@ end
 
 desc "Make inspections live"
 task :makelive => :environment do
-	@inspections = Inspection.where('DATEDIFF(NOW(), date) >= 27 AND published = 0 AND appeal = 0')
+	@inspections = Inspection.where('DATEDIFF(NOW(), date) >= 27 AND published = 0 AND appeal = 0 AND scope != "Sensitive"')
 	count = @inspections.count
 	@inspections.each do |inspection|
 		inspection.update_attributes(:published => 1)
@@ -196,9 +196,77 @@ end
 
 desc "Upload FSA returns"
 task :fsaupload => :environment do
-	councils = Council.all
+	councils = Council.where(:external => false)
 	councils.each do |council|
-		system "wget -N -nv -P /tmp/ http://lichfield-001.vm.brightbox.net/inspections/fsa/#{council.slug}.xml && casperjs lib/fsaupload.js #{council.slug} 289 Lichsystad LichTe#T!"
+		system "wget -N -nv -P /tmp/ http://lichfield-001.vm.brightbox.net/inspections/fsa/#{council.slug}.xml && casperjs lib/fsaupload.js #{council.slug} #{"%03d" % council.fsaid} #{council.username} #{council.password}"
 	end
 end
 
+desc "Import external inspections"
+task :import => :environment do
+	require 'httparty'
+	require 'nokogiri'
+	require 'pat'
+	
+	councils = Council.where(:external => true)
+	councils.each do |council|
+	
+		doc = Nokogiri::XML HTTParty.get("http://ratings.food.gov.uk/OpenDataFiles/FHRS#{council.id}en-GB.xml").response.body
+		
+		inspections = []
+	
+		doc.search('EstablishmentDetail').each do |i|
+			inspections << i.children.inject({}){|hsh,el| hsh[el.name] = el.inner_text;hsh}
+		end
+		
+		inspections.each do |i|
+			if i["RatingValue"] != "Exempt" 
+				inspection = Inspection.find_or_create_by_internalid(i["LocalAuthorityBusinessID"])
+				if i["RatingDate"] != inspection.date
+					if inspection.lat == nil
+						begin
+							postcode = Pat.get(i["PostCode"])
+							lat = postcode["geo"]["lat"]
+							lng = postcode["geo"]["lng"]
+						rescue
+							lat = 0
+							lng = 0
+						end
+					else
+						lat = inspection.lat
+						lng = inspection.lng
+					end
+					
+					address = [i["AddressLine1"], i["AddressLine2"], i["AddressLine3"], i["AddressLine4"]].compact.reject { |s| s.empty? || s == "Staffordshire" }
+					
+					if address.length == 4
+						town = address[3]
+						address[3] = nil
+					elsif address.length == 3
+						town = address[2]
+						address[2] = nil
+					elsif
+						town = address[1]
+						address[1] = nil
+					else
+						town = address[0]
+					end
+					
+					if i["PostCode"].blank?
+						i["PostCode"] = "x"
+					end
+					
+					inspection.update_attributes(:name => i["BusinessName"].titleize, :address1 => address[0], :address2 => address[1], :address3 => address[2], :town => town, :postcode => i["PostCode"], :uprn => "x", :category => i["BusinessType"], :scope => "included", :hygiene => 99, :structure => 99, :confidence => 99, :rating => i["RatingValue"], :date => i["RatingDate"], :councilid => i["LocalAuthorityCode"], :lat => lat, :lng => lng, :published =>  1, :hours => "", :tel => "", :email => "", :website => "")
+					inspection.save
+					inspection.tweet
+					
+					if inspection.errors.any?
+						inspection.errors.full_messages.each do |msg|
+							puts msg
+						end
+					end
+				end
+			end
+		end
+	end
+end

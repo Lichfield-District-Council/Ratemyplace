@@ -9,7 +9,7 @@ class Inspection < ActiveRecord::Base
 	has_attached_file :menu
 	acts_as_mappable
 	
-	validates_presence_of :name, :address1, :town, :postcode, :hygiene, :structure, :confidence, :rating, :date, :councilid
+	validates_presence_of :name, :address1, :town, :postcode, :hygiene, :structure, :confidence, :rating, :category, :scope, :date, :councilid
 	
 	validates :date,
 			  :date => {:before => Proc.new { Time.now + 1.day }, :message => 'must be in the past'}
@@ -32,29 +32,37 @@ class Inspection < ActiveRecord::Base
   		if tags != nil
 		    taglist = tags.split(",")
 		   	taglist.each { |tag|
-		    	self.tags.build({"tag" => tag.strip})
+		   		if tag.length > 0
+			    	self.tags.build({"tag" => tag.strip})
+			    end
 		    }
 		    self.save
 	    end
   	end
   	
   	def address(seperator = ", ")
-  		address = [self.address1, self.address2, self.address3, self.address4, self.town, self.postcode].compact.reject { |s| s.empty? }
-    	return address.join(seperator)
+  		if self.scope == "Included and Private"
+  			address = self.postcode.split(" ")[0]
+  			return address
+  		else
+  			address = [self.address1, self.address2, self.address3, self.address4, self.town, self.postcode].compact.reject { |s| s.empty? }
+  			return address.join(seperator)
+  		end
   	end
   	
   	def getfoursquareid
-  		result = JSON.parse HTTParty.get("https://api.foursquare.com/v2/venues/search?ll=#{self.lat},#{self.lng}&query=#{CGI::escape(self.name)}&radius=50&oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}").response.body
-  		if result["response"]["venues"].length == 0
-  			foursquare_id = nil
-  		else
-  			foursquare_id = result["response"]["venues"][0]["id"].split.join("\n")
-  		end
-  		self.update_attributes(:foursquare_id => foursquare_id)
-  		self.save
-  		
-  		rescue Exception => e
-  			puts "#{self.name} raised error"
+  		result = JSON.parse HTTParty.get("https://api.foursquare.com/v2/venues/search?ll=#{self.lat},#{self.lng}&query=#{CGI::escape(self.name)}&radius=10&oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}").response.body
+  		if result["meta"]["code"] == 200
+	  		if result["response"]["venues"].length == 0
+	  			foursquare_id = nil
+	  		else
+	  			foursquare_id = result["response"]["venues"][0]["id"].split.join("\n")
+	  		end
+	  		self.update_attributes(:foursquare_id => foursquare_id)
+	  		self.save
+	  	else
+	  		puts "#{self.name} raised error #{result["meta"]["errorDetail"]}"
+	  	end
   	end
   	
   	def addfoursquaretip
@@ -101,43 +109,43 @@ class Inspection < ActiveRecord::Base
   	def getrating
   		stars = self.hygiene + self.structure + self.confidence
 		
-		if stars >=0 and stars <=15
-			if hygiene > 5 or structure > 5 or confidence > 5
-				rating = 4
-			elsif hygiene > 10 or structure > 10 or confidence > 10
-				rating = 2
+		if stars >=0 and stars <=15		
+			if hygiene > 20 or structure > 20 or confidence > 20
+				rating = 0
 			elsif hygiene > 15 or structure > 15 or confidence > 15
 				rating = 1
-			elsif hygiene > 20 or structure > 20 or confidence > 20
-				rating = 0
+			elsif hygiene > 10 or structure > 10 or confidence > 10
+				rating = 2
+			elsif hygiene > 5 or structure > 5 or confidence > 5
+				rating = 4
 			else
 				rating = 5
 			end
 		elsif stars >=16 and stars <=20
-			if hygiene > 10 or structure > 10 or confidence > 10 
-				rating = 2
+			if hygiene > 20 or structure > 20 or confidence > 20 
+				rating = 0
 			elsif hygiene > 15 or structure > 15 or confidence > 15 
 				rating = 1
-			elsif hygiene > 20 or structure > 20 or confidence > 20 
-				rating = 0
+			elsif hygiene > 10 or structure > 10 or confidence > 10
+				rating = 2
 			else
 				rating = 4
 			end
 		elsif stars >=21 and stars <=30 
-			if hygiene > 10 or structure > 10 or confidence > 10 
-				rating = 2
-			elsif hygiene > 15 or structure > 15 or confidence > 15 
-				rating = 1
-			elsif hygiene > 20 or structure > 20 or confidence > 20 
+			if hygiene > 20 or structure > 20 or confidence > 20
 				rating = 0
+			elsif hygiene > 15 or structure > 15 or confidence > 15
+				rating = 1
+			elsif hygiene > 10 or structure > 10 or confidence > 10
+				rating = 2
 			else
 				rating = 3
 			end
 		elsif  stars >=31 and stars <=40
-			if hygiene > 15 or structure > 15 or confidence > 15 
-				rating = 1
-			elsif hygiene > 20 or structure > 20 or confidence > 20 
+			if hygiene > 20 or structure > 20 or confidence > 20
 				rating = 0
+			elsif hygiene > 15 or structure > 15 or confidence > 15 
+				rating = 1
 			else
 				rating = 2
 			end
@@ -158,7 +166,7 @@ class Inspection < ActiveRecord::Base
   	end
   	
   	def tweet(now = false)
-  		BufferApp.new(BUFFER_CONFIG[:token], BUFFER_CONFIG[:id]).create("New Inspection: #{self.name} #{self.town} #{self.rating} stars #{"http://www.ratemyplace.org.uk/inspections/" + self.slug}", now)
+  		BufferApp.new(BUFFER_CONFIG[:token], BUFFER_CONFIG[:id]).create("New Inspection: #{self.name} #{self.town} #{self.rating}/5 #{"http://www.ratemyplace.org.uk/inspections/" + self.slug}", now)
   	end
   	
   	def reportsize

@@ -1,6 +1,9 @@
 class ContactsController < ApplicationController
   def new
     @contact = Contact.new
+    if params[:council]
+    	@contact.council = params[:council]
+    end
   end
 
   def create

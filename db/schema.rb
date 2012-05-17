@@ -11,12 +11,34 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120427094652) do
+ActiveRecord::Schema.define(:version => 20120510133417) do
 
   create_table "addresses", :force => true do |t|
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.text     "uprn",             :limit => 255
+    t.text     "organisation",     :limit => 255
+    t.integer  "sao_start"
+    t.text     "sao_start_suffix", :limit => 255
+    t.integer  "sao_end"
+    t.text     "sao_end_suffix",   :limit => 255
+    t.text     "sao_text",         :limit => 255
+    t.integer  "pao_start"
+    t.text     "pao_start_suffix", :limit => 255
+    t.integer  "pao_end"
+    t.text     "pao_end_suffix",   :limit => 255
+    t.text     "pao_text",         :limit => 255
+    t.text     "street",           :limit => 255
+    t.text     "town",             :limit => 255
+    t.text     "locality",         :limit => 255
+    t.text     "county",           :limit => 255
+    t.text     "postcode",         :limit => 255
+    t.integer  "x"
+    t.integer  "y"
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+    t.text     "fulladdress",      :limit => 2147483647
   end
+
+  add_index "addresses", ["fulladdress"], :name => "fulladdress"
 
   create_table "contacts", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -32,10 +54,13 @@ ActiveRecord::Schema.define(:version => 20120427094652) do
     t.text     "fax"
     t.text     "email"
     t.text     "logo"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
     t.string   "snac"
     t.string   "slug"
+    t.string   "username"
+    t.string   "password"
+    t.boolean  "external",   :default => true
   end
 
   add_index "councils", ["id"], :name => "index_councils_on_id"
@@ -51,7 +76,7 @@ ActiveRecord::Schema.define(:version => 20120427094652) do
     t.text     "postcode",                               :null => false
     t.text     "operator"
     t.text     "uprn"
-    t.string   "tel"
+    t.string   "tel",                 :default => ""
     t.text     "category",                               :null => false
     t.text     "scope",                                  :null => false
     t.integer  "hygiene",                                :null => false

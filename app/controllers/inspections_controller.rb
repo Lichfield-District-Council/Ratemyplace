@@ -1,5 +1,7 @@
 class InspectionsController < ApplicationController
 
+require "csv"
+
 before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api]
 
   # GET /inspections
@@ -16,7 +18,6 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       format.rss do
       	response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
       end
-      format.js
     end
   end
 
@@ -62,16 +63,23 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		if !session[:user_id]
 			params[:q][:published_eq] = 1
 		end
+		@title = "Search results"
 	  	@search = Inspection.search(params[:q])
 	  	if params[:nearest] == "1" 
 	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).within(5, :origin => [params[:lat], params[:lng]]).order("distance ASC")
 	  	else
-	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10)
+	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
 	  	end
 	else 
 	  	@search = Inspection.search(params[:search])
 	  	@inspections = Inspection.where(:published => 1).order("date DESC").limit(3)
 	end
+  end
+  
+  def tags
+  	@title = "Businesses tagged '#{params[:tag]}'"
+  	@inspections = Inspection.joins(:tags).where(:tags => {:tag => params[:tag]}).paginate(:page => params[:page], :per_page => 10).order("name ASC")
+
   end
   
   def searchapi
@@ -127,7 +135,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   def atoz
   	if params[:council]
   		@council = Council.find(params[:council])
-  		@inspections = Inspection.where("councilid = ? AND name LIKE ? AND published = 1", @council.id, "#{params[:letter]}%")
+  		@inspections = Inspection.where("councilid = ? AND name LIKE ? AND published = 1", @council.id, "#{params[:letter]}%").order("name ASC")
   	else
   		@councils = Council.all
   	end
@@ -163,7 +171,38 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   def editsearch 
 	if params[:q]
 	  	@search = Inspection.search(params[:q])
-	  	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10)
+	  	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
+	  	
+	  	respond_to do |format|
+	  		format.html
+	  		format.csv do
+	  			@inspections = @search.result
+	  			csv_string = CSV.generate do |csv| 
+				csv << ["Name", "Address1", "Address2", "Address3", "Town", "Postcode", "Operator", "Category", "Scope", "Hygiene", "Structure", "Confidence", "Rating", "Inspection Date", "Link"]
+					@inspections.each do |inspection|
+						csv << [inspection.name,
+								  inspection.address1,
+								  inspection.address2,
+								  inspection.address3,
+								  inspection.town,
+								  inspection.postcode,
+								  inspection.operator,
+								  inspection.category,
+								  inspection.scope,
+								  inspection.hygiene,
+								  inspection.structure,
+								  inspection.confidence,
+								  inspection.rating,
+								  inspection.date,
+								  "http://www.ratemyplace.org.uk/inspections/#{inspection.slug}" ]
+					end
+				end
+	
+				send_data csv_string,
+					:type => 'text/csv; charset=iso-8859-1; header=present', 
+			        :disposition => "attachment; filename=inspections.csv" 
+	  		end
+	  	end
 	else 
 	  	@search = Inspection.search(params[:search])
 	end
@@ -171,7 +210,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   
   def certificatesearch 
 	if params[:q]
-	  	@search = Inspection.search(params[:q])
+	  	@search = Inspection.search(params[:q]).order("name ASC")
 	  	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10)
 	else 
 	  	@search = Inspection.search(params[:search])
@@ -203,6 +242,8 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	    @inspection = Inspection.new
 	    @councils = Council.all
 	    @addressclass = "hidden"
+	    user = current_user
+  		@inspection.councilid = user.councilid
 	    	
 	    respond_to do |format|
 	      format.html # new.html.erb
@@ -230,23 +271,29 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   def create 
   	
   	params[:inspection][:name] = params[:inspection][:name].titleize
+  	
+  	if params[:inspection][:scope] == "Included and private"
+	  	params[:inspection][:lat] = 0
+	  	params[:inspection][:lng] = 0
+	end
+  	
 	@inspection = Inspection.new(params[:inspection])
 	
 	if @inspection.rating
 		if @inspection.rating < 5
 			@inspection.published = 0
 		else
-			@inspection.published = 1
+			@inspection.published = 1 unless @inspection.scope == "Sensitive"
 		end
 	end
 
 	if @inspection.save
 	
-		@inspection.buildtags(params[:inspection][:tags])
+		@inspection.buildtags(params[:tags])
 	
 		if @inspection.rating == 5
-			@inspection.tweet('true')
-			@inspection.addfoursquaretip
+			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
 		end
 		
 		redirect_to @inspection, notice: 'Inspection was successfully created.'
@@ -261,12 +308,17 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	@inspection = Inspection.find(params[:id])
 	  
 	  params[:inspection][:name] = params[:inspection][:name].titleize
+	  
+	  if params[:inspection][:scope] == "Included and private"
+	  	params[:inspection][:lat] = 0
+	  	params[:inspection][:lng] = 0
+	  end
 	
       if @inspection.update_attributes(params[:inspection])
       	      
 	    # Destroy old tags (to make sure all tags we're adding are fresh!)
     	Tag.destroy_all(:inspection_id => @inspection.id)
-    	@inspection.buildtags(params[:inspection][:tags])
+    	@inspection.buildtags(params[:tags])
       	
       	newdate = Date::civil(params[:inspection]["date(1i)"].to_i, params[:inspection]["date(2i)"].to_i, params[:inspection]["date(3i)"].to_i)
       	
@@ -275,10 +327,10 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       			@inspection.published = 0
       			@inspection.save
       		else
-      			@inspection.published = 1
+      			@inspection.published = 1 unless @inspection.scope == "Sensitive"
       			@inspection.save
-      			@inspection.tweet('true')
-      			@inspection.addfoursquaretip
+      			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+      			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
       		end
       	end
       	
@@ -293,9 +345,9 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	@inspection = Inspection.find(params[:id])
   	@inspection.appeal = 0
   	@inspection.appealdate = 0
-  	@inspection.published = 1
+  	@inspection.published = 1 unless @inspection.scope == "Sensitive"
   	@inspection.save
-  	@inspection.tweet('true')
+  	@inspection.tweet('true') unless @inspection.scope == "Sensitive"
   	redirect_to @inspection, notice: 'The appeal was rejected and the inspection is now live.'
   end
 

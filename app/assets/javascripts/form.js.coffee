@@ -47,6 +47,10 @@ $(document).ready ->
 	 	  			$('#inspection_address1').val(data.address1)
 	 	  			if (data.address2 != "Null")
 	 	  				$('#inspection_address2').val(data.address2)
+	 	  			if (data.address3 != "Null")
+	 	  				$('#inspection_address3').val(data.address3)
+	 	  			if (data.address4 != "Null")
+	 	  				$('#inspection_address4').val(data.address4)
 	 	  			$('#inspection_town').val(data.town)
 	 	  			$('#inspection_postcode').val(data.postcode)
 	 	  			$('#inspection_town').val(data.town)
@@ -96,6 +100,12 @@ $(document).ready ->
  		$('#findaddress').addClass('hidden')
  		$('#inspection_postcode').val('Mobile')
  		$('#postcode_group').addClass('hidden')
+ 		
+ $(".delete").bind 'click', ->
+        tag = $(this).parent().find('span').html()
+        $('#tagshidden').val($('#tagshidden').val().replace(tag, ""))
+        $(this).parent().remove()
+        return false
  
  $("#inspection_hygiene, #inspection_structure, #inspection_confidence").bind 'change', ->
  	hygiene = parseInt($('#inspection_hygiene').val())
@@ -105,40 +115,40 @@ $(document).ready ->
  	if !isNaN(hygiene) and !isNaN(structure) and !isNaN(confidence)
  		stars = parseInt(hygiene + structure + confidence)
  			
-			if stars >=0 and stars <=15
-				if hygiene > 5 or structure > 5 or confidence > 5
-					rating = 4
-				else if hygiene > 10 or structure > 10 or confidence > 10
-					rating = 2
+			if stars >=0 and stars <=15		
+				if hygiene > 20 or structure > 20 or confidence > 20
+					rating = 0
 				else if hygiene > 15 or structure > 15 or confidence > 15
 					rating = 1
-				else if hygiene > 20 or structure > 20 or confidence > 20
-					rating = 0
+				else if hygiene > 10 or structure > 10 or confidence > 10
+					rating = 2
+				else if hygiene > 5 or structure > 5 or confidence > 5
+					rating = 4
 				else
 					rating = 5
 			else if stars >=16 and stars <=20
-				if hygiene > 10 or structure > 10 or confidence > 10 
-					rating = 2
+				if hygiene > 20 or structure > 20 or confidence > 20 
+					rating = 0
 				else if hygiene > 15 or structure > 15 or confidence > 15 
 					rating = 1
-				else if hygiene > 20 or structure > 20 or confidence > 20 
-					rating = 0
+				else if hygiene > 10 or structure > 10 or confidence > 10
+					rating = 2
 				else
 					rating = 4
 			else if stars >=21 and stars <=30 
-				if hygiene > 10 or structure > 10 or confidence > 10 
-					rating = 2
-				else if hygiene > 15 or structure > 15 or confidence > 15 
-					rating = 1
-				else if hygiene > 20 or structure > 20 or confidence > 20 
+				if hygiene > 20 or structure > 20 or confidence > 20
 					rating = 0
+				else if hygiene > 15 or structure > 15 or confidence > 15
+					rating = 1
+				else if hygiene > 10 or structure > 10 or confidence > 10
+					rating = 2
 				else
 					rating = 3
 			else if  stars >=31 and stars <=40
-				if hygiene > 15 or structure > 15 or confidence > 15 
-					rating = 1
-				else if hygiene > 20 or structure > 20 or confidence > 20 
+				if hygiene > 20 or structure > 20 or confidence > 20
 					rating = 0
+				else if hygiene > 15 or structure > 15 or confidence > 15 
+					rating = 1
 				else
 					rating = 2
 			else if  stars >=41 and stars <=50 

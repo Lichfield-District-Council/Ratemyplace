@@ -66,7 +66,8 @@ border-radius: @topleft @topright @bottomright @bottomleft;
 }
 
 .modal-body {
-
+	max-height: 460px;
+	overflow: scroll;
 	
 	table {
 		font-size: 0.9em;
@@ -83,8 +84,32 @@ border-radius: @topleft @topright @bottomright @bottomleft;
 	}
 }
 
+.modal {
+	height: 500px;
+	overflow: hidden;
+}
+
 .modal#how {
 	max-height: 550px;
+		
+	.modal-body {
+		max-height: 510px;
+	}
+}
+
+.modal#report {
+	width: 700px;
+	height: 500px;
+	clip:rect(1px 1px 1px 1px);
+	
+	.content-pane {
+		top: 0 !important;
+		height: 460px !important;
+	}
+}
+
+.modal#report.in {
+	clip: auto !important;
 }
 
 #widgetpreview {
@@ -98,6 +123,14 @@ border-radius: @topleft @topright @bottomright @bottomleft;
 
 .pagination-centered {
 	font-size: 0.9em;
+}
+
+.leaflet-popup {
+	min-width: 200px;
+}
+
+input#password {
+	font-family: Arial !important;
 }
 
 body {
@@ -169,6 +202,12 @@ body {
 			.full-border-radius(0, 0, 5px, 5px);
 			z-index: 1000;
 			width: 15px;
+		}
+		
+		#adminlink {
+			position: absolute;
+			right: 40px;
+			bottom: 30px;
 		}
 		
 	}
@@ -304,6 +343,7 @@ body {
 		
 		#fullwidth {
 			margin-top: 14px;
+			position: relative;
 			
 			ul {
 				margin: 14px 0;
@@ -428,6 +468,11 @@ body {
 						a {
 							font-size: 1.1em;
 							color: @headings;
+							text-decoration: none;
+						}
+						
+						a:hover {
+							color: #000;
 						}
 					}
 					
@@ -524,8 +569,8 @@ body {
 	
 	#actions {
 		list-style-type: none;
-		margin-left: 90px !important;
 		padding: 0;
+		margin: 0 auto;
 		
 		li {
 			display: inline;
@@ -534,7 +579,7 @@ body {
 			a {
 				float: left;
 				padding-top: 128px;
-				width: 128px;
+				width: 122px;
 				text-align: center;
 				background-color: transparent;
 				background-position: top center;
@@ -570,6 +615,19 @@ body {
 			}		
 			
 		}
+	}
+	
+	#logout {
+		position: absolute;
+		right: 0;
+		top: 10px;
+		right: 50px;
+	}
+	
+	#download {
+		position: absolute;
+		top: 5px;
+		right: 10px;
 	}
 		
 	#home {
@@ -850,6 +908,22 @@ body {
 		top: 5px;
 	} 
 	
+	#addedtags {
+		.label {
+			padding: 4px;
+			margin: 7px 7px 0 0;
+			
+			.delete {
+				float: none;
+				background: none;
+				font-size: 12px;
+				border: none;
+				color: #fff;
+				opacity: none;
+			}
+		}
+	}
+	
 	#footer {
 		
 		float: left;
@@ -993,6 +1067,10 @@ body {
 @media (max-width: 768px) {
 	#rightcol {
 		float: left;
+	}
+	
+	.modal#report {
+		width: 95% !important;
 	}
 	
 	.container {

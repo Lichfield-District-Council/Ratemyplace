@@ -3,7 +3,11 @@ Ratemyplace::Application.routes.draw do
 
   resources :uploads
 
-  resources :tags
+  resources :tags do
+ 	  collection do
+	  	match 'search.json' => 'tags#search', :format=>false, :defaults=>{:format=>'json'}
+	  end
+  end
 
   resources :sessions
 
@@ -20,6 +24,7 @@ Ratemyplace::Application.routes.draw do
 	    match 'a-z/:council/:letter' => 'inspections#atoz', :via => [:get], :as => :atoz
 	    match ':id/rejectappeal' => 'inspections#rejectappeal', :via => [:get], :as => :rejectappeal
 	    match 'fsa/:council.xml' => 'inspections#fsa', :format => false, :defaults=>{:format=>'xml'}
+	    match 'tags/:tag' => 'inspections#tags', :via => [:get], :as => :tags
 	  end
   end
       
@@ -50,6 +55,10 @@ Ratemyplace::Application.routes.draw do
   # Contact stuff
   
   match 'contact-us' => 'contacts#new'
+  
+  # Widgets
+  
+  match 'widget/:id' => 'councils#show', :defaults=>{:format=>'js'}
   
   # Legacy redirects
   

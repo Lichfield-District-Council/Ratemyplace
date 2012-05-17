@@ -14,9 +14,17 @@
 						= f.select :category_eq, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit"], {:prompt => '--Please Select--'}
 					= f.hidden_field :councilid_eq, :value => @council.id
 				.control-group 
+					=f.label :address1_cont, "Address:"
+					.controls
+						= f.text_field :address1_cont
+				.control-group 
 					=f.label :town_eq, "Town / Village:"
 					.controls
 						= f.text_field :town_cont
+				.control-group 
+					=f.label :postcode_eq, "Postcode:"
+					.controls
+						= f.text_field :postcode_eq
 				.control-group 
 					= f.label :rating_eq, "Rating:"
 					.controls

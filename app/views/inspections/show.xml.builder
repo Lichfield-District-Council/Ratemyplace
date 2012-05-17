@@ -5,9 +5,11 @@ xml.inspection do
 		xml.name @inspection.name
 		xml.url "/inspections/#{@inspection.slug}"
 		xml.address full_address(@inspection)
-		xml.postcode @inspection.postcode
-		xml.lat @inspection.lat
-		xml.lng @inspection.lng
+		unless @inspection.scope = "Included and private"
+			xml.postcode @inspection.postcode
+			xml.lat @inspection.lat
+			xml.lng @inspection.lng
+		end
 		xml.opening_times @inspection.hours
 		xml.email @inspection.email
 		xml.website @inspection.website

@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
-  before_filter :login_required, :except => [:new, :create]
-
+  before_filter :login_required
+  
   def new 
     if session[:user_id]	
     	@user = User.new

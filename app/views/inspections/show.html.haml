@@ -5,12 +5,14 @@
 		<!--[if lte IE 8]>
 		= stylesheet_link_tag "leaflet.ie"
 		<![endif]-->
-		= javascript_tag do
-			= "var lat = " + @inspection.lat.to_json
-			= "var lng = " + @inspection.lng.to_json
-		= javascript_include_tag "map"
+		- unless @inspection.postcode == "Mobile" || @inspection.scope == "Included and Private"
+			= javascript_tag do
+				= "var lat = " + @inspection.lat.to_json
+				= "var lng = " + @inspection.lng.to_json
+			= javascript_include_tag "map"
 	= javascript_include_tag "show"
 - title "#{@inspection.name} in #{@inspection.town} - Food Safety Star Rating | Ratemyplace", false
+- meta_description "Food safety inspection for #{@inspection.name} in #{@inspection.town} from #{@council.name}"
 .row
 	#leftcol.span8.hreview
 		- if @inspection.published == false
@@ -43,90 +45,91 @@
 		%p
 			%strong Local Authority:
 			= @council.name
-		%h3 
-			Scores
-			%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#how"} How are these calculated?
-
-		#how.modal.hide.fade{"style" => "display:none;"}
-			.modal-header
-				%a.close{"data-dismiss" => "modal"} x
-				%h3 How the award was calculated
-			.modal-body
-				%div
-					%p At the end of each inspection the business is given a food hazard rating. This reflects how well the business complies with food law and how much confidence we have in the food operator's ability to manage the business safely. The higher hazard rating, the higher the risk and the more often inspections are carried out.
-					%p The premises recieves a score in three areas. The lower the score the better the premises is in terms of legal compliance and the higher the rating. Ratings are awarded as follows:
-					
-					%table.table-condensed.table.table-bordered
-						%tr
-							%th.row{"scope" => "row"}
-								Total score
-							%th{"scope" => "col"}
-								0 -15
-							%th{"scope" => "col"}
-								20
-							%th{"scope" => "col"}
-								25 -30
-							%th{"scope" => "col"}
-								35 -40
-							%th{"scope" => "col"}
-								45 - 50
-							%th{"scope" => "col"}
-								> 50
-						%tr
-							%th.row{"scope" => "row"}
-								Additional scoring factor
-							%td
-								No score greater than 5
-							%td
-								No score greater than 10
-							%td
-								No score greater than 10
-							%td
-								No score greater than 15
-							%td
-								No score greater than 20
-							%td
-								-
-						%tr
-							%th.row{"scope" => "row"}
-								Food hygiene rating
-							%td
-								5
-							%td
-								4
-							%td
-								3
-							%td
-								2
-							%td
-								1
-							%td
-								0
-						%tr
-							%th.row{"scope" => "row"}
-								Descriptor
-							%td
-								Very good
-							%td
-								Good
-							%td
-								Generally satisfactory
-							%td
-								Improvement necessary
-							%td
-								Major improvement necessary
-							%td
-								Urgent improvement necessary
-
-		%p
-			%strong Food Hygiene and Safety:
-			= showrating(@inspection.hygiene, "hygiene")
-		%p
-			%strong Structure and Cleaning:
-			= showrating(@inspection.structure, "structure")
-		%p
-			%strong Confidence in Management:
-			= showrating(@inspection.confidence, "confidence")
+		- unless @inspection.hygiene == 99
+			%h3 
+				Scores
+				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#how"} How are these calculated?
+	
+			#how.modal.fade{"style" => "display:none;"}
+				.modal-header
+					%a.close{"data-dismiss" => "modal"} x
+					%h3 How the award was calculated
+				.modal-body
+					%div
+						%p At the end of each inspection the business is given a food hazard rating. This reflects how well the business complies with food law and how much confidence we have in the food operator's ability to manage the business safely. The higher hazard rating, the higher the risk and the more often inspections are carried out.
+						%p The premises recieves a score in three areas. The lower the score the better the premises is in terms of legal compliance and the higher the rating. Ratings are awarded as follows:
+						
+						%table.table-condensed.table.table-bordered
+							%tr
+								%th.row{"scope" => "row"}
+									Total score
+								%th{"scope" => "col"}
+									0 -15
+								%th{"scope" => "col"}
+									20
+								%th{"scope" => "col"}
+									25 -30
+								%th{"scope" => "col"}
+									35 -40
+								%th{"scope" => "col"}
+									45 - 50
+								%th{"scope" => "col"}
+									> 50
+							%tr
+								%th.row{"scope" => "row"}
+									Additional scoring factor
+								%td
+									No score greater than 5
+								%td
+									No score greater than 10
+								%td
+									No score greater than 10
+								%td
+									No score greater than 15
+								%td
+									No score greater than 20
+								%td
+									-
+							%tr
+								%th.row{"scope" => "row"}
+									Food hygiene rating
+								%td
+									5
+								%td
+									4
+								%td
+									3
+								%td
+									2
+								%td
+									1
+								%td
+									0
+							%tr
+								%th.row{"scope" => "row"}
+									Descriptor
+								%td
+									Very good
+								%td
+									Good
+								%td
+									Generally satisfactory
+								%td
+									Improvement necessary
+								%td
+									Major improvement necessary
+								%td
+									Urgent improvement necessary
+	
+			%p
+				%strong Food Hygiene and Safety:
+				= showrating(@inspection.hygiene, "hygiene")
+			%p
+				%strong Structure and Cleaning:
+				= showrating(@inspection.structure, "structure")
+			%p
+				%strong Confidence in Management:
+				= showrating(@inspection.confidence, "confidence")
 		%p
 			%strong Rating:
 			%span.rating.hidden 
@@ -139,9 +142,21 @@
 		- if @inspection.report_file_name != nil
 			%p
 				%strong Inspection Report:
-				= link_to 'Download inspection report', @inspection.report.url
+				= link_to 'View inspection report', @inspection.report.url, :id => 'dlreport'
 				= @inspection.reportsize
 				= image_tag "pdf.png", :alt => "PDF file"
+				
+			#report.modal.fade
+				.modal-header
+					%a.close{"data-dismiss" => "modal"} x
+					%h3 Inspection report
+					%a.btn.btn-info{:href => @inspection.report.url, :style => "position: absolute; left: 220px; top: 9px;"} 
+						%i.icon-download-alt.icon-white
+						Download
+				.modal-body
+					= "<iframe src=\"http://docs.google.com/viewer?url=#{url_encode("http://lichfield-001.vm.brightbox.net/" + @inspection.report.url)}&embedded=true\" style=\"width:100%; height:440px;\" frameborder=\"0\" style=\"border: none;\"></iframe>".html_safe
+				
+				
 		- if @inspection.tradingstandards == true
 			%p
 				%strong Trading Standards Compliance [
@@ -164,26 +179,35 @@
 			%h3 Opening hours
 			= @inspection.hours.html_safe
 
-		%h3 Contacts
-		- if @inspection.tel.length > 0
-			%p
-				%strong Tel:
-				= @inspection.tel
-		- if @inspection.email.length > 0
-			%p
-				%strong Email:
-				= mail_to @inspection.email, @inspection.email
-		- if @inspection.website.length > 0
-			%p
-				%strong Website:
-				= link_to @inspection.website, (@inspection.website.include?("http://") ? @inspection.website : "http://" + @inspection.website)
+		- if @inspection.tel.length > 0 || @inspection.email.length > 0 || @inspection.website.length > 0
+			%h3 Contacts
+			- if @inspection.tel.length > 0
+				%p
+					%strong Tel:
+					= @inspection.tel
+			- if @inspection.email.length > 0
+				%p
+					%strong Email:
+					= mail_to @inspection.email, @inspection.email
+			- if @inspection.website.length > 0
+				%p
+					%strong Website:
+					= link_to @inspection.website, (@inspection.website.include?("http://") ? @inspection.website : "http://" + @inspection.website)
 		
-		%h3 Comments
-		= disqus_thread.html_safe
+		%h3 Owner of this business?
+		
+		:markdown
+			If any information on this page is incorrect you can email the correct information to your local authority via our [contact form](/contact-us?council=#{@council.id}).
+		
+			You can find out [how to appeal against the rating given and find out about your right to reply](/faq#num12).
+		
+			You can also [ask for a re-inspection](/faq#num19).
+		
+		// = disqus_thread.html_safe
 			
 				
 	.span4#rightcol
-		- if @inspection.postcode != "Mobile"
+		- unless @inspection.postcode == "Mobile" || @inspection.scope == "Included and Private" || @inspection.postcode == "x"
 			%h3 Location
 			#mapcontainer
 				#map
@@ -203,8 +227,12 @@
 				#widgetpreview
 					="<script src='#{request.protocol + request.host_with_port + "/inspections/" + @inspection.slug}.js' type='text/javascript'></script>".html_safe
 		
-		%h3 Tags
-		#tags
-			%ul.tags
-				- @tags.each do |tag|
-					%li= tag.tag
+		- if @tags.length > 0
+			%h3 Tags
+			- meta_keywords @tags
+			#tags
+				%ul.tags
+					- @tags.each do |tag|
+						%li
+							%a{:href => "/inspections/tags/#{tag.tag}"}
+								=tag.tag

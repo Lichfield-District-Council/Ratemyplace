@@ -6,8 +6,8 @@
 	<meta name="Author" content="Lichfield District Council" />
 	<meta name="Publisher" content="Lichfield District Council, District Council House, Frog Lane, Lichfield, Staffordshire. WS13 6YY" />
 	<meta name="Publisher-Email" content="webmaster@lichfielddc.gov.uk" />
-	<meta name="Keywords" content="Environment, Food safety, staffordshire, lichfield, cannock, leek, newcastle, stafford, tamworth, burton, burton on trent, codsall, burntwood, UK, England, local authority, council, local government, services, citizen, councillor, community, food, safety, restaurants, rating, scheme, ratemyplace, rate, my, place, star" />
-	<meta name="Description" content="ratemyplace is your one-stop shop for information on Food Safety Inspections in Staffordshire. Ever wondered if a food business, such as a restaurant or shop you're planning to visit has a good quality of hygiene and management you can trust? Well wonder no more because ratemyplace tells you all this and more, simply search for the place you want to know more about and ratemyplace will do the rest." />
+	<meta name="Keywords" content="<%= content_for?(:meta_keywords) ? yield(:meta_keywords) : "Environment, Food safety, staffordshire, lichfield, cannock, leek, newcastle, stafford, tamworth, burton, burton on trent, codsall, burntwood, UK, England, local authority, council, local government, services, citizen, councillor, community, food, safety, restaurants, rating, scheme, ratemyplace, rate, my, place, star" %>" />
+	<meta name="Description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "ratemyplace is your one-stop shop for information on Food Safety Inspections in Staffordshire. Ever wondered if a food business, such as a restaurant or shop you're planning to visit has a good quality of hygiene and management you can trust? Well wonder no more because ratemyplace tells you all this and more, simply search for the place you want to know more about and ratemyplace will do the rest." %>" />
 	<meta name="Coverage" content="Worldwide" />
 	<meta name="DC.creator" lang="en" content="Lichfield District Council" />
 	<meta name="DC.date.created" lang="en" content="01-04-2005" />
@@ -49,6 +49,10 @@
 				<label for="q_name_cont" class="clip">Search</label>
       			<input class="span3" id="q_name_cont" name="q[name_cont]" size="30" type="text" placeholder="Search for a business…" tabindex="3" /><button type="submit" tabindex="4">Search</button>
 			</form>
+			
+			<% if session[:user_id] %>
+			<a href="/admin" id="adminlink" class="btn btn-info"><i class="icon-home icon-white"></i> Admin Home</a>
+			<% end %>
 		</div>
 	 <div id="main">
       <% flash.each do |name, msg| %>
@@ -69,8 +73,9 @@
 			
 			<ul class="extra">
 				<li><a href="/api" tabindex="13"><strong>API</strong></a></li>
-				<li><a href="http://www.twitter.com/ratemyplace" tabindex="14"><img src="/assets/twitter.png" alt="Follow us on Twitter" /></a></li>
-				<li><a href="/inspections.rss" tabindex="15"><img src="/assets/rss.png" alt="RSS Feed" /></a></li>
+				<li><a href="http://www.twitter.com/ratemyplace" tabindex="15"><img src="/assets/twitter.png" alt="Follow us on Twitter" /></a></li>
+				<li><a href="http://www.facebook.com/ratemyplaceuk" tabindex="14"><img src="/assets/facebook.png" alt="Like us on Facebook" /></a></li>
+				<li><a href="/inspections.rss" tabindex="16"><img src="/assets/rss.png" alt="RSS Feed" /></a></li>
 			</ul>
 		</ul>
 	</nav>

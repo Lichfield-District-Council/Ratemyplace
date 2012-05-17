@@ -31,6 +31,11 @@ class TagsController < ApplicationController
       format.json { render json: @tag }
     end
   end
+  
+  def search
+  	@search = Tag.search({"tag_cont" => params[:tag]})
+  	@tags = @search.result.group(:tag)
+  end
 
   # GET /tags/1/edit
   def edit

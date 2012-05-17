@@ -100,523 +100,33 @@ WysiHat.BrowserFeatures = (function() {
 
   return features;
 })();
-/*  IE Selection and Range classes
- *
- *  Original created by Tim Cameron Ryan
- *    http://github.com/timcameronryan/IERange
- *  Copyright (c) 2009 Tim Cameron Ryan
- *  Released under the MIT/X License
- *
- *  Modified by Joshua Peek
- */
-if (!window.getSelection) {
-  var DOMUtils = {
-    isDataNode: function(node) {
-      try {
-        return node && node.nodeValue !== null && node.data !== null;
-      } catch (e) {
-        return false;
-      }
-    },
-    isAncestorOf: function(parent, node) {
-      if (!parent) return false;
-      return !DOMUtils.isDataNode(parent) &&
-          (parent.contains(DOMUtils.isDataNode(node) ? node.parentNode : node) ||
-          node.parentNode == parent);
-    },
-    isAncestorOrSelf: function(root, node) {
-      return DOMUtils.isAncestorOf(root, node) || root == node;
-    },
-    findClosestAncestor: function(root, node) {
-      if (DOMUtils.isAncestorOf(root, node))
-        while (node && node.parentNode != root)
-          node = node.parentNode;
-      return node;
-    },
-    getNodeLength: function(node) {
-      return DOMUtils.isDataNode(node) ? node.length : node.childNodes.length;
-    },
-    splitDataNode: function(node, offset) {
-      if (!DOMUtils.isDataNode(node))
-        return false;
-      var newNode = node.cloneNode(false);
-      node.deleteData(offset, node.length);
-      newNode.deleteData(0, offset);
-      node.parentNode.insertBefore(newNode, node.nextSibling);
-    }
-  };
 
-  Range = (function() {
-    function Range(document) {
-      this._document = document;
 
-      this.startContainer = this.endContainer = document.body;
-      this.endOffset = DOMUtils.getNodeLength(document.body);
-    }
-    Range.START_TO_START = 0;
-    Range.START_TO_END = 1;
-    Range.END_TO_END = 2;
-    Range.END_TO_START = 3;
-
-    function findChildPosition(node) {
-      for (var i = 0; node = node.previousSibling; i++)
-        continue;
-      return i;
-    }
-
-    Range.prototype = {
-      startContainer: null,
-      startOffset: 0,
-      endContainer: null,
-      endOffset: 0,
-      commonAncestorContainer: null,
-      collapsed: false,
-      _document: null,
-
-      _toTextRange: function() {
-        function adoptEndPoint(textRange, domRange, bStart) {
-          var container = domRange[bStart ? 'startContainer' : 'endContainer'];
-          var offset = domRange[bStart ? 'startOffset' : 'endOffset'], textOffset = 0;
-          var anchorNode = DOMUtils.isDataNode(container) ? container : container.childNodes[offset];
-          var anchorParent = DOMUtils.isDataNode(container) ? container.parentNode : container;
-
-          if (container.nodeType == 3 || container.nodeType == 4)
-            textOffset = offset;
-
-          var cursorNode = domRange._document.createElement('a');
-          if (anchorNode)
-            anchorParent.insertBefore(cursorNode, anchorNode);
-          else
-            anchorParent.appendChild(cursorNode);
-          var cursor = domRange._document.body.createTextRange();
-          cursor.moveToElementText(cursorNode);
-          cursorNode.parentNode.removeChild(cursorNode);
-
-          textRange.setEndPoint(bStart ? 'StartToStart' : 'EndToStart', cursor);
-          textRange[bStart ? 'moveStart' : 'moveEnd']('character', textOffset);
-        }
-
-        var textRange = this._document.body.createTextRange();
-        adoptEndPoint(textRange, this, true);
-        adoptEndPoint(textRange, this, false);
-        return textRange;
-      },
-
-      _refreshProperties: function() {
-        this.collapsed = (this.startContainer == this.endContainer && this.startOffset == this.endOffset);
-        var node = this.startContainer;
-        while (node && node != this.endContainer && !DOMUtils.isAncestorOf(node, this.endContainer))
-          node = node.parentNode;
-        this.commonAncestorContainer = node;
-      },
-
-      setStart: function(container, offset) {
-        this.startContainer = container;
-        this.startOffset = offset;
-        this._refreshProperties();
-      },
-      setEnd: function(container, offset) {
-        this.endContainer = container;
-        this.endOffset = offset;
-        this._refreshProperties();
-      },
-      setStartBefore: function(refNode) {
-        this.setStart(refNode.parentNode, findChildPosition(refNode));
-      },
-      setStartAfter: function(refNode) {
-        this.setStart(refNode.parentNode, findChildPosition(refNode) + 1);
-      },
-      setEndBefore: function(refNode) {
-        this.setEnd(refNode.parentNode, findChildPosition(refNode));
-      },
-      setEndAfter: function(refNode) {
-        this.setEnd(refNode.parentNode, findChildPosition(refNode) + 1);
-      },
-      selectNode: function(refNode) {
-        this.setStartBefore(refNode);
-        this.setEndAfter(refNode);
-      },
-      selectNodeContents: function(refNode) {
-        this.setStart(refNode, 0);
-        this.setEnd(refNode, DOMUtils.getNodeLength(refNode));
-      },
-      collapse: function(toStart) {
-        if (toStart)
-          this.setEnd(this.startContainer, this.startOffset);
-        else
-          this.setStart(this.endContainer, this.endOffset);
-      },
-
-      cloneContents: function() {
-        return (function cloneSubtree(iterator) {
-          for (var node, frag = document.createDocumentFragment(); node = iterator.next(); ) {
-            node = node.cloneNode(!iterator.hasPartialSubtree());
-            if (iterator.hasPartialSubtree())
-              node.appendChild(cloneSubtree(iterator.getSubtreeIterator()));
-            frag.appendChild(node);
-          }
-          return frag;
-        })(new RangeIterator(this));
-      },
-      extractContents: function() {
-        var range = this.cloneRange();
-        if (this.startContainer != this.commonAncestorContainer)
-          this.setStartAfter(DOMUtils.findClosestAncestor(this.commonAncestorContainer, this.startContainer));
-        this.collapse(true);
-        return (function extractSubtree(iterator) {
-          for (var node, frag = document.createDocumentFragment(); node = iterator.next(); ) {
-            iterator.hasPartialSubtree() ? node = node.cloneNode(false) : iterator.remove();
-            if (iterator.hasPartialSubtree())
-              node.appendChild(extractSubtree(iterator.getSubtreeIterator()));
-            frag.appendChild(node);
-          }
-          return frag;
-        })(new RangeIterator(range));
-      },
-      deleteContents: function() {
-        var range = this.cloneRange();
-        if (this.startContainer != this.commonAncestorContainer)
-          this.setStartAfter(DOMUtils.findClosestAncestor(this.commonAncestorContainer, this.startContainer));
-        this.collapse(true);
-        (function deleteSubtree(iterator) {
-          while (iterator.next())
-            iterator.hasPartialSubtree() ? deleteSubtree(iterator.getSubtreeIterator()) : iterator.remove();
-        })(new RangeIterator(range));
-      },
-      insertNode: function(newNode) {
-        if (DOMUtils.isDataNode(this.startContainer)) {
-          DOMUtils.splitDataNode(this.startContainer, this.startOffset);
-          this.startContainer.parentNode.insertBefore(newNode, this.startContainer.nextSibling);
-        } else {
-          var offsetNode = this.startContainer.childNodes[this.startOffset];
-          if (offsetNode) {
-            this.startContainer.insertBefore(newNode, offsetNode);
-          } else {
-            this.startContainer.appendChild(newNode);
-          }
-        }
-        this.setStart(this.startContainer, this.startOffset);
-      },
-      surroundContents: function(newNode) {
-        var content = this.extractContents();
-        this.insertNode(newNode);
-        newNode.appendChild(content);
-        this.selectNode(newNode);
-      },
-
-      compareBoundaryPoints: function(how, sourceRange) {
-        var containerA, offsetA, containerB, offsetB;
-        switch (how) {
-            case Range.START_TO_START:
-            case Range.START_TO_END:
-          containerA = this.startContainer;
-          offsetA = this.startOffset;
-          break;
-            case Range.END_TO_END:
-            case Range.END_TO_START:
-          containerA = this.endContainer;
-          offsetA = this.endOffset;
-          break;
-        }
-        switch (how) {
-            case Range.START_TO_START:
-            case Range.END_TO_START:
-          containerB = sourceRange.startContainer;
-          offsetB = sourceRange.startOffset;
-          break;
-            case Range.START_TO_END:
-            case Range.END_TO_END:
-          containerB = sourceRange.endContainer;
-          offsetB = sourceRange.endOffset;
-          break;
-        }
-
-        return containerA.sourceIndex < containerB.sourceIndex ? -1 :
-            containerA.sourceIndex == containerB.sourceIndex ?
-                offsetA < offsetB ? -1 : offsetA == offsetB ? 0 : 1
-                : 1;
-      },
-      cloneRange: function() {
-        var range = new Range(this._document);
-        range.setStart(this.startContainer, this.startOffset);
-        range.setEnd(this.endContainer, this.endOffset);
-        return range;
-      },
-      detach: function() {
-      },
-      toString: function() {
-        return this._toTextRange().text;
-      },
-      createContextualFragment: function(tagString) {
-        var content = (DOMUtils.isDataNode(this.startContainer) ? this.startContainer.parentNode : this.startContainer).cloneNode(false);
-        content.innerHTML = tagString;
-        for (var fragment = this._document.createDocumentFragment(); content.firstChild; )
-          fragment.appendChild(content.firstChild);
-        return fragment;
-      }
-    };
-
-    function RangeIterator(range) {
-      this.range = range;
-      if (range.collapsed)
-        return;
-
-      var root = range.commonAncestorContainer;
-      this._next = range.startContainer == root && !DOMUtils.isDataNode(range.startContainer) ?
-          range.startContainer.childNodes[range.startOffset] :
-          DOMUtils.findClosestAncestor(root, range.startContainer);
-      this._end = range.endContainer == root && !DOMUtils.isDataNode(range.endContainer) ?
-          range.endContainer.childNodes[range.endOffset] :
-          DOMUtils.findClosestAncestor(root, range.endContainer).nextSibling;
-    }
-
-    RangeIterator.prototype = {
-      range: null,
-      _current: null,
-      _next: null,
-      _end: null,
-
-      hasNext: function() {
-        return !!this._next;
-      },
-      next: function() {
-        var current = this._current = this._next;
-        this._next = this._current && this._current.nextSibling != this._end ?
-            this._current.nextSibling : null;
-
-        if (DOMUtils.isDataNode(this._current)) {
-          if (this.range.endContainer == this._current)
-            (current = current.cloneNode(true)).deleteData(this.range.endOffset, current.length - this.range.endOffset);
-          if (this.range.startContainer == this._current)
-            (current = current.cloneNode(true)).deleteData(0, this.range.startOffset);
-        }
-        return current;
-      },
-      remove: function() {
-        if (DOMUtils.isDataNode(this._current) &&
-            (this.range.startContainer == this._current || this.range.endContainer == this._current)) {
-          var start = this.range.startContainer == this._current ? this.range.startOffset : 0;
-          var end = this.range.endContainer == this._current ? this.range.endOffset : this._current.length;
-          this._current.deleteData(start, end - start);
-        } else
-          this._current.parentNode.removeChild(this._current);
-      },
-      hasPartialSubtree: function() {
-        return !DOMUtils.isDataNode(this._current) &&
-            (DOMUtils.isAncestorOrSelf(this._current, this.range.startContainer) ||
-                DOMUtils.isAncestorOrSelf(this._current, this.range.endContainer));
-      },
-      getSubtreeIterator: function() {
-        var subRange = new Range(this.range._document);
-        subRange.selectNodeContents(this._current);
-        if (DOMUtils.isAncestorOrSelf(this._current, this.range.startContainer))
-          subRange.setStart(this.range.startContainer, this.range.startOffset);
-        if (DOMUtils.isAncestorOrSelf(this._current, this.range.endContainer))
-          subRange.setEnd(this.range.endContainer, this.range.endOffset);
-        return new RangeIterator(subRange);
-      }
-    };
-
-    return Range;
-  })();
-  window.Range = Range;
-
-  window.Range._fromTextRange = function(textRange, document) {
-    function adoptBoundary(domRange, textRange, bStart) {
-      var cursorNode = document.createElement('a'), cursor = textRange.duplicate();
-      cursor.collapse(bStart);
-      var parent = cursor.parentElement();
-      do {
-        parent.insertBefore(cursorNode, cursorNode.previousSibling);
-        cursor.moveToElementText(cursorNode);
-      } while (cursor.compareEndPoints(bStart ? 'StartToStart' : 'StartToEnd', textRange) > 0 && cursorNode.previousSibling);
-
-      if (cursor.compareEndPoints(bStart ? 'StartToStart' : 'StartToEnd', textRange) == -1 && cursorNode.nextSibling) {
-        cursor.setEndPoint(bStart ? 'EndToStart' : 'EndToEnd', textRange);
-        domRange[bStart ? 'setStart' : 'setEnd'](cursorNode.nextSibling, cursor.text.length);
-      } else {
-        domRange[bStart ? 'setStartBefore' : 'setEndBefore'](cursorNode);
-      }
-      cursorNode.parentNode.removeChild(cursorNode);
-    }
-
-    var domRange = new Range(document);
-    adoptBoundary(domRange, textRange, true);
-    adoptBoundary(domRange, textRange, false);
-    return domRange;
-  }
-
-  document.createRange = function() {
-    return new Range(document);
-  };
-
-  Selection = (function() {
-    function Selection(document) {
-      this._document = document;
-
-      var selection = this;
-      document.attachEvent('onselectionchange', function() {
-        selection._selectionChangeHandler();
-      });
-    }
-
-    Selection.prototype = {
-      rangeCount: 0,
-      _document: null,
-
-      _selectionChangeHandler: function() {
-        this.rangeCount = this._selectionExists(this._document.selection.createRange()) ? 1 : 0;
-      },
-      _selectionExists: function(textRange) {
-        return textRange.compareEndPoints('StartToEnd', textRange) != 0 ||
-            textRange.parentElement().isContentEditable;
-      },
-      addRange: function(range) {
-        var selection = this._document.selection.createRange(), textRange = range._toTextRange();
-        if (!this._selectionExists(selection)) {
-          textRange.select();
-        } else {
-          if (textRange.compareEndPoints('StartToStart', selection) == -1)
-            if (textRange.compareEndPoints('StartToEnd', selection) > -1 &&
-                textRange.compareEndPoints('EndToEnd', selection) == -1)
-              selection.setEndPoint('StartToStart', textRange);
-          else
-            if (textRange.compareEndPoints('EndToStart', selection) < 1 &&
-                textRange.compareEndPoints('EndToEnd', selection) > -1)
-              selection.setEndPoint('EndToEnd', textRange);
-          selection.select();
-        }
-      },
-      removeAllRanges: function() {
-        this._document.selection.empty();
-      },
-      getRangeAt: function(index) {
-        var textRange = this._document.selection.createRange();
-        if (this._selectionExists(textRange))
-          return Range._fromTextRange(textRange, this._document);
-        return null;
-      },
-      toString: function() {
-        return this._document.selection.createRange().text;
-      }
-    };
-
-    return Selection;
-  })();
-  window.Selection = Selection;
-
-  window.getSelection = (function() {
-    var selection = new Selection(document);
-    return function() { return selection; };
-  })();
+if (typeof Selection == 'undefined') {
+	var Selection = {}
 }
 
-$.extend(Range.prototype, (function() {
-  function beforeRange(range) {
-    if (!range || !range.compareBoundaryPoints) return false;
-    return (this.compareBoundaryPoints(this.START_TO_START, range) == -1 &&
-      this.compareBoundaryPoints(this.START_TO_END, range) == -1 &&
-      this.compareBoundaryPoints(this.END_TO_END, range) == -1 &&
-      this.compareBoundaryPoints(this.END_TO_START, range) == -1);
-  }
-
-  function afterRange(range) {
-    if (!range || !range.compareBoundaryPoints) return false;
-    return (this.compareBoundaryPoints(this.START_TO_START, range) == 1 &&
-      this.compareBoundaryPoints(this.START_TO_END, range) == 1 &&
-      this.compareBoundaryPoints(this.END_TO_END, range) == 1 &&
-      this.compareBoundaryPoints(this.END_TO_START, range) == 1);
-  }
-
-  function betweenRange(range) {
-    if (!range || !range.compareBoundaryPoints) return false;
-    return !(this.beforeRange(range) || this.afterRange(range));
-  }
-
-  function equalRange(range) {
-    if (!range || !range.compareBoundaryPoints) return false;
-    return (this.compareBoundaryPoints(this.START_TO_START, range) == 0 &&
-      this.compareBoundaryPoints(this.START_TO_END, range) == 1 &&
-      this.compareBoundaryPoints(this.END_TO_END, range) == 0 &&
-      this.compareBoundaryPoints(this.END_TO_START, range) == -1);
-  }
-
-  function getNode() {
-    var parent = this.commonAncestorContainer;
-
-    while (parent.nodeType == Node.TEXT_NODE)
-      parent = parent.parentNode;
-
-    var node;
-    var that = this;
-    $.each(parent.children, function(index, child) {
-      var range = document.createRange();
-      range.selectNodeContents(child);
-      if (that.betweenRange(range)) {
-        node = child;
-        return false;
-      }
-    });
-
-    node = node || parent;
-
-    return $(node);
-  }
-
-  return {
-    beforeRange:  beforeRange,
-    afterRange:   afterRange,
-    betweenRange: betweenRange,
-    equalRange:   equalRange,
-    getNode:      getNode
-  };
+$.extend(Selection.prototype, (function() {
+	function getNode() {
+	  if (this.rangeCount > 0)
+	    return this.getRangeAt(0).getNode();
+	  else
+	    return null;
+	}
+	
+	function selectNode(element) {
+	  var range = document.createRange();
+	  range.selectNode(element[0]);
+	  this.removeAllRanges();
+	  this.addRange(range);
+	}
+	
+	return {
+	  getNode:    getNode,
+	  selectNode: selectNode
+	}
 })());
 
-if ($.browser.msie) {
-  $.extend(Selection.prototype, (function() {
-    function getNode() {
-      var range = this._document.selection.createRange();
-      return $(range.parentElement());
-    }
-
-    function selectNode(element) {
-      var range = this._document.body.createTextRange();
-      range.moveToElementText(element);
-      range.select();
-    }
-
-    return {
-      getNode:    getNode,
-      selectNode: selectNode
-    }
-  })());
-} else {
-  if (typeof Selection == 'undefined') {
-    var Selection = {}
-    Selection.prototype = window.getSelection().__proto__;
-  }
-
-  $.extend(Selection.prototype, (function() {
-    function getNode() {
-      if (this.rangeCount > 0)
-        return this.getRangeAt(0).getNode();
-      else
-        return null;
-    }
-
-    function selectNode(element) {
-      var range = document.createRange();
-      range.selectNode(element[0]);
-      this.removeAllRanges();
-      this.addRange(range);
-    }
-
-    return {
-      getNode:    getNode,
-      selectNode: selectNode
-    }
-  })());
-}
 $(document).ready(function() {
   function fieldChangeHandler(event, element) {
     var $element = $(element);
@@ -671,7 +181,7 @@ WysiHat.Commands = (function(window) {
     if ($.browser.mozilla) {
       var selection, range, node, blockquote;
 
-      selection = window.getSelection();
+      selection = getSelection();
       range     = selection.getRangeAt(0);
       node      = selection.getNode();
 
@@ -703,7 +213,7 @@ WysiHat.Commands = (function(window) {
   }
 
   function indentSelected() {
-    var node = window.getSelection().getNode();
+    var node = getSelection().getNode();
     return node.is("blockquote, blockquote *");
   }
 
@@ -732,7 +242,7 @@ WysiHat.Commands = (function(window) {
   }
 
   function alignSelected() {
-    var node = window.getSelection().getNode();
+    var node = getSelection().getNode();
     return $(node).css('textAlign');
   }
 
@@ -741,15 +251,15 @@ WysiHat.Commands = (function(window) {
   }
 
   function unlinkSelection() {
-    var node = window.getSelection().getNode();
+    var node = getSelection().getNode();
     if (this.linkSelected())
-      window.getSelection().selectNode(node);
+      getSelection().selectNode(node);
 
     this.execCommand('unlink', false, null);
   }
 
   function linkSelected() {
-    var node = window.getSelection().getNode();
+    var node = getSelection().getNode();
     return node ? node.get(0).tagName.toUpperCase() == 'A' : false;
   }
 
@@ -760,7 +270,7 @@ WysiHat.Commands = (function(window) {
   function toggleOrderedList() {
     var selection, node;
 
-    selection = window.getSelection();
+    selection = getSelection();
     node      = selection.getNode();
 
     if (this.orderedListSelected() && !node.is("ol li:last-child, ol li:last-child *")) {
@@ -777,7 +287,7 @@ WysiHat.Commands = (function(window) {
   }
 
   function orderedListSelected() {
-    var element = window.getSelection().getNode();
+    var element = getSelection().getNode();
     if (element) return element.is('*[contenteditable=""] ol, *[contenteditable=true] ol, *[contenteditable=""] ol *, *[contenteditable=true] ol *');
     return false;
   }
@@ -785,7 +295,7 @@ WysiHat.Commands = (function(window) {
   function toggleUnorderedList() {
     var selection, node;
 
-    selection = window.getSelection();
+    selection = getSelection();
     node      = selection.getNode();
 
     if (this.unorderedListSelected() && !node.is("ul li:last-child, ul li:last-child *")) {
@@ -802,7 +312,7 @@ WysiHat.Commands = (function(window) {
   }
 
   function unorderedListSelected() {
-    var element = window.getSelection().getNode();
+    var element = getSelection().getNode();
     if (element) return element.is('*[contenteditable=""] ul, *[contenteditable=true] ul, *[contenteditable=""] ul *, *[contenteditable=true] ul *');
     return false;
   }
@@ -1136,7 +646,7 @@ $(document).ready(function() {
         previousRange = null;
         $(element).trigger("selection:change");
       } else {
-        var selection = window.getSelection();
+        var selection = getSelection();
         if (selection.rangeCount < 1) { return };
 
         var range = selection.getRangeAt(0);

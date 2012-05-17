@@ -1,0 +1,57 @@
+- @extras = capture do
+	= javascript_include_tag "geo.min"
+	= javascript_include_tag "geo"
+	= javascript_include_tag "leaflet"
+	= stylesheet_link_tag "leaflet"
+	<!--[if lte IE 8]>
+	= stylesheet_link_tag "leaflet.ie"
+	<![endif]-->
+	= javascript_tag do
+		points = new Array()
+		- num = 1
+		- @inspections.each do |inspection|
+			- if inspection.lat != 0
+				= "points[#{num}] = {lat: #{inspection.lat.to_json}, lng: #{inspection.lng.to_json}, name: '#{inspection.name.gsub(/['"\\\x0]/,'\\\\\0')}', url: '#{url_for(inspection)}', rating: #{inspection.rating} }"
+				- num = num + 1	
+	= javascript_include_tag "searchmap"				
+- title @title, false
+- if @inspections.length == 0
+	.row#fullwidth
+		.span12
+			%h2 
+				= @title
+			%p
+				%strong Sorry, there were no results for your search
+- else
+	.row
+		#resultview.span7
+			%h2 
+				= @title
+			%table.table.table-bordered#searchresults
+				%thead
+					%tr
+						%th.mapicon
+						%th Name
+						%th Town / Village
+						%th Rating
+				- num = 1
+				- @inspections.each do |inspection|
+					- @council = Council.find(inspection.councilid)
+					%tr
+						- if inspection.lat != 0
+							%td.mapicon= image_tag "#{num}.png"
+						- else
+							%td.mapicon
+						%td= link_to inspection.name, inspection
+						%td= inspection.town
+						%td
+							%span.hidden
+								= "#{inspection.rating} stars"
+							= image_tag "rating#{inspection.rating}.png", :alt => ''
+					- if inspection.lat != 0
+						- num = num + 1
+			.pagination-centered= will_paginate @inspections, :inner_window => 2, :outer_window => 0
+		.span5#rightcol.searchmap
+			%h3 Map
+			#mapcontainer
+				#searchmap

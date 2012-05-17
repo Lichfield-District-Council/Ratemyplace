@@ -8,13 +8,19 @@ class CouncilsController < ApplicationController
   # GET /councils/1
   # GET /councils/1.json
   def show
-    @council = Council.find(params[:id])
-    @inspections = Inspection.where(:councilid => @council.id, :published => 1).order("date DESC").limit(3)
-    @search = Inspection.search(params[:search])
+  	if params[:id] == "all"
+   		@inspections = Inspection.where(:published => 1).order("date DESC").limit(3)
+	    @search = Inspection.search(params[:search])
+	    @council = Council.new
+	    @council.name = "All"
+  	else
+    	@council = Council.find(params[:id])
+   		@inspections = Inspection.where(:councilid => @council.id, :published => 1).order("date DESC").limit(3)
+	    @search = Inspection.search(params[:search])
+	end
 
     respond_to do |format|
       format.html # show.html.erb
-      format.json { render json: @council }
       format.js
     end
   end
