@@ -1,4 +1,4 @@
-- title "Contact Us", false
+- pagetitle "Contact Us", false
 .row#fullwidth
 	.span12
 	
@@ -67,7 +67,7 @@
 				.control-group 
 					= f.label "What council does your comment relate to?"
 					.controls
-						= collection_select(:contact, :council, Council.all, :id, :name, {:include_blank => 'No particular council'})
+						= collection_select(:contact, :council, Council.where(:external => 0), :id, :name, {:include_blank => 'No particular council'})
 	
 				.form-actions
 					= f.submit "Submit", :class => "btn btn-primary btn-large"

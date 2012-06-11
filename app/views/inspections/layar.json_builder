@@ -1,0 +1,17 @@
+hotspots @inspections do |inspection|
+	id inspection.slug
+	anchor do
+		geolocation do
+			lat inspection.lat
+			lon inspection.lng
+		end
+	end
+	text do
+		title inspection.name
+		description "#{inspection.rating} out of 5"
+	end
+	imageURL "http://lichfield-001.vm.brightbox.net/assets/rating#{inspection.rating}.png"
+end
+layer "ratemyplace"
+errorString "ok"
+errorCode 0

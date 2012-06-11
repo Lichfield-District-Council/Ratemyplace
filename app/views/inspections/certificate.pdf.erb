@@ -50,15 +50,19 @@
     	#address {
     		position: absolute;
     		top: 425px;
-    		left: 0;		
+    		left: 50px;
     	}
     	
     	#address p {
     		font-size: 22px;
     		line-height: 27px;
-    		left: 0;
     		text-align: center;
-    		width: 800px;
+    		width: 710px;
+    	}
+    	
+    	#address p .name {
+	    	font-size: 28px;
+	    	font-weight: bold;
     	}
     	
     	#date {
@@ -67,18 +71,32 @@
     		left: 98px;
     	}
     	
+    	#date p {
+	    	font-size: 18px;
+    	}
+    	
+    	#signature {
+    		position: absolute;
+	    	top: 750px;
+	    	left: 98px;
+    	}
+    	
     </style>
   </head>
   <body>
       <%= wicked_pdf_image_tag "certificate#{@inspection.rating}.jpg", :id => "bg" %>
 
       <div id="address">
-      <p><%= @inspection.name %><br />
+      <p><span class="name"><%= @inspection.name %></span><br />
       <%= @inspection.address("<br />").html_safe %>      </p>
       </div>
 
       <div id="date">
       <p><%= @inspection.date.strftime("#{@inspection.date.day.ordinalize} %B %Y") %></p>
+      </div>
+      
+      <div id="signature">
+      <%= wicked_pdf_image_tag "signature#{@council.id}.png" %>
       </div>
       
       <div id="council">

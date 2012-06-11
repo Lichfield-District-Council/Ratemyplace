@@ -25,6 +25,8 @@ Ratemyplace::Application.routes.draw do
 	    match ':id/rejectappeal' => 'inspections#rejectappeal', :via => [:get], :as => :rejectappeal
 	    match 'fsa/:council.xml' => 'inspections#fsa', :format => false, :defaults=>{:format=>'xml'}
 	    match 'tags/:tag' => 'inspections#tags', :via => [:get], :as => :tags
+	    match 'download/:id' => 'councils#download', :via => [:get], :as => :download
+	    match 'layar.json' => 'inspections#layar', :format=>false, :defaults=>{:format=>'json'}
 	  end
   end
       
@@ -40,6 +42,8 @@ Ratemyplace::Application.routes.draw do
   match 'admin/certificate/:id' => 'inspections#certificate', :as => :certificate
   match 'admin/profile' => 'users#edit', :as => :edit_current_user
   match 'admin/newuser' => 'users#new', :as => :signup
+  match 'admin/foursquarecleanup' => 'inspections#foursquarecleanup', :as => :foursquarecleanup
+  match 'admin/profile' => 'users#edit', :as => :edit
   match 'logout' => 'sessions#destroy', :as => :logout
   match 'login' => 'sessions#new', :as => :login
   

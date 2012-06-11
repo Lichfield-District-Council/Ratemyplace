@@ -53,11 +53,11 @@ end
 
 desc "Generate and download all certificates"
 task :certificates => :environment do
-	@councils = Council.where(:id => [7,8])
+	@councils = Council.where(:id => 2)
 	@councils.each do |council|
 		@inspections = Inspection.where(:councilid => council.id)
 		@inspections.each do |inspection|
-			system "wget -P /tmp/Certificates/#{council.slug} http://localhost:3000/admin/certificate/#{inspection.slug}.pdf"
+			system "wget -P /tmp/Certificates/#{council.slug}/#{inspection.rating} http://localhost:3000/admin/certificate/#{inspection.slug}.pdf"
 		end
 	end
 end
@@ -83,100 +83,33 @@ task :live => :environment do
 	end
 end
 
-desc "Get UPRNS"
-task :uprn => :environment do
-	inspections = Inspection.where("uprn = '' OR uprn IS null")
-	inspections.each do |inspection|
-		options = []
-		["name", "postcode", "address1"].each do |i|
-			address = Address.GetAddressFromPostcode(inspection[i])
-			
-			if address.length == 1 && address[0][:postcode] == inspection.postcode
-				inspection.update_attributes(:uprn => address[0][:uprn])
-				inspection.save
-				print "\r\n*** #{inspection.name} #{inspection.address} updated automagically! ***\r\n"
-				break
-			end
-			
-			if address.length > 0
-				options << address
-				break
-			end
-		end
-		
-		if options.length > 0
-			num = 1
-			
-			print "\r\n#{inspection.name} #{inspection.address}\r\n"
-			print "-----------------------------------------------------------\r\n\r\n"
-			
-			options[0].each do |option|
-				print "#{num}: #{option[:address]}\r\n"
-				num += 1
-			end
-			
-			print "\r\nPlease enter the number of the correct address, the UPRN or x if address not present\r\n"
-			print "-------------------------------------------------------------------------------------------\r\n"
-			answer = STDIN.gets
-			if /^[\d]+(\.[\d]+){0,1}$/ === answer
-				if answer.length > 3
-					uprn = answer		
-				else
-					choice = answer.to_i - 1
-					uprn = options[0][choice][:uprn]
-				end
-				inspection.update_attributes(:uprn => uprn)
-				inspection.save
-			end
-		end
-	end
-end
-
-desc "Get UPRNS"
-task :dbuprn => :environment do
-	inspections = Inspection.where("uprn = '' OR uprn IS null")
-	inspections.each do |inspection|
-		options = []
-		number = inspection.address1.gsub(/[a-zA-Z ]+/,"")
-		results = Address.find_by_sql("SELECT uprn, REPLACE(LTRIM(CONCAT_WS('', sao_start, sao_start_suffix, sao_end, sao_end_suffix, sao_end_suffix, CONCAT(' ', sao_text), pao_start, pao_start_suffix, pao_end, pao_end_suffix, pao_end_suffix, CONCAT(' ', pao_text), ' ', street)), '  ', ' ') as address FROM addresses WHERE postcode = '#{inspection.postcode.strip}'")
-		
-		results.each do |result|
-			if result.address.strip == inspection.address1.upcase.strip
-				inspection.update_attributes(:uprn => result.uprn.gsub(".00", ""))
-				inspection.save
-			print "\r\n*** #{inspection.name} #{inspection.address} updated automagically! ***\r\n"
-			end
-		end
-		
-		options << results
-	end
-end
-
-desc "Update locations based on UPRN"
-task :locate => :environment do
-	inspections = Inspection.where('length(uprn) > 0')
-	inspections.each do |inspection|
-		address = Address.where(:uprn => "#{inspection.uprn.to_i.to_s}.00")
-		puts "#{inspection.uprn.to_i.to_s}\r\n"
-		#address = Address.GetAddressFromUprn(inspection.uprn)
-		latlng = EastingNorthing.eastingNorthingToLatLong(address[0].x, address[0].y)
-		inspection.update_attributes(:lat => latlng["lat"], :lng => latlng["long"]) rescue puts "UPRN not found for #{inspection.name}"
-	end
-end
-
 namespace :foursquare do
 	desc "Get Foursquare venues"
 	task :venues => :environment do
-		inspections = Inspection.where(:foursquare_id => nil)
+		inspections = Inspection.where('(foursquare_id = "" OR foursquare_id is NULL) AND lat != 0')
 		inspections.each do |inspection|
 			inspection.getfoursquareid
 		end
 	end
 	
 	task :tips => :environment do
-		inspections = Inspection.where("foursquare_id IS NOT NULL")
+		inspections = Inspection.where("foursquare_id != 'x'")
 		inspections.each do |inspection|
 			inspection.addfoursquaretip
+		end
+	end
+	
+	task :check => :environment do
+		inspections = Inspection.where("foursquare_id != 'x' AND foursquare_id != '' AND foursquare_id is not NULL AND foursquare_id not like '%?%' AND foursquare_name IS NULL")
+		inspections.each do |i|
+			result = JSON.parse HTTParty.get("https://api.foursquare.com/v2/venues/#{i.foursquare_id}?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}").response.body
+			if result["meta"]["code"] == 200
+				i.update_attributes(:foursquare_id => "#{i.foursquare_id}?", :foursquare_name => result["response"]["venue"]["name"])
+				i.save
+			else
+	  			puts "#{i.name} raised error #{result["meta"]["errorDetail"]}"
+	  			break
+	  		end
 		end
 	end
 end
@@ -198,7 +131,8 @@ desc "Upload FSA returns"
 task :fsaupload => :environment do
 	councils = Council.where(:external => false)
 	councils.each do |council|
-		system "wget -N -nv -P /tmp/ http://lichfield-001.vm.brightbox.net/inspections/fsa/#{council.slug}.xml && casperjs lib/fsaupload.js #{council.slug} #{"%03d" % council.fsaid} #{council.username} #{council.password}"
+		puts "Uploading #{council.name}..."
+		system "wget -N -nv -P /tmp/ http://lichfield-001.vm.brightbox.net/inspections/fsa/#{council.slug}.xml > /dev/null 2>&1 && PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs #{Rails.root}/lib/fsaupload.js #{FSA_CONFIG[:url]} #{council.slug} #{"%03d" % council.fsaid} #{council.username} #{council.password}"
 	end
 end
 
@@ -214,6 +148,7 @@ task :import => :environment do
 		doc = Nokogiri::XML HTTParty.get("http://ratings.food.gov.uk/OpenDataFiles/FHRS#{council.id}en-GB.xml").response.body
 		
 		inspections = []
+		count = 0
 	
 		doc.search('EstablishmentDetail').each do |i|
 			inspections << i.children.inject({}){|hsh,el| hsh[el.name] = el.inner_text;hsh}
@@ -221,8 +156,8 @@ task :import => :environment do
 		
 		inspections.each do |i|
 			if i["RatingValue"] != "Exempt" 
-				inspection = Inspection.find_or_create_by_internalid(i["LocalAuthorityBusinessID"])
-				if i["RatingDate"] != inspection.date
+				inspection = Inspection.find_or_create_by_internalid(i["FHRSID"])
+				if i["RatingDate"].to_date != inspection.date
 					if inspection.lat == nil
 						begin
 							postcode = Pat.get(i["PostCode"])
@@ -259,6 +194,7 @@ task :import => :environment do
 					inspection.update_attributes(:name => i["BusinessName"].titleize, :address1 => address[0], :address2 => address[1], :address3 => address[2], :town => town, :postcode => i["PostCode"], :uprn => "x", :category => i["BusinessType"], :scope => "included", :hygiene => 99, :structure => 99, :confidence => 99, :rating => i["RatingValue"], :date => i["RatingDate"], :councilid => i["LocalAuthorityCode"], :lat => lat, :lng => lng, :published =>  1, :hours => "", :tel => "", :email => "", :website => "")
 					inspection.save
 					inspection.tweet
+					count += 1
 					
 					if inspection.errors.any?
 						inspection.errors.full_messages.each do |msg|
@@ -268,5 +204,7 @@ task :import => :environment do
 				end
 			end
 		end
+		
+		puts "#{count} inspection(s) added for #{council.name}!"
 	end
 end

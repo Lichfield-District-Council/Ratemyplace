@@ -1,0 +1,5 @@
+development:
+  url: http://176.227.203.102/fhrsuat/
+
+production:
+  url: https://ratingsportal.food.gov.uk/

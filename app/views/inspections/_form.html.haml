@@ -1,9 +1,12 @@
 - content_for :head do
 	=javascript_include_tag "selection.js"
+	=javascript_include_tag "select2.js"
 	=javascript_include_tag "wysihat-dist.js"
 	=javascript_include_tag "typeahead-fork.js"
 	=javascript_include_tag "autocomplete.js"
 	=javascript_include_tag "form.js"
+	=stylesheet_link_tag "select2.css"
+	='<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" >'.html_safe
 			
 =form_for(@inspection, :html => {:class => 'form-horizontal'}) do |f|
 	- if @inspection.errors.any?
@@ -46,7 +49,9 @@
 		.control-group 
 			= f.label :scope
 			.controls
-				= select :inspection, :scope, ["Included", "Included and Private", "Included  Sensitive", "Excluded", "Exempt", "Sensitive"], {:prompt => '--Please Select--'} 
+				= select :inspection, :scope, ["--Please Select--", "Included", "Included and Private", "Included  Sensitive", "Excluded", "Exempt", "Sensitive"]
+				#scopeexplain
+					&nbsp;
 		- if @inspection.address1.length == 0
 			#findaddress.well
 				%h3 Find address
@@ -131,23 +136,25 @@
 			.control-group 
 				= f.label :revisit_requested, 'Revisit requested?'
 				.controls
-					= f.check_box :revisit_requested	
-		.control-group 
-			= f.label :hygiene, 'Food Hygiene and Safety'
-			.controls
-				= select :inspection, :hygiene, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
-		.control-group 
-			= f.label :structure, 'Structure and Cleaning'
-			.controls
-				= select :inspection, :structure, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
-		.control-group 
-			= f.label :confidence, 'Confidence in Management'
-			.controls
-				= select :inspection, :confidence, [0, 5, 10, 20, 30], {:prompt => '--Please Select--'}
-		.control-group 
-			= f.label :annex5, 'Annex 5 overall rating'
-			.controls
-				= f.text_field :annex5
+					= f.check_box :revisit_requested
+		- unless @inspection.rating == -1
+			#scores	
+				.control-group 
+					= f.label :hygiene, 'Food Hygiene and Safety'
+					.controls
+						= select :inspection, :hygiene, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
+				.control-group 
+					= f.label :structure, 'Structure and Cleaning'
+					.controls
+						= select :inspection, :structure, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
+				.control-group 
+					= f.label :confidence, 'Confidence in Management'
+					.controls
+						= select :inspection, :confidence, [0, 5, 10, 20, 30], {:prompt => '--Please Select--'}
+				.control-group 
+					= f.label :annex5, 'Annex 5 overall rating'
+					.controls
+						= f.text_field :annex5
 		#rating
 			- if !@inspection.rating.nil?
 				.control-group
@@ -166,22 +173,31 @@
 			= f.label :image
 			.controls
 				= f.file_field :image
+				- if !@inspection.image_file_name.nil?
+					%span.filename#inspection_image_filename
+						= @inspection.image_file_name
 		.control-group 
 			= f.label :report
 			.controls
 				= f.file_field :report
+				- if !@inspection.report_file_name.nil?
+					%span.filename#inspection_report_filename
+						= @inspection.report_file_name
 		.control-group 
 			= f.label :menu
 			.controls
 				= f.file_field :menu
+				- if !@inspection.menu_file_name.nil?
+					%span.filename#inspection_menu_filename
+						= @inspection.menu_file_name
 		.control-group 
 			= f.label :tradingstandards, 'Trading Standards Compliance'
 			.controls
-				= select :inspection, :tradingstandards, {"No" => 0, "Yes" => 1}, {:prompt => '--Please Select--'}		
+				= select :inspection, :tradingstandards, {"No" => 0, "Yes" => 1}, {:include_blank => '--Please Select--'}		
 		.control-group 
 			= f.label :healthy, 'Healthy Options Award?'
 			.controls
-				= select :inspection, :healthy, {"No" => 0, "Yes" => 1}, {:prompt => '--Please Select--' }
+				= select :inspection, :healthy, ["Bronze", "Gold", "Silver"], {:include_blank => '--Please Select--' }
 		.control-group
 			- if params[:action] == "edit" && @inspection.appeal != true && @inspection.published == false
 				.controls
@@ -192,7 +208,7 @@
 					= f.label :appealdate, 'Date of appeal'
 					.controls
 						= date_select(:inspection, :appealdate, {:order => [:day, :month, :year]}, {:class => 'span2'})
-						= f.hidden_field :appeal, :value => 0, :id => 'appeal'
+						= f.hidden_field :appeal, :value => "", :id => 'appeal'
 							
 		.form-actions
 			- if params[:action] == "edit"

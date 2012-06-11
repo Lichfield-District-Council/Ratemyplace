@@ -1,4 +1,4 @@
-- title "API", false
+- pagetitle "API", false
 .row#fullwidth
 	.span12
 		%h2 API
@@ -116,3 +116,36 @@
 
 		%p.example
 			%a.btn.btn-primary{:href => "http://www.ratemyplace.org.uk/inspections/mcdonalds-cannock.json"} View example
+			
+		%h3 Bulk download
+		
+		%p Download all inspections for a particular council (or all councils) in XML, JSON or CSV format:
+		
+		%ul
+			%li
+				All councils
+				%a{:href => "http://www.ratemyplace.org.uk/inspections/download/all.xml"}
+					%span.label.label-success
+						XML
+				&nbsp;
+				%a{:href => "http://www.ratemyplace.org.uk/inspections/download/all.json"}
+					%span.label.label-success
+						JSON
+				&nbsp;
+				%a{:href => "http://www.ratemyplace.org.uk/inspections/download/all.csv"}
+					%span.label.label-success
+						CSV
+			- Council.all.each do |council|
+				%li
+					= council.name
+					%a{:href => "http://www.ratemyplace.org.uk/inspections/download/#{council.slug}.xml"}
+						%span.label.label-success
+							XML
+					&nbsp;
+					%a{:href => "http://www.ratemyplace.org.uk/inspections/download/#{council.slug}.json"}
+						%span.label.label-success
+							JSON
+					&nbsp;
+					%a{:href => "http://www.ratemyplace.org.uk/inspections/download/#{council.slug}.csv"}
+						%span.label.label-success
+							CSV

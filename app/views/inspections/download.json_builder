@@ -1,0 +1,40 @@
+inspections	@inspections do |i|
+	i = i
+	council = Council.find(i.councilid)
+	inspection do
+		detail do
+			id i.id
+			name i.name
+			url "/inspections/#{i.slug}"
+			address full_address(i)
+			unless i.scope = "Included and private"
+				postcode i.postcode
+				lat i.lat
+				lng i.lng
+			end
+			opening_times i.hours
+			email i.email
+			website i.website
+		end
+		authority do
+			name council.name
+			snac council.snac
+		end
+		inspection do
+			inspection_date i.date
+			if i.hygiene != 99
+				hygiene i.hygiene
+				structure i.structure
+				confidence i.confidence
+			end
+			if i.report_file_name != nil
+				report i.report.url
+			end
+			rating i.rating
+		end
+		other do
+			trading_standards i.tradingstandards
+			healthy_options i.healthy
+		end
+	end
+end

@@ -1,14 +1,13 @@
 class InspectionsController < ApplicationController
-
 require "csv"
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api]
+before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar]
 
   # GET /inspections
   # GET /inspections.json
   def index
-    @inspections = Inspection.where(:published => 1).order("date DESC").limit(3)
-    @rssinspections = Inspection.where(:published => 1).order("date DESC").limit(10)
+    @inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(3)
+    @rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(10)
     @search = Inspection.search(params[:search])
     @feed = Feedzirra::Feed.fetch_and_parse("http://www.food.gov.uk/news/?view=rss")
 
@@ -132,6 +131,12 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	end
   end
   
+  def layar
+  	  distance = params[:radius].to_i / 1609.344
+	  @inspections = Inspection.search({"published_eq" => 1}).result.within(distance, :origin => [params[:lat], params[:lon]]).order("distance ASC")
+	  render "layar.json_builder"
+  end
+  
   def atoz
   	if params[:council]
   		@council = Council.find(params[:council])
@@ -170,13 +175,23 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   
   def editsearch 
 	if params[:q]
-	  	@search = Inspection.search(params[:q])
-	  	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
+	  	
+	  	if params[:title] == "publication"
+	  		@inspections =  Inspection.search(params[:q]).result.where('DATEDIFF(NOW(), date) <= 27 AND published = 0 AND appeal = 0 AND scope != "Sensitive"').paginate(:page => params[:page], :per_page => 10).order("name ASC")
+	  	else
+	  		@search = Inspection.search(params[:q])
+	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
+	  	end
+	  	
 	  	
 	  	respond_to do |format|
 	  		format.html
 	  		format.csv do
-	  			@inspections = @search.result
+	  			if params[:title] == "publication"
+	  				@inspections = Inspection.search(params[:q]).result.where('DATEDIFF(NOW(), date) <= 27 AND published = 0 AND appeal = 0 AND scope != "Sensitive"')
+	  			else
+	  				@inspections = @search.result
+	  			end
 	  			csv_string = CSV.generate do |csv| 
 				csv << ["Name", "Address1", "Address2", "Address3", "Town", "Postcode", "Operator", "Category", "Scope", "Hygiene", "Structure", "Confidence", "Rating", "Inspection Date", "Link"]
 					@inspections.each do |inspection|
@@ -203,19 +218,36 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 			        :disposition => "attachment; filename=inspections.csv" 
 	  		end
 	  	end
-	else 
+	else
+		@councilid = current_user.councilid
 	  	@search = Inspection.search(params[:search])
 	end
   end
   
   def certificatesearch 
 	if params[:q]
-	  	@search = Inspection.search(params[:q]).order("name ASC")
-	  	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10)
+	  	@search = Inspection.search(params[:q])
+	  	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
 	else 
 	  	@search = Inspection.search(params[:search])
 	end
 	render "editsearch"
+  end
+  
+  def foursquarecleanup 
+  	if params[:id]
+  		inspection = Inspection.find(params[:id])
+  		if params[:approve] == "1"
+  			inspection.update_attributes(:foursquare_id => params[:foursquare_id])
+  		else
+  			inspection.update_attributes(:foursquare_id => "x")
+  			if inspection.foursquare_tip_id != nil
+  				inspection.removefoursquaretip
+  			end
+  		end
+  	end
+	@search = Inspection.search(:foursquare_id_cont => "?")
+	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
   end
   
   def certificate
@@ -285,6 +317,12 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		else
 			@inspection.published = 1 unless @inspection.scope == "Sensitive"
 		end
+		
+		if @inspection.rating == -1
+			@inspection.hygiene = 99
+			@inspection.structure = 99
+			@inspection.confidence = 99
+		end
 	end
 
 	if @inspection.save
@@ -298,6 +336,9 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		
 		redirect_to @inspection, notice: 'Inspection was successfully created.'
 	else
+		if @inspection.address1.length == 0
+			@addressclass = "hidden"
+		end
 		render action: "new"
 	end
   end
@@ -323,7 +364,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       	newdate = Date::civil(params[:inspection]["date(1i)"].to_i, params[:inspection]["date(2i)"].to_i, params[:inspection]["date(3i)"].to_i)
       	
       	if newdate.to_s != params[:olddate].to_s
-      		if @inspection.rating < 5
+      		if @inspection.rating < 5 && @inspection.rating > 0
       			@inspection.published = 0
       			@inspection.save
       		else
@@ -332,6 +373,21 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
       			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
       		end
+      	elsif (Date.today - newdate).to_i < 27
+      		@inspection.published = 0
+      		@inspection.save
+      	end
+      	
+      	if params[:inspection][:appeal] == "1"
+      		@inspection.lodgeappeal(Date::civil(params[:inspection]["appealdate(1i)"].to_i, params[:inspection]["appealdate(2i)"].to_i, params[:inspection]["appealdate(3i)"].to_i))
+      	end
+      	
+      	if params[:inspection][:appeal] == "0"
+      		@inspection.acceptappeal
+  			@inspection.published = 1 unless @inspection.scope == "Sensitive"
+  			@inspection.save
+  			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+  			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
       	end
       	
         redirect_to @inspection, notice: 'Inspection was successfully updated.'
@@ -348,6 +404,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	@inspection.published = 1 unless @inspection.scope == "Sensitive"
   	@inspection.save
   	@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+  	@inspection.rejectappeal
   	redirect_to @inspection, notice: 'The appeal was rejected and the inspection is now live.'
   end
 

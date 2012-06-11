@@ -31,6 +31,7 @@ gem 'wicked_pdf'
 gem 'date_validator', :git => 'https://github.com/codegram/date_validator.git'
 gem 'active_attr'
 gem 'bluecloth'  
+gem 'text'
 
 # Gems used only for assets and not required
 # in production environments by default.

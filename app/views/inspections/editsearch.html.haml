@@ -1,4 +1,4 @@
-- title "Find a Premises", false
+- pagetitle "Find a Premises", false
 .row#fullwidth
 	.span12
 		- if params[:title] == "publication"
@@ -15,7 +15,7 @@
 					%strong Sorry, there were no results for your search
 			- else
 				
-				%a.btn.btn-warning#download{:href => request.url.gsub("editsearch", "editsearch.csv")}
+				%a.btn.btn-warning#download{:href => request.url.gsub(/(editsearch)|(certificatesearch)/, "editsearch.csv")}
 					%i.icon-download-alt.icon-white
 					Download spreadsheet
 				
@@ -23,14 +23,14 @@
 					%thead
 						%tr
 							%th Name
-							%th Town / Village
+							%th Address
 							%th Actions
 					- num = 1
 					- @inspections.each do |inspection|
 						- @council = Council.find(inspection.councilid)
 						%tr
 							%td= inspection.name
-							%td= inspection.town
+							%td= inspection.address
 							%td
 								- if params[:action] == "editsearch"
 									= link_to '<i class="icon-pencil icon-white"></i>'.html_safe + ' Edit', { :controller => "inspections", :action => "edit", :id => inspection }, :class => 'btn btn-primary'
@@ -53,7 +53,7 @@
 					.control-group 
 						=f.label :councilid_eq, "Local Authority:"
 						.controls
-							=f.select(:councilid_eq, Council.all.collect {|p| [ p.name, p.id ] }, {:prompt => '--Please Select--'})
+							=f.select(:councilid_eq, Council.all.collect {|p| [ p.name, p.id ] }, {:prompt => '--Please Select--', :selected => @councilid})
 					.control-group 
 						=f.label :address1_cont, "Address:"
 						.controls

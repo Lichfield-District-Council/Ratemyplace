@@ -25,6 +25,7 @@ $(document).ready ->
  $(".form-horizontal").bind 'submit', ->
     $('#inspection_hours').val($('#inspection_hours_editor').html())
 
+
  $("#searchaddress").bind 'click', ->
  	postcode = $("#postcode").val()
  	$('#loading').removeClass('hidden')
@@ -92,7 +93,6 @@ $(document).ready ->
  $('#accept').bind 'click', ->
  	$('#appeal').val('0')
  	$('#appealnote').addClass('hidden')
- 	$('#inspection_postcode').val('Mobile')
  	
  $("#inspection_category").bind 'change', ->
  	if $("#inspection_category").val() == "Mobile food unit"
@@ -100,12 +100,28 @@ $(document).ready ->
  		$('#findaddress').addClass('hidden')
  		$('#inspection_postcode').val('Mobile')
  		$('#postcode_group').addClass('hidden')
+ 
+ $("#inspection_scope").bind 'change', ->
+ 	if $("#inspection_scope").val() == "Exempt"
+ 		$('#scores').addClass('hidden')
+ 		$('#inspection_rating').val("-1")
+ 		$('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><strong>Exempt</strong></div></div></div>")
+ 		
  		
  $(".delete").bind 'click', ->
         tag = $(this).parent().find('span').html()
         $('#tagshidden').val($('#tagshidden').val().replace(tag, ""))
         $(this).parent().remove()
         return false
+
+ $("#inspection_image").bind 'change', ->
+ 	$('#inspection_image_filename').addClass('hidden')
+        
+ $("#inspection_report").bind 'change', ->
+ 	$('#inspection_report_filename').addClass('hidden')
+ 	
+ $("#inspection_menu").bind 'change', ->
+ 	$('#inspection_menu_filename').addClass('hidden')
  
  $("#inspection_hygiene, #inspection_structure, #inspection_confidence").bind 'change', ->
  	hygiene = parseInt($('#inspection_hygiene').val())

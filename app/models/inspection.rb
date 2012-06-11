@@ -50,15 +50,25 @@ class Inspection < ActiveRecord::Base
   		end
   	end
   	
-  	def getfoursquareid
+  	def getfoursquareid(force = false)
   		result = JSON.parse HTTParty.get("https://api.foursquare.com/v2/venues/search?ll=#{self.lat},#{self.lng}&query=#{CGI::escape(self.name)}&radius=10&oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}").response.body
   		if result["meta"]["code"] == 200
 	  		if result["response"]["venues"].length == 0
-	  			foursquare_id = nil
+	  			foursquare_id = "x"
 	  		else
-	  			foursquare_id = result["response"]["venues"][0]["id"].split.join("\n")
+	  			if force === false
+		  			white = Text::WhiteSimilarity.new
+		  			if white.similarity(result["response"]["venues"][0]["name"], self.name) > 0.5
+			  			foursquare_id = result["response"]["venues"][0]["id"].split.join("\n")
+			  		else
+			  			foursquare_id = "?"
+			  		end
+		  		else
+		  			foursquare_id = result["response"]["venues"][0]["id"].split.join("\n")
+		  			foursquare_name = result["response"]["venues"][0]["name"].split.join("\n")
+		  		end
 	  		end
-	  		self.update_attributes(:foursquare_id => foursquare_id)
+	  		self.update_attributes(:foursquare_id => foursquare_id, :foursquare_name => foursquare_name)
 	  		self.save
 	  	else
 	  		puts "#{self.name} raised error #{result["meta"]["errorDetail"]}"
@@ -70,27 +80,33 @@ class Inspection < ActiveRecord::Base
   			self.foursquare_id = self.getfoursquareid
   		end
   		
-  		if self.foursquare_id == nil
+  		if self.foursquare_id != "x"
 	  		if self.foursquare_tip_id != nil
-	  			HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}")
-	  		end
+		  		HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}")
+			end
 	  		
 	  		text = "Food safety rating here is #{self.rating} out of 5"
 	  		url = "http://www.ratemyplace.org.uk/inspections/#{self.slug}"
 	  		
 	  		options = {:query => { :venueId => self.foursquare_id, :text => text, :url => url }}
 	  		post = JSON.parse HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options ).response.body
-	  		  		
-	  		self.update_attributes(:foursquare_tip_id => post["response"]["tip"]["id"])
-	  		self.save
+	  		if post["meta"]["code"] == 200 		
+		  		self.update_attributes(:foursquare_tip_id => post["response"]["tip"]["id"])
+		  		self.save
+		  	end
   		end
-  		
-  		rescue Exception => e
-  			puts "#{self.name} raised error #{e}"
   	end
+  	
+  	def removefoursquaretip
+  		HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}")
+  		self.update_attributes(:foursquare_tip_id => "x")
+  	end
+
   	
   	def ratingtext
   		case self.rating
+  		when -1
+  			"Exempt"
   		when 0
   			"Urgent improvement necessary"
   		when 1
@@ -166,7 +182,12 @@ class Inspection < ActiveRecord::Base
   	end
   	
   	def tweet(now = false)
-  		BufferApp.new(BUFFER_CONFIG[:token], BUFFER_CONFIG[:id]).create("New Inspection: #{self.name} #{self.town} #{self.rating}/5 #{"http://www.ratemyplace.org.uk/inspections/" + self.slug}", now)
+  		if self.rating >= 0
+  			text = "New Inspection: #{self.name} #{self.town} #{self.rating}/5 #{"http://www.ratemyplace.org.uk/inspections/" + self.slug}"
+  		else
+  			text = "New Inspection: #{self.name} #{self.town} Exempt #{"http://www.ratemyplace.org.uk/inspections/" + self.slug}"
+  		end
+  		BufferApp.new(BUFFER_CONFIG[:token], BUFFER_CONFIG[:id]).create(text, now)
   	end
   	
   	def reportsize
@@ -174,4 +195,23 @@ class Inspection < ActiveRecord::Base
   		return size.to_s + "kb"
   	end
   	
+  	def lodgeappeal(date = Time.new)
+  		date = date.strftime("%e %B %Y").strip
+  		council = Council.find(self.councilid)
+  		system "PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs lib/lodgeappeal.js #{FSA_CONFIG[:url]} #{"%03d" % council.fsaid} #{council.username} #{council.password} #{self.id} \"#{date}\""
+  	end
+  	
+  	def rejectappeal(date = Time.new)
+  		date = date.strftime("%e %B %Y").strip
+  		council = Council.find(self.councilid)
+  		system "PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs lib/acceptrejectappeal.js #{FSA_CONFIG[:url]} #{"%03d" % council.fsaid} #{council.username} #{council.password} #{self.id} \"#{date}\" reject"
+  	end
+  	
+  	def acceptappeal(date = Time.new)
+  		date = date.strftime("%e %B %Y").strip
+  		council = Council.find(self.councilid)
+  		system "PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs lib/acceptrejectappeal.js #{FSA_CONFIG[:url]} #{"%03d" % council.fsaid} #{council.username} #{council.password} #{self.id} \"#{date}\" reject"
+  		#todo - upload the latest fsa xml file - might be best to schedule this???
+  	end
+
 end

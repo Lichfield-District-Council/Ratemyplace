@@ -1,7 +1,7 @@
 - @extras = capture do
 	= javascript_include_tag "geo.min"
 	= javascript_include_tag "geo"
-- title "Ratemyplace | Food Safety Star Rating Scheme for Staffordshire", false
+- pagetitle "Ratemyplace | Food Safety Star Rating Scheme for Staffordshire", false
 .row#home
 	.span9
 		= search_form_for @search, :url => search_inspections_path,  :html => { :class => "form-inline", :id => 'homesearch' } do |f|
@@ -27,11 +27,14 @@
 						%i.icon-search
 		.span3#ads
 			.ad
-				%h3 Follow us on Twitter
-				= image_tag 'twitterad.png'
-			.ad
-				%h3 Find us on your mobile
-				= image_tag 'mobilead.png'
+				%h3 Social Media
+				#social
+					<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+					%p
+						=link_to image_tag('/assets/facebook4.png', :alt => "Like us on Facebook"), 'http://www.facebook.com/ratemyplace-uk'
+						=link_to image_tag('/assets/twitter4.png', :alt => "Follow us on Twitter"), 'http://twitter.com/intent/user?screen_name=ratemyplace'
+						=link_to image_tag('/assets/foursquare4.png', :alt => "Follow us on Foursquare"), 'https://foursquare.com/user/26633022'
+
 		.span6#feed
 			%h3 
 				FSA Latest News
@@ -54,4 +57,4 @@
 				= submit_tag "Search", :class => "btn-primary icon-search", :name => nil
 		
 		%h3 Latest additions
-		= render :partial => "latest"		
+		= render :partial => "latest"	

@@ -6,8 +6,8 @@ txt += '<p style="background-color: #9ABE4A; background-image: -moz-linear-gradi
 txt += '<div style="background-color: #FBFACC; moz-border-radius-topleft: 0; -moz-border-radius-topright: 0; -moz-border-radius-bottomright: 5px; -moz-border-radius-bottomleft: 5px; -webkit-border-radius: 5px  5px 5px; border-radius: 0 0 5px 5px; padding: 45px 7px 15px 7px; width: 150px; margin: 10px 5px;">'
 <% @inspections.each do |inspection| %>
 txt += '<div style="border-bottom: 1px solid #000; position: relative; padding: 7px 0 0 0;">'
-txt += '<%= "<p style=\"font-size: 14px;\"><a href=\"#{request.protocol + request.host_with_port + '/inspections/' + inspection.slug}\" style=\"color: #4E611E\" onMouseOver=\"this.style.color=\\'#000\\'\" onMouseOut=\"this.style.color=\\'#4E611E\\'\">#{inspection.name}</a>".html_safe %>'
-txt += '<p style="font-size: 14px; line-height: 16px;"><%= "#{full_address(inspection)}".html_safe %></p>'
+txt += '<%= "<p style=\"font-size: 14px;\"><a href=\"#{request.protocol + request.host_with_port + '/inspections/' + inspection.slug}\" style=\"color: #4E611E\" onMouseOver=\"this.style.color=\\'#000\\'\" onMouseOut=\"this.style.color=\\'#4E611E\\'\">#{escape_javascript(inspection.name)}</a>".html_safe %>'
+txt += '<p style="font-size: 14px; line-height: 16px;"><%= "#{escape_javascript(full_address(inspection))}".html_safe %></p>'
 txt += '<%= "<p style=\"font-size: 13px;\"><strong>Rating:</strong> <img src=\"#{request.protocol + request.host_with_port + '/assets/rating' + inspection.rating.to_s + 'home.png'}\" alt=\"\" width=\"100\" style=\"position: absolute; bottom: -1px; margin-left: 5px;\" /></p>".html_safe %>'
 txt += '</div>'
 <% end %>

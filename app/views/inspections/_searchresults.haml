@@ -14,7 +14,7 @@
 				= "points[#{num}] = {lat: #{inspection.lat.to_json}, lng: #{inspection.lng.to_json}, name: '#{inspection.name.gsub(/['"\\\x0]/,'\\\\\0')}', url: '#{url_for(inspection)}', rating: #{inspection.rating} }"
 				- num = num + 1	
 	= javascript_include_tag "searchmap"				
-- title @title, false
+- pagetitle @title, false
 - if @inspections.length == 0
 	.row#fullwidth
 		.span12

@@ -8,7 +8,9 @@ xml.inspections do
 			xml.establishmentaddressline2 inspection.address2
 			xml.establishmentaddressline3 inspection.address3
 			xml.establishmentaddressline4 inspection.town
-			xml.postcode inspection.postcode
+			unless inspection.postcode == "Mobile"
+				xml.postcode inspection.postcode
+			end
 			xml.inspectiondate inspection.date.strftime("%d/%m/%Y")
 			xml.confidenceinmanagementscore inspection.confidence
 			xml.hygieneandsafetyscore inspection.hygiene

@@ -1,3 +1,4 @@
+# There is currently no way to do partials in json_builder, so we can't be DRY here! If you change this, you'll need to change download.json_builder too!
 inspection do
 	detail do
 		id @inspection.id
@@ -19,11 +20,15 @@ inspection do
 	end
 	inspection do
 		inspection_date @inspection.date
-		hygiene @inspection.hygiene
-		structure @inspection.structure
-		confidence @inspection.confidence
+		if @inspection.hygiene != 99
+			hygiene @inspection.hygiene
+			structure @inspection.structure
+			confidence @inspection.confidence
+		end
+		if @inspection.report_file_name != nil
+			report @inspection.report.url
+		end
 		rating @inspection.rating
-		report @inspection.report.url
 	end
 	other do
 		trading_standards @inspection.tradingstandards

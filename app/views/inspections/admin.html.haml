@@ -1,4 +1,4 @@
-- title "Admin Home", false
+- pagetitle "Admin Home", false
 .row#fullwidth
 	.span12		
 		%h2 Admin Home
@@ -9,11 +9,15 @@
 			%i.icon-off.icon-white
 			Logout
 		
+		%a#profile.btn.btn-info{:href => "/admin/profile"}
+			%i.icon-user.icon-white
+			Edit profile
+		
 		%ul#actions
 			%li= link_to 'Add a new premises', { :controller => "inspections", :action => "new" }, {:class => "add"}
 			%li= link_to 'Edit an existing premises', { :controller => "inspections", :action => "editsearch" }, {:class => "edit"}
 			%li= link_to 'Download certificate', { :controller => "inspections", :action => "certificatesearch" }, {:class => "download"}
 			%li= link_to 'Download FSA XML file', "/inspections/fsa/#{@council.slug}.xml", {:class => "fsa"}
-			%li= link_to 'View inspections awaiting publication', "/admin/editsearch?utf8=✓&title=publication&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Bpublished_eq%5D=0", {:class => "awaiting"}
-			%li= link_to 'View inspections awaiting appeal', "/admin/editsearch?utf8=✓&title=appeal&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Bappeal_eq%5D=1", {:class => "appeal"}
-			%li= link_to 'View revisit requests', "/admin/editsearch?utf8=✓&title=revisit&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Brevisit_requested_eq%5D=1", {:class => "revisit"}
+			%li= link_to 'View inspections awaiting publication', "/admin/editsearch?title=publication&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Bpublished_eq%5D=0", {:class => "awaiting"}
+			%li= link_to 'View inspections awaiting appeal', "/admin/editsearch?title=appeal&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Bappeal_eq%5D=1", {:class => "appeal"}
+			%li= link_to 'View revisit requests', "/admin/editsearch?title=revisit&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Brevisit_requested_eq%5D=1", {:class => "revisit"}

@@ -1,24 +1,36 @@
-<%= form_for @user do |f| %>
+<%= form_for(@user, :html => {:class => 'form-horizontal'}) do |f| %>
   <%= f.error_messages %>
-  <p>
-    <%= f.label :username %><br />
+  <fieldset>
+  <div class="control-group">
+    <%= f.label :username %>
+    <div class="controls">
     <%= f.text_field :username %>
-  </p>
-  <p>
-    <%= f.label :email, "Email Address" %><br />
-    <%= f.text_field :email %>
-  </p>
-  <p>
-  	<%= f.label :councilid, "Council" %><br />
-  	<%= collection_select(:user, :councilid, Council.all, :id, :name, {:prompt => '--Please Select--'}) %>
-  </p>
-  <p>
-    <%= f.label :password %><br />
-    <%= f.password_field :password %>
-  </p>
-  <p>
-    <%= f.label :password_confirmation, "Confirm Password" %><br />
-    <%= f.password_field :password_confirmation %>
-  </p>
-  <p><%= f.submit (@user.new_record? ? "Add user" : "Update user"), :class => 'btn-large btn-primary' %></p>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :email, "Email Address" %>
+    <div class="controls">
+	    <%= f.text_field :email %>
+    </div>
+  </div>
+  <div class="control-group">
+  	<%= f.label :councilid, "Council" %>
+  	<div class="controls">
+  		<%= collection_select(:user, :councilid, Council.all, :id, :name, {:prompt => '--Please Select--'}) %>
+  	</div>
+  </div>
+  <div class="control-group">
+    <%= f.label :password %>
+    <div class="controls">
+    	<%= f.password_field :password %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :password_confirmation, "Confirm Password" %>
+    <div class="controls">
+    	<%= f.password_field :password_confirmation %>
+    </div>
+  </div>
+  <div class="form-actions"><%= f.submit (@user.new_record? ? "Add user" : "Update user"), :class => 'btn-large btn-primary' %></div>
+  </fieldset>
 <% end %>

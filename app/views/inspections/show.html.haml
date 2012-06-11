@@ -11,7 +11,7 @@
 				= "var lng = " + @inspection.lng.to_json
 			= javascript_include_tag "map"
 	= javascript_include_tag "show"
-- title "#{@inspection.name} in #{@inspection.town} - Food Safety Star Rating | Ratemyplace", false
+- pagetitle "#{@inspection.name} in #{@inspection.town} - Food Safety Star Rating | Ratemyplace", false
 - meta_description "Food safety inspection for #{@inspection.name} in #{@inspection.town} from #{@council.name}"
 .row
 	#leftcol.span8.hreview
@@ -174,7 +174,29 @@
 					%p 
 						For more information on Trading Standards, visit the 
 						%a{:href => 'http://www.staffordshire.gov.uk/business/tradingstandards/home.aspx'} Trading Standards section of the Staffordshire County Council Website.
-						
+		
+		- unless @inspection.healthy.blank?
+			
+			%p
+				%strong Healthy Options Award [
+				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#healthy"} What's this?
+				]
+				= image_tag "#{@inspection.healthy}.gif", :alt => @inspection.healthy
+				
+			#healthy.modal.hide.fade{"style" => "display:none;"}
+				.modal-header
+					%a.close{"data-dismiss" => "modal"} x
+					%h3 Healthy Options Award
+				.modal-body
+					%p Premises in possession of a food hygiene award are eligible to be assessed for a Healthy Options Award. The award, which has three tiers – bronze, silver and gold – recognises and encourages catering premises to provide healthier options to their customers.
+					%p Premises achieve the award by offering a large range of dishes that have a high level of fruits, vegetables and complex carbohydrates and a low level of saturated fat, sugar and salt.
+					
+					%p The award also recognises provision of healthy options for children, and rewards staff training and promotion and marketing of these healthier options.
+					
+					%p 
+						For more information, visit the 
+						%a{:href => 'http://www.eaststaffsbc.gov.uk/Services/FoodTeam/Pages/HealthyOptionsAward.aspx'} Healthy Options Award section of the East Staffordshire Borough Council website
+
 		- if @inspection.hours.length > 0
 			%h3 Opening hours
 			= @inspection.hours.html_safe
@@ -194,16 +216,15 @@
 					%strong Website:
 					= link_to @inspection.website, (@inspection.website.include?("http://") ? @inspection.website : "http://" + @inspection.website)
 		
-		%h3 Owner of this business?
-		
-		:markdown
-			If any information on this page is incorrect you can email the correct information to your local authority via our [contact form](/contact-us?council=#{@council.id}).
-		
-			You can find out [how to appeal against the rating given and find out about your right to reply](/faq#num12).
-		
-			You can also [ask for a re-inspection](/faq#num19).
-		
-		// = disqus_thread.html_safe
+		- unless @inspection.hygiene == 99
+			%h3 Owner of this business?
+			
+			:markdown
+				If any information on this page is incorrect you can email the correct information to your local authority via our [contact form](/contact-us?council=#{@council.id}).
+			
+				You can find out [how to appeal against the rating given and find out about your right to reply](/appeals?council=#{@council.id}).
+			
+			// = disqus_thread.html_safe
 			
 				
 	.span4#rightcol

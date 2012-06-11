@@ -1,5 +1,5 @@
 - if params[:council]
-- title "A to Z for #{@council.name}", false
+- pagetitle "A to Z for #{@council.name}", false
 
 	.row#fullwidth
 		.span12
@@ -17,7 +17,7 @@
 					%li= link_to inspection.name, inspection
 
 - else
-	- title "A to Z of premises", false
+	- pagetitle "A to Z of premises", false
 	.row#fullwidth
 		.span12
 			%h2 A to Z of Premises
