@@ -13,6 +13,7 @@ detail do
 	website @inspection.website
 	authority @council.name
 	reference "#{@council.code}-#{@inspection.id}"
+	coords "#{@inspection.lng},#{@inspection.lat}"
 end
 inspection do
 	date @inspection.date.strftime("%d/%m/%Y")

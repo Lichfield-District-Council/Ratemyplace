@@ -10,7 +10,7 @@ hotspots @inspections do |inspection|
 		title inspection.name
 		description "#{inspection.rating} out of 5"
 	end
-	imageURL "http://lichfield-001.vm.brightbox.net/assets/rating#{inspection.rating}.png"
+	imageURL "http://www.ratemyplace.org.uk/assets/rating#{inspection.rating}.png"
 end
 layer "ratemyplace"
 errorString "ok"

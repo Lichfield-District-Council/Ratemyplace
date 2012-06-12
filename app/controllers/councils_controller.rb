@@ -9,20 +9,46 @@ class CouncilsController < ApplicationController
   # GET /councils/1.json
   def show
   	if params[:id] == "all"
-   		@inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(3)
-	    @search = Inspection.search(params[:search])
+  		if params[:format] == "rss"
+	   		@inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(10)
+		    @search = Inspection.search(params[:search])
+  		else
+	   		@inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(3)
+		    @search = Inspection.search(params[:search])
+		end
 	    @council = Council.new
 	    @council.name = "All"
   	else
-    	@council = Council.find(params[:id])
-   		@inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND councilid = #{@council.id} AND published = 1").order("date DESC").limit(3)
-	    @search = Inspection.search(params[:search])
+  		@council = Council.find(params[:id])
+  		if params[:format] == "rss"
+	   		@inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND councilid = #{@council.id} AND published = 1").order("date DESC").limit(10)
+		    @search = Inspection.search(params[:search])
+  		else
+	   		@inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND councilid = #{@council.id} AND published = 1").order("date DESC").limit(3)
+		    @search = Inspection.search(params[:search])
+	    end
 	end
 
     respond_to do |format|
       format.html # show.html.erb
       format.js
+      format.rss do
+      	response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
+      end
     end
+  end
+  
+  def redirect
+  	if params[:council]
+  		@council = Council.find(params[:council])
+  		url = council_url(@council, :format => 'rss')
+  	else
+  		url = "/councils/all.rss"
+  	end
+  	
+  	respond_to do |format|
+  		format.rss { redirect_to url, :status=>:moved_permanently }
+  	end
   end
   
   def download

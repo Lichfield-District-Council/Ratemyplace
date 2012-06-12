@@ -13,6 +13,7 @@ inspection do
 		opening_times @inspection.hours
 		email @inspection.email
 		website @inspection.website
+		coords "#{@inspection.lat},#{@inspection.lng}"
 	end
 	authority do
 		name @council.name

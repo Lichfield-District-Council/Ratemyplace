@@ -253,7 +253,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   def certificate
   	@inspection = Inspection.find(params[:id])
   	@council = Council.find(@inspection.councilid)
-  	system("curl http://lichfield-001.vm.brightbox.net/inspections/#{@inspection.slug}.png?type=cert -o /tmp/#{@inspection.slug}.png")
+  	system("curl http://www.ratemyplace.org.uk/inspections/#{@inspection.slug}.png?type=cert -o /tmp/#{@inspection.slug}.png")
   	@qrcode = "/tmp/#{@inspection.slug}.png"	
   	respond_to do |format|
   		format.pdf do

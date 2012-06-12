@@ -14,6 +14,7 @@ xml.detail do
 	xml.website @inspection.website
 	xml.authority @council.name
 	xml.reference "#{@council.code}-#{@inspection.id}"
+	xml.coords "#{inspection.lng},#{inspection.lat}"
 end
 xml.inspection do
 	xml.date @inspection.date.strftime("%d/%m/%Y")

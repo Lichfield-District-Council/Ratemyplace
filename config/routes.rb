@@ -13,7 +13,11 @@ Ratemyplace::Application.routes.draw do
 
   resources :users
 
-  resources :councils
+  resources :councils do
+  	collection do
+  	
+  	end
+  end
     
   resources :inspections do
 	  collection do
@@ -69,6 +73,7 @@ Ratemyplace::Application.routes.draw do
   match 'view/:id/:name' => 'inspections#redirect',  :defaults=>{:format=>'html'}
   match 'widget.php' => 'inspections#redirect',  :defaults=>{:format=>'js'}
   match 'api/api.php' => 'inspections#api'
+  match 'rss.php' => 'councils#redirect', :defaults=>{:format=>'rss'}
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

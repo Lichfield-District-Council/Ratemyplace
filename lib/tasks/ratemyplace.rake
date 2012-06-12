@@ -132,7 +132,7 @@ task :fsaupload => :environment do
 	councils = Council.where(:external => false)
 	councils.each do |council|
 		puts "Uploading #{council.name}..."
-		system "wget -N -nv -P /tmp/ http://lichfield-001.vm.brightbox.net/inspections/fsa/#{council.slug}.xml > /dev/null 2>&1 && PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs #{Rails.root}/lib/fsaupload.js #{FSA_CONFIG[:url]} #{council.slug} #{"%03d" % council.fsaid} #{council.username} #{council.password}"
+		system "wget -N -nv -P /tmp/ http://www.ratemyplace.org.uk/inspections/fsa/#{council.slug}.xml > /dev/null 2>&1 && PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs #{Rails.root}/lib/fsaupload.js #{FSA_CONFIG[:url]} #{council.slug} #{"%03d" % council.fsaid} #{council.username} #{council.password}"
 	end
 end
 
