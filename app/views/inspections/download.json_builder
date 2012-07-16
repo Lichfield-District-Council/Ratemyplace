@@ -15,7 +15,6 @@ inspections	@inspections do |i|
 			opening_times i.hours
 			email i.email
 			website i.website
-			coords "#{@inspection.lat},#{@inspection.lng}"
 		end
 		authority do
 			name council.name

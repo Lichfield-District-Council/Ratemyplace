@@ -7,14 +7,13 @@ xml.detail do
 	xml.id @inspection.id
 	xml.address full_address(@inspection)
 	xml.postcode @inspection.postcode
-	xml.coords "#{@inspection.lat},#{@inspection.lng}"
+	xml.coords "#{@inspection.lng},#{@inspection.lat}"
 	xml.opening_times @inspection.hours
 	xml.tel @inspection.tel
 	xml.email @inspection.email
 	xml.website @inspection.website
 	xml.authority @council.name
 	xml.reference "#{@council.code}-#{@inspection.id}"
-	xml.coords "#{inspection.lng},#{inspection.lat}"
 end
 xml.inspection do
 	xml.date @inspection.date.strftime("%d/%m/%Y")

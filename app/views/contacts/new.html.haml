@@ -63,6 +63,11 @@
 						.controls
 							= f.text_area :message, :rows => 6, :class => 'span4'
 							%span.help-inline Required
+
+				.control-group.hidden
+					= f.label "Please leave this box blank"
+					.controls
+						= f.text_field :website
 						
 				.control-group 
 					= f.label "What council does your comment relate to?"

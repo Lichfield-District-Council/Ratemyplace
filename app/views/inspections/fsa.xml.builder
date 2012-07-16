@@ -12,9 +12,11 @@ xml.inspections do
 				xml.postcode inspection.postcode
 			end
 			xml.inspectiondate inspection.date.strftime("%d/%m/%Y")
-			xml.confidenceinmanagementscore inspection.confidence
-			xml.hygieneandsafetyscore inspection.hygiene
-			xml.structuralscore inspection.structure
+			unless inspection.confidence == 99
+				xml.confidenceinmanagementscore inspection.confidence
+				xml.hygieneandsafetyscore inspection.hygiene
+				xml.structuralscore inspection.structure
+			end
 			xml.businesstype inspection.category
 			xml.status inspection.scope
 		end

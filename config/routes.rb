@@ -31,6 +31,7 @@ Ratemyplace::Application.routes.draw do
 	    match 'tags/:tag' => 'inspections#tags', :via => [:get], :as => :tags
 	    match 'download/:id' => 'councils#download', :via => [:get], :as => :download
 	    match 'layar.json' => 'inspections#layar', :format=>false, :defaults=>{:format=>'json'}
+	    match 'qr/:id.png' => 'inspections#qr', :format => false, :defaults=>{:format=>'png'}
 	  end
   end
       

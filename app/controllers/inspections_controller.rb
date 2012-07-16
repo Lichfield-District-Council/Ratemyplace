@@ -1,13 +1,17 @@
 class InspectionsController < ApplicationController
 require "csv"
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar]
+before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar, :qr]
 
   # GET /inspections
   # GET /inspections.json
   def index
     @inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(3)
-    @rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(10)
+    if params[:layar]
+	    @rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC")
+	else
+		@rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(10)
+	end
     @search = Inspection.search(params[:search])
     @feed = Feedzirra::Feed.fetch_and_parse("http://www.food.gov.uk/news/?view=rss")
 
@@ -45,6 +49,20 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	      	}
 	    end
 	end
+  end
+  
+  def qr
+  	@inspection = Inspection.find(params[:id])
+  	respond_to do |format|
+  		format.png {
+	      	if params[:type] == "cert"
+	      		utm_campaign = "certificate"
+	      	else
+	      		utm_campaign = "usergenerated"
+	      	end
+			render Inspection.qrcode("http://www.ratemyplace.org.uk/inspections/#{@inspection.slug}?utm_source=qrcode&utm_medium=qrcode&utm_campaign=#{utm_campaign}") 
+  		}
+  	end
   end
   
   def redirect
@@ -177,7 +195,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	if params[:q]
 	  	
 	  	if params[:title] == "publication"
-	  		@inspections =  Inspection.search(params[:q]).result.where('DATEDIFF(NOW(), date) <= 27 AND published = 0 AND appeal = 0 AND scope != "Sensitive"').paginate(:page => params[:page], :per_page => 10).order("name ASC")
+	  		@inspections =  Inspection.search(params[:q]).result.where('DATEDIFF(NOW(), date) <= 27 AND published = 0 AND (appeal = 0 OR appeal IS NULL) AND scope != "Sensitive"').paginate(:page => params[:page], :per_page => 10).order("name ASC")
 	  	else
 	  		@search = Inspection.search(params[:q])
 	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
@@ -253,7 +271,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   def certificate
   	@inspection = Inspection.find(params[:id])
   	@council = Council.find(@inspection.councilid)
-  	system("curl http://www.ratemyplace.org.uk/inspections/#{@inspection.slug}.png?type=cert -o /tmp/#{@inspection.slug}.png")
+  	system("curl http://www.ratemyplace.org.uk/inspections/qr/#{@inspection.slug}.png?type=cert -o /tmp/#{@inspection.slug}.png")
   	@qrcode = "/tmp/#{@inspection.slug}.png"	
   	respond_to do |format|
   		format.pdf do
@@ -362,7 +380,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
     	@inspection.buildtags(params[:tags])
       	
       	newdate = Date::civil(params[:inspection]["date(1i)"].to_i, params[:inspection]["date(2i)"].to_i, params[:inspection]["date(3i)"].to_i)
-      	
+      	      	
       	if newdate.to_s != params[:olddate].to_s
       		if @inspection.rating < 5 && @inspection.rating > 0
       			@inspection.published = 0
@@ -373,8 +391,11 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
       			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
       		end
-      	elsif (Date.today - newdate).to_i < 27
+      	elsif (Date.today - newdate).to_i < 27 && @inspection.rating < 5
       		@inspection.published = 0
+      		@inspection.save
+      	else
+      		@inspection.published = 1
       		@inspection.save
       	end
       	

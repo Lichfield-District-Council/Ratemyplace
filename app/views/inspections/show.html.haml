@@ -12,7 +12,7 @@
 			= javascript_include_tag "map"
 	= javascript_include_tag "show"
 - pagetitle "#{@inspection.name} in #{@inspection.town} - Food Safety Star Rating | Ratemyplace", false
-- meta_description "Food safety inspection for #{@inspection.name} in #{@inspection.town} from #{@council.name}"
+- meta_description "#{@inspection.name} in #{@inspection.town} has been given a food safety inspection rating of #{@inspection.rating} from #{@council.name}"
 .row
 	#leftcol.span8.hreview
 		- if @inspection.published == false
@@ -22,7 +22,7 @@
 			.well
 				= link_to '<i class="icon-pencil icon-white"></i>'.html_safe + ' Edit', { :controller => "inspections", :action => "edit", :id => @inspection }, :class => 'btn btn-primary'
 				= link_to '<i class="icon-print icon-white"></i>'.html_safe + ' Print Certificate', { :controller => "inspections", :action => "certificate", :id => @inspection, :format => :pdf }, :class => 'btn btn-info'
-		.rating{:class => "rating#{@inspection.rating}"}
+		.fhrsrating{:class => "rating#{@inspection.rating}"}
 			= image_tag "fhrsweb#{@inspection.rating}.jpg", :alt => "#{@inspection.ratingtext}"
 		- if @inspection.image_file_name != nil
 			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
@@ -44,7 +44,8 @@
 			
 		%p
 			%strong Local Authority:
-			= @council.name
+			%span.reviewer
+				= @council.name
 		- unless @inspection.hygiene == 99
 			%h3 
 				Scores
@@ -132,8 +133,8 @@
 				= showrating(@inspection.confidence, "confidence")
 		%p
 			%strong Rating:
-			%span.rating.hidden 
-				= @inspection.rating
+			%span.rating.hidden
+				= "#{@inspection.rating}"
 			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating} - #{@inspection.ratingtext}"
 			%em= "(#{@inspection.ratingtext})"
 			- if @inspection.revisit_requested === true

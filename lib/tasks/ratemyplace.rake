@@ -116,7 +116,7 @@ end
 
 desc "Make inspections live"
 task :makelive => :environment do
-	@inspections = Inspection.where('DATEDIFF(NOW(), date) >= 27 AND published = 0 AND appeal = 0 AND scope != "Sensitive"')
+	@inspections = Inspection.where('DATEDIFF(NOW(), date) >= 27 AND published = 0 AND (appeal = 0 OR appeal IS NULL) AND scope != "Sensitive"')
 	count = @inspections.count
 	@inspections.each do |inspection|
 		inspection.update_attributes(:published => 1)

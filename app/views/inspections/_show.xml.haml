@@ -4,7 +4,6 @@
 		%name= inspection.name
 		%url= "http://www.ratemyplace.org.uk/inspections/#{inspection.slug}"
 		%address= full_address(inspection)
-		%coords= "#{inspection.lat},#{inspection.lng}"
 		- unless inspection.scope = "Included and private"
 			%postcode= inspection.postcode
 			%lat inspection.lat
