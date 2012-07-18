@@ -2,7 +2,42 @@
 <div id="fullwidth" class="row">
 <div class="span12">
 <h2>Update Your Profile</h2>
-<%= render 'form' %>
+<%= form_for(@user, :html => {:class => 'form-horizontal'}) do |f| %>
+  <%= f.error_messages %>
+  <fieldset>
+  <div class="control-group">
+    <%= f.label :username %>
+    <div class="controls">
+    <%= f.text_field :username, :disabled => true %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :email, "Email Address" %>
+    <div class="controls">
+	    <%= f.text_field :email %>
+    </div>
+  </div>
+  <div class="control-group">
+  	<%= f.label :councilid, "Council" %>
+  	<div class="controls">
+  		<%= collection_select(:user, :councilid, Council.all, :id, :name, {:prompt => '--Please Select--'}) %>
+  	</div>
+  </div>
+  <div class="control-group">
+    <%= f.label :password %>
+    <div class="controls">
+    	<%= f.password_field :password %>
+    </div>
+  </div>
+  <div class="control-group">
+    <%= f.label :password_confirmation, "Confirm Password" %>
+    <div class="controls">
+    	<%= f.password_field :password_confirmation %>
+    </div>
+  </div>
+  <div class="form-actions"><%= f.submit (@user.new_record? ? "Add user" : "Update user"), :class => 'btn-large btn-primary' %></div>
+  </fieldset>
+<% end %>
 </div>
 </div>
 
