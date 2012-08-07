@@ -126,10 +126,22 @@ task :makelive => :environment do
 	puts "#{count} inspections made live!"
 end
 
+desc "Test task"
+task :testtask, [:council] => :environment do |t, args|
+	if args[:council].nil?
+		puts "No council specified"
+	else
+		puts args[:council]
+	end
+end
 
 desc "Upload FSA returns"
-task :fsaupload => :environment do
-	councils = Council.where(:external => false)
+task :fsaupload, [:council] => :environment do |t, args|
+	if args[:council].nil?
+		councils = Council.where(:external => false)
+	else
+		councils = Council.where(:logo => args[:council])
+	end
 	councils.each do |council|
 		puts "Uploading #{council.name}..."
 		system "wget -N -nv -P /tmp/ http://www.ratemyplace.org.uk/inspections/fsa/#{council.slug}.xml > /dev/null 2>&1 && PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs #{Rails.root}/lib/fsaupload.js #{FSA_CONFIG[:url]} #{council.slug} #{"%03d" % council.fsaid} #{council.username} #{council.password}"
