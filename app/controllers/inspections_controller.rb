@@ -1,7 +1,7 @@
 class InspectionsController < ApplicationController
 require "csv"
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar, :qr]
+before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar, :qr, :redirect]
 
   # GET /inspections
   # GET /inspections.json

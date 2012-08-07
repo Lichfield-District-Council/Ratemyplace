@@ -49,7 +49,7 @@
 		.control-group 
 			= f.label :scope
 			.controls
-				= select :inspection, :scope, ["--Please Select--", "Included", "Included and Private", "Included  Sensitive", "Excluded", "Exempt", "Sensitive"]
+				= select :inspection, :scope, ["--Please Select--", "Included", "Included and Private", "Excluded", "Exempt", "Sensitive"]
 				#scopeexplain
 					&nbsp;
 		- if @inspection.address1.length == 0
