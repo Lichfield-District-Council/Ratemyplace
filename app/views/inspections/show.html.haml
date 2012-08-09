@@ -216,6 +216,15 @@
 				%p
 					%strong Website:
 					= link_to @inspection.website, (@inspection.website.include?("http://") ? @inspection.website : "http://" + @inspection.website)
+					
+		- if @inspection.internalid
+			%h3 About this inspection
+			
+			:markdown
+				These inspection details are taken from the [Food Standards Agency's Food hygiene Ratings site](http://ratings.food.gov.uk/). 
+				
+				You can [see the original inspection report here](http://ratings.food.gov.uk/business/en-GB/#{@inspection.internalid})
+			
 		
 		- unless @inspection.hygiene == 99
 			%h3 Owner of this business?
