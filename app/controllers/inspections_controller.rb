@@ -211,7 +211,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	  				@inspections = @search.result
 	  			end
 	  			csv_string = CSV.generate do |csv| 
-				csv << ["Name", "Address1", "Address2", "Address3", "Town", "Postcode", "Operator", "Category", "Scope", "Hygiene", "Structure", "Confidence", "Rating", "Inspection Date", "Link"]
+				csv << ["Name", "Address1", "Address2", "Address3", "Town", "Postcode", "Tel", "Email", "Website", "Operator", "Category", "Scope", "Hygiene", "Structure", "Confidence", "Rating", "Annex 5 overall rating", "Inspection Date", "Link"]
 					@inspections.each do |inspection|
 						csv << [inspection.name,
 								  inspection.address1,
@@ -219,6 +219,9 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 								  inspection.address3,
 								  inspection.town,
 								  inspection.postcode,
+								  inspection.tel,
+								  inspection.email,
+								  inspection.website,
 								  inspection.operator,
 								  inspection.category,
 								  inspection.scope,
@@ -226,6 +229,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 								  inspection.structure,
 								  inspection.confidence,
 								  inspection.rating,
+								  inspection.annex5,
 								  inspection.date,
 								  "http://www.ratemyplace.org.uk/inspections/#{inspection.slug}" ]
 					end
