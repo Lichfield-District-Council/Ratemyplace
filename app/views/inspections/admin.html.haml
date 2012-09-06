@@ -13,7 +13,7 @@
 			%i.icon-user.icon-white
 			Edit profile
 			
-		- if @user.role == 2
+		- if @user.role >= 2
 		
 			%a#newuser.btn.btn-success{:href => "/admin/newuser"}
 				%i.icon-user.icon-white
