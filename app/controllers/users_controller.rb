@@ -2,20 +2,26 @@ class UsersController < ApplicationController
   before_filter :login_required
   
   def new 
-    if session[:user_id]	
-    	@user = User.new
+    if session[:user_id]
+    	if current_user.role == 2
+	    	@user = User.new
+	    else
+	    	redirect_to '/admin', :notice => "I'm afraid I can't let you do that, Dave" 
+	    end
 	else
 		redirect_to :login
 	end
   end
 
   def create
-    @user = User.new(params[:user])
-    if @user.save
-      redirect_to '/admin', :notice => "User created!"
-    else
-      render :action => 'new'
-    end
+  	if current_user.role == 2
+	    @user = User.new(params[:user])
+	    if @user.save
+	      redirect_to '/admin', :notice => "User created!"
+	    else
+	      render :action => 'new'
+	    end
+	 end
   end
 
   def edit
@@ -24,6 +30,7 @@ class UsersController < ApplicationController
 
   def update
     @user = current_user
+    @user.accessible = [:role] if @user.role == 2
     if @user.update_attributes(params[:user])
       redirect_to '/admin', :notice => "Your profile has been updated."
     else

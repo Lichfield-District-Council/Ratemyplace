@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
   # new columns need to be added here to be writable through mass assignment
   attr_accessible :username, :email, :password, :password_confirmation, :councilid
 
-  attr_accessor :password
+  attr_accessor :password, :accessible
   before_save :prepare_password
 
   validates_presence_of :username
@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   validates_presence_of :password, :on => :create
   validates_confirmation_of :password
   validates_length_of :password, :minimum => 4, :allow_blank => true
+  validates_presence_of :role
 
   # login can be either username or email address
   def self.authenticate(login, pass)
@@ -31,4 +32,9 @@ class User < ActiveRecord::Base
       self.password_hash = encrypt_password(password)
     end
   end
+  
+  def mass_assignment_authorizer(role = :default)
+    super + (accessible || [])
+  end
+  
 end

@@ -12,6 +12,12 @@
 		%a#profile.btn.btn-info{:href => "/admin/profile"}
 			%i.icon-user.icon-white
 			Edit profile
+			
+		- if @user.role == 2
+		
+			%a#newuser.btn.btn-success{:href => "/admin/newuser"}
+				%i.icon-user.icon-white
+				Add new user
 		
 		%ul#actions
 			%li= link_to 'Add a new premises', { :controller => "inspections", :action => "new" }, {:class => "add"}

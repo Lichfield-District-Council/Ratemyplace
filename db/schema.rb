@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120608103821) do
+ActiveRecord::Schema.define(:version => 20120906114414) do
 
   create_table "addresses", :force => true do |t|
     t.text     "uprn",             :limit => 255
@@ -148,6 +148,7 @@ ActiveRecord::Schema.define(:version => 20120608103821) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
     t.integer  "councilid"
+    t.integer  "role"
   end
 
 end
