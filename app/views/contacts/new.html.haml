@@ -4,7 +4,12 @@
 	
 		%h2 Contact Us
 		
-		%p To get in touch with ratemyplace, please use the online form below:
+		%p To get in touch with ratemyplace, please use the online form below.
+		
+		%p 
+			%strong
+				Please note:
+			This form is for contacting local authorities about food safety ratings. Please do not use it to contact individual businesses. We will not be able to help you with your enquiry.
 		
 		= form_for(@contact, :html => {:class => 'form-horizontal'}) do |f|
 			- if @contact.errors.any?
