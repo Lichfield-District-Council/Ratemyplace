@@ -386,7 +386,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       	newdate = Date::civil(params[:inspection]["date(1i)"].to_i, params[:inspection]["date(2i)"].to_i, params[:inspection]["date(3i)"].to_i)
       	      	
       	if newdate.to_s != params[:olddate].to_s
-      		if @inspection.rating < 5 && @inspection.rating > 0
+      		if @inspection.rating < 5 && @inspection.rating >= 0
       			@inspection.published = 0
       			@inspection.save
       		else
