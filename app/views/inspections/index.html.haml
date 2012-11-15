@@ -41,10 +41,14 @@
 				%span
 			
 			%ul
-				- for entry in @feed.entries[0..1] do
+				- unless @entries.nil?
+					- for entry in @entries[0..1] do
+						%li
+							%h4= link_to entry.title, entry.url
+							%p= entry.summary.html_safe
+				- else
 					%li
-						%h4= link_to entry.title, entry.url
-						%p= entry.summary.html_safe
+						Ooops! Unable to get the feed from food.gov.uk
 			
 	#rightcol.span3	
 		%h3 

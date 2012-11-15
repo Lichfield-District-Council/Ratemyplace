@@ -13,7 +13,8 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		@rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(10)
 	end
     @search = Inspection.search(params[:search])
-    @feed = Feedzirra::Feed.fetch_and_parse("http://www.food.gov.uk/news/?view=rss")
+    feed = Feedzirra::Feed.fetch_and_parse("http://www.food.gov.uk/news/?view=rss", :timeout => 10)
+    @entries = feed.entries rescue nil
 
     respond_to do |format|
       format.html # index.html.erb

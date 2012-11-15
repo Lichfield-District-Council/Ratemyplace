@@ -16,7 +16,7 @@ class Address < ActiveRecord::Base
 	
 		postcode = CGI::escape(postcode)
 	
-		addresses = JSON.parse HTTParty.get("http://www.lichfielddc.gov.uk/site/custom_scripts/countyllpg.php?q=#{postcode}").response.body
+		addresses = JSON.parse HTTParty.get("https://www.lichfielddc.gov.uk/site/custom_scripts/countyllpg.php?q=#{postcode}").response.body
 		
 		num = 0
 		results = []
@@ -50,7 +50,7 @@ class Address < ActiveRecord::Base
 	
 	def self.GetAddressFromUprn(uprn)
 			
-		address = JSON.parse HTTParty.get("http://www.lichfielddc.gov.uk/site/custom_scripts/countyllpg.php?type=uprn&q=#{uprn}").response.body
+		address = JSON.parse HTTParty.get("https://www.lichfielddc.gov.uk/site/custom_scripts/countyllpg.php?type=uprn&q=#{uprn}").response.body
 		
 		result = Hash.new
 		
