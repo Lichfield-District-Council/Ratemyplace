@@ -119,8 +119,13 @@ task :makelive => :environment do
 	@inspections = Inspection.where('DATEDIFF(NOW(), date) >= 27 AND published = 0 AND (appeal = 0 OR appeal IS NULL) AND scope != "Sensitive"')
 	count = @inspections.count
 	@inspections.each do |inspection|
+		puts "Publishing..."
 		inspection.update_attributes(:published => 1)
+		puts "Tweeting..."
+
 		inspection.tweet
+		puts "Foursquareing..."
+
 		inspection.addfoursquaretip
 	end
 	puts "#{count} inspections made live!"

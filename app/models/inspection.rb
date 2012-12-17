@@ -9,6 +9,7 @@ class Inspection < ActiveRecord::Base
 	has_attached_file :menu
 	acts_as_mappable
 	
+	validate :sensitive_inspections_cant_be_published
 	validates_presence_of :name, :address1, :town, :postcode, :hygiene, :structure, :confidence, :rating, :category, :scope, :date, :councilid
 	
 	validates :date,
@@ -16,6 +17,12 @@ class Inspection < ActiveRecord::Base
 			
   	extend FriendlyId
   	friendly_id :name_and_town, use: :slugged
+  	
+  	def sensitive_inspections_cant_be_published
+  		if scope == 'Sensitive' and published == true
+  			errors[:base] << "Sensitive inspections can't be published" 
+  		end
+  	end
   	
   	def name_and_town
   		"#{name} #{town}"
@@ -82,14 +89,14 @@ class Inspection < ActiveRecord::Base
   		
   		if self.foursquare_id != "x"
 	  		if self.foursquare_tip_id != nil
-		  		HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}")
+		  		HTTParty.post("https://api.foursquare.com/v2/tips/#{self.foursquare_tip_id}/delete?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}") rescue puts "#{self.foursquare_id} caused an error when deleting an old tip"
 			end
-	  		
+	  			  		
 	  		text = "Food safety rating here is #{self.rating} out of 5"
 	  		url = "http://www.ratemyplace.org.uk/inspections/#{self.slug}"
 	  		
 	  		options = {:query => { :venueId => self.foursquare_id, :text => text, :url => url }}
-	  		post = JSON.parse HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options ).response.body
+	  		post = JSON.parse HTTParty.post("https://api.foursquare.com/v2/tips/add?oauth_token=#{FOURSQUARE_CONFIG[:token]}&v=#{Date.today.strftime("%Y%m%d")}", options ).response.body rescue puts "#{self.foursquare_id} caused an error when POSTing a new tip"
 	  		if post["meta"]["code"] == 200 		
 		  		self.update_attributes(:foursquare_tip_id => post["response"]["tip"]["id"])
 		  		self.save
