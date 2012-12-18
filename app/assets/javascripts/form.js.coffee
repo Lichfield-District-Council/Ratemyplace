@@ -110,7 +110,7 @@ $(document).ready ->
  		
  $(".delete").bind 'click', ->
         tag = $(this).parent().find('span').html()
-        $('#tagshidden').val($('#tagshidden').val().replace(tag, ""))
+        $('#tags').val($('#tags').val().replace(tag, ""))
         $(this).parent().remove()
         return false
 
