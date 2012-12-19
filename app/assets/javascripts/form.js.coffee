@@ -108,7 +108,7 @@ $(document).ready ->
  		$('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><strong>Exempt</strong></div></div></div>")
  		
  		
- $(".delete").bind 'click', ->
+ $("#addedtags .delete").bind 'click', ->
         tag = $(this).parent().find('span').html()
         $('#tags').val($('#tags').val().replace(tag, ""))
         $(this).parent().remove()
