@@ -10,7 +10,7 @@ gem 'httparty'
 gem 'nifty-generators', :group => :development
 gem 'paperclip', '~> 2.0'
 gem 'twitter'
-gem 'friendly_id', '~> 4.0.0'
+gem 'friendly_id', '~> 4.0.9'
 gem 'haml'
 gem 'less-rails-bootstrap'
 gem 'ransack'
