@@ -7,6 +7,8 @@
 			%h2 View inspections awaiting appeal
 		- elsif params[:title] == "revisit"
 			%h2 View revisit requests
+		- elsif params[:title] == "dupes"
+			%h2 View possible duplicates
 		- else
 			%h2 Find a premises
 		- if params[:q]

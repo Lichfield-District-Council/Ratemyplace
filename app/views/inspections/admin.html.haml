@@ -27,3 +27,4 @@
 			%li= link_to 'View inspections awaiting publication', "/admin/editsearch?title=publication&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Bpublished_eq%5D=0", {:class => "awaiting"}
 			%li= link_to 'View inspections awaiting appeal', "/admin/editsearch?title=appeal&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Bappeal_eq%5D=1", {:class => "appeal"}
 			%li= link_to 'View revisit requests', "/admin/editsearch?title=revisit&q%5Bcouncilid_eq%5D=#{@council.id}&q%5Brevisit_requested_eq%5D=1", {:class => "revisit"}
+			%li= link_to 'View reports', "/admin/reports", {:class => "reports"}

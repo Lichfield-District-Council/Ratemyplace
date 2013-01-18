@@ -49,6 +49,7 @@ Ratemyplace::Application.routes.draw do
   match 'admin/newuser' => 'users#new', :as => :signup
   match 'admin/foursquarecleanup' => 'inspections#foursquarecleanup', :as => :foursquarecleanup
   match 'admin/profile' => 'users#edit', :as => :edit
+  match 'admin/reports' => 'inspections#reports', :as => :reports
   match 'logout' => 'sessions#destroy', :as => :logout
   match 'login' => 'sessions#new', :as => :login
   

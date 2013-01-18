@@ -153,6 +153,34 @@ task :fsaupload, [:council] => :environment do |t, args|
 	end
 end
 
+desc "Generate reports for users"
+task :reports => :environment do
+	users = User.all
+	users.each do |user|
+			
+		reports = {}
+		
+		#No Reports
+		reports['noreports'] = Inspection.where(:report_file_name => nil, :councilid => user.councilid).count
+		
+		#Reports not in PDF format
+		reports['pdf'] = Inspection.where('report_file_name not LIKE ? and councilid = ?', '%pdf%', user.councilid).count
+		
+		#No Annex 5 score
+		reports['annex5'] = Inspection.where(:annex5 => nil, :councilid => user.councilid).count
+		
+		#Possible duplicates
+		reports['duplicates'] = Inspection.find_by_sql("SELECT inspections.name, inspections.councilid, inspections.address1, inspections.address2, inspections.address3, inspections.address4, inspections.town, inspections.postcode, inspections.tel, inspections.email, inspections.website, inspections.operator, inspections.category, inspections.scope, inspections.hygiene, inspections.structure, inspections.confidence, inspections.rating, inspections.annex5, inspections.date, inspections.slug FROM inspections INNER JOIN (SELECT inspections.id, inspections.name, inspections.postcode, count(*) FROM inspections WHERE councilid = #{user.councilid} GROUP BY inspections.name, inspections.postcode HAVING count(*) > 1) dup ON inspections.name = dup.name WHERE councilid = #{user.councilid} ORDER by inspections.name ASC").count
+		
+		total = reports.values.inject(:+)
+		
+		if total > 0			
+			ReportMailer.report(user, reports).deliver
+		end
+		
+	end
+end
+
 desc "Import external inspections"
 task :import => :environment do
 	require 'httparty'

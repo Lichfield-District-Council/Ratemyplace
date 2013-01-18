@@ -1,0 +1,21 @@
+- pagetitle "Reports", false
+.row#fullwidth
+	.span12		
+		%h2 Reports
+		
+		%p This page allows you to view reports of things which may be wrong
+		
+		%h3 Show me inspections with:
+		
+		%a.btn.btn-primary.icon-search{:href => "/admin/editsearch?utf8=✓&q%5Breport_file_name_null%5D=1&q%5Bcouncilid_eq%5D=#{@council.id}"}
+			No reports
+
+		%a.btn.btn-primary.icon-search{:href => "/admin/editsearch?utf8=✓&q%5Breport_file_name_not_cont%5D=pdf&q%5Bcouncilid_eq%5D=#{@council.id}"}
+			Reports not in PDF format
+			
+		%a.btn.btn-primary.icon-search{:href => "/admin/editsearch?utf8=✓&q%5Bannex5_null%5D=1&q%5Bcouncilid_eq%5D=#{@council.id}"}
+			No Annex 5 Score
+
+		%a.btn.btn-primary.icon-search{:href => "/admin/editsearch?title=dupes&q%5Bcouncilid_eq%5D=#{@council.id}"}
+			Possible duplicates
+			

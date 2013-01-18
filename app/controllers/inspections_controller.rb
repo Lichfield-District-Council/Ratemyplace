@@ -1,7 +1,7 @@
 class InspectionsController < ApplicationController
 require "csv"
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar, :qr, :redirect]
+before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar, :qr, :redirect, :tags]
 
   # GET /inspections
   # GET /inspections.json
@@ -197,6 +197,8 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	  	
 	  	if params[:title] == "publication"
 	  		@inspections =  Inspection.search(params[:q]).result.where('DATEDIFF(NOW(), date) <= 27 AND published = 0 AND (appeal = 0 OR appeal IS NULL) AND scope != "Sensitive"').paginate(:page => params[:page], :per_page => 10).order("name ASC")
+	  	elsif params[:title] == "dupes"
+	  		@inspections =  Inspection.paginate_by_sql("SELECT inspections.name, inspections.councilid, inspections.address1, inspections.address2, inspections.address3, inspections.address4, inspections.town, inspections.postcode, inspections.tel, inspections.email, inspections.website, inspections.operator, inspections.category, inspections.scope, inspections.hygiene, inspections.structure, inspections.confidence, inspections.rating, inspections.annex5, inspections.date, inspections.slug FROM inspections INNER JOIN (SELECT inspections.id, inspections.name, inspections.postcode, count(*) FROM inspections WHERE councilid = #{params[:q][:councilid_eq]} GROUP BY inspections.name, inspections.postcode HAVING count(*) > 1) dup ON inspections.name = dup.name WHERE councilid = #{params[:q][:councilid_eq]} ORDER by inspections.name ASC", :page => params[:page], :per_page => 10)
 	  	else
 	  		@search = Inspection.search(params[:q])
 	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
@@ -208,7 +210,9 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	  		format.csv do
 	  			if params[:title] == "publication"
 	  				@inspections = Inspection.search(params[:q]).result.where('DATEDIFF(NOW(), date) <= 27 AND published = 0 AND appeal = 0 AND scope != "Sensitive"')
-	  			else
+			  	elsif params[:title] == "dupes"
+			  		@inspections =  Inspection.find_by_sql("SELECT inspections.name, inspections.councilid, inspections.address1, inspections.address2, inspections.address3, inspections.address4, inspections.town, inspections.postcode, inspections.tel, inspections.email, inspections.website, inspections.operator, inspections.category, inspections.scope, inspections.hygiene, inspections.structure, inspections.confidence, inspections.rating, inspections.annex5, inspections.date, inspections.slug FROM inspections INNER JOIN (SELECT inspections.id, inspections.name, inspections.postcode, count(*) FROM inspections WHERE councilid = #{params[:q][:councilid_eq]} GROUP BY inspections.name, inspections.postcode HAVING count(*) > 1) dup ON inspections.name = dup.name WHERE councilid = #{params[:q][:councilid_eq]} ORDER by inspections.name ASC")
+			  	else
 	  				@inspections = @search.result
 	  			end
 	  			csv_string = CSV.generate do |csv| 
@@ -245,6 +249,17 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		@councilid = current_user.councilid
 	  	@search = Inspection.search(params[:search])
 	end
+  end
+  
+  # GET /reports
+  def reports
+  	if session[:user_id]
+  		@user = current_user
+  		@council = Council.find(@user.councilid)
+  		@search = Inspection.search(params[:search])
+  	else
+ 		redirect_to :login 	
+  	end
   end
   
   def certificatesearch 

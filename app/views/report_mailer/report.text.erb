@@ -1,0 +1,52 @@
+Welcome to your weekly Ratemyplace report!
+==========================================
+
+This weekly email is designed to alert you to any problems with your council's Ratemyplace inspections. See below for more information:
+
+<% if @reports['noreports'] > 0 %>
+
+No Reports
+---
+
+<%= "Looks like #{@reports['noreports']} inspection(s) have no reports attached!" %>
+
+View and fix here:
+
+<%=raw "http://www.ratemyplace.org.uk/admin/editsearch?q%5Breport_file_name_null%5D=1&q%5Bcouncilid_eq%5D=#{@council.id}" %>
+	
+<% end %>
+<% if @reports['pdf'] > 0 %>
+
+Reports not in PDF format
+---
+
+<%= "Looks like #{@reports['pdf']} inspection(s) have no reports attached!" %>
+
+View and fix here:
+
+<%=raw "http://www.ratemyplace.org.uk/admin/editsearch?q%5Breport_file_name_not_cont%5D=pdf&q%5Bcouncilid_eq%5D=#{@council.id}" %>
+	
+<% end %>
+<% if @reports['annex5'] > 0 %>
+
+No Annex 5 Score
+---
+
+<%= "Looks like #{@reports['annex5']} inspection(s) have no Annex 5 score!" %>
+
+View and fix here:
+
+<%=raw "http://www.ratemyplace.org.uk/admin/editsearch?q%5Bannex5_null%5D=1&q%5Bcouncilid_eq%5D=#{@council.id}" %>
+	
+<% end %>
+<% if @reports['duplicates'] > 0 %>
+
+Possible duplicates
+---
+
+<%= "Looks like #{@reports['duplicates']} inspection(s) could be duplicates!" %>
+
+View and fix here:
+
+<%=raw "http://www.ratemyplace.org.uk/admin/editsearch?title=dupes&q%5Bcouncilid_eq%5D=#{@council.id}" %>
+<% end %>
