@@ -334,6 +334,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		taglist << tag.tag
 	}
 	@tags = taglist.join(",")
+	@findclass = 'hidden'
   end
 
   # POST /inspections
@@ -433,6 +434,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       	
         redirect_to @inspection, notice: 'Inspection was successfully updated.'
       else
+      	@findclass = 'hidden'
         render action: "edit"
       end
   end

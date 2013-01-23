@@ -52,27 +52,26 @@
 				= select :inspection, :scope, ["Included", "Included and Private", "Excluded", "Exempt", "Sensitive"],{:prompt => '--Please Select--'}
 				#scopeexplain
 					&nbsp;
-		- if @inspection.address1.length == 0
-			#findaddress.well
-				%h3 Find address
-				.control-group
-					%label{:for => "address"} Postcode
-					.controls
-						%input{:name => "postcode", :id => "postcode"}
-						%button{:id => "searchaddress", :class => "btn-primary"} Go!
-						= image_tag "ajax-loader2.gif", :alt => "", :class => "hidden", :id => "loading"
-				.control-group
-					%label
-						%strong
-							or
-				.control-group
-					%label{:for => "uprn"} UPRN
-					.controls
-						%input{:name => "uprn", :id => "uprn"}
-						%button{:id => "searchuprn", :class => "btn-primary"} Go!
-						= image_tag "ajax-loader2.gif", :alt => "", :class => "hidden", :id => "loading2"
-			#results.hidden.well
-				%h3 Select Address
+		#findaddress.well{:class => @findclass}
+			%h3 Find address
+			.control-group
+				%label{:for => "address"} Postcode
+				.controls
+					%input{:name => "postcode", :id => "postcode"}
+					%button{:id => "searchaddress", :class => "btn-primary"} Go!
+					= image_tag "ajax-loader2.gif", :alt => "", :class => "hidden", :id => "loading"
+			.control-group
+				%label
+					%strong
+						or
+			.control-group
+				%label{:for => "uprn"} UPRN
+				.controls
+					%input{:name => "uprn", :id => "uprn"}
+					%button{:id => "searchuprn", :class => "btn-primary"} Go!
+					= image_tag "ajax-loader2.gif", :alt => "", :class => "hidden", :id => "loading2"
+		#results.hidden.well
+			%h3 Select Address
 		#address{:class => @addressclass}
 			.control-group 
 				= f.label :address1
@@ -100,7 +99,11 @@
 					= f.text_field :postcode
 			= f.hidden_field :lat
 			= f.hidden_field :lng
-			= f.hidden_field :uprn			
+			= f.hidden_field :uprn		
+			
+			.control-group
+				.controls
+					= link_to("<i class='icon-map-marker icon-white'></i> Change address".html_safe, '#', {:id => 'changeaddress', :class => 'btn btn-primary btn-small'})	
 					
 		.control-group 
 			= f.label :hours, "Opening Times"

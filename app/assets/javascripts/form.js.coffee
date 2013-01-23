@@ -36,7 +36,7 @@ $(document).ready ->
  $("#searchaddress").bind 'click', ->
  	postcode = $("#postcode").val()
  	$('#loading').removeClass('hidden')
- 	$.getJSON '../address/postcode/' + postcode, (data) ->
+ 	$.getJSON '/address/postcode/' + postcode, (data) ->
  	  items = []
  	  items.push('<option>---Please Select---</option>')
  	  $.each data, (key, item) ->
@@ -50,7 +50,7 @@ $(document).ready ->
 	 	  	html: items.join('')
 	 	  	change: ->
 	 	  		uprn = $(this).val()
-	 	  		$.getJSON '../address/uprn/' + uprn, (data) ->
+	 	  		$.getJSON '/address/uprn/' + uprn, (data) ->
 	 	  			$('#address').removeClass('hidden')
 	 	  			$('#inspection_address1').val(data.address1)
 	 	  			if (data.address2 != "Null")
@@ -91,6 +91,11 @@ $(document).ready ->
     	alert("UPRN not found. Please try again.")
     	$('#loading2').addClass('hidden')	
   return false
+  
+ $('#changeaddress').bind 'click', ->
+   $('#findaddress').removeClass('hidden')
+   $('#address').addClass('hidden')
+   return false
 
  $('#appeals').bind 'click', ->
  	$('#appealdate').removeClass('hidden')
