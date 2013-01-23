@@ -25,6 +25,13 @@ $(document).ready ->
  $(".form-horizontal").bind 'submit', ->
     $('#inspection_hours').val($('#inspection_hours_editor').html())
 
+ $('.removefile').bind 'click', ->
+  path = window.location.pathname.split('/')
+  type = this.id
+  $.getJSON "/admin/deleteattachment/#{path[2]}/#{type}", (data) ->
+    if data.success == "true"
+      $("#inspection_#{type}_filename").addClass('hidden')
+  return false
 
  $("#searchaddress").bind 'click', ->
  	postcode = $("#postcode").val()

@@ -6,6 +6,7 @@ class Inspection < ActiveRecord::Base
 	has_many :tags
 	has_attached_file :image, :styles => { :medium => "300x300>", :thumb => "100x100>" }
 	has_attached_file :report
+	
 	has_attached_file :menu
 	acts_as_mappable
 	
@@ -14,6 +15,9 @@ class Inspection < ActiveRecord::Base
 	
 	validates :date,
 			  :date => {:before => Proc.new { Time.now + 1.day }, :message => 'must be in the past'}
+			  
+	validates_attachment_content_type :report, :content_type => ["application/pdf"], :message => "must be PDF format"
+	validates_attachment_content_type :image, :content_type => ["image/jpeg", "image/png", "image/gif"], :message => "must be jpeg, png or gif format"
 			
   	extend FriendlyId
   	friendly_id :name_and_town, use: :slugged
@@ -220,5 +224,5 @@ class Inspection < ActiveRecord::Base
   		system "PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs lib/acceptrejectappeal.js #{FSA_CONFIG[:url]} #{"%03d" % council.fsaid} #{council.username} #{council.password} #{self.id} \"#{date}\" reject"
   		#todo - upload the latest fsa xml file - might be best to schedule this???
   	end
-
+  	
 end

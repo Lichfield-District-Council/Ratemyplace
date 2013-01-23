@@ -176,6 +176,7 @@
 				- if !@inspection.image_file_name.nil?
 					%span.filename#inspection_image_filename
 						= @inspection.image_file_name
+					= link_to("<i class='icon-trash icon-white'></i> Remove image".html_safe, '#', {:id => 'image', :class => 'btn btn-danger btn-small removefile'})
 		.control-group 
 			= f.label :report
 			.controls
@@ -183,6 +184,7 @@
 				- if !@inspection.report_file_name.nil?
 					%span.filename#inspection_report_filename
 						= @inspection.report_file_name
+					= link_to("<i class='icon-trash icon-white'></i> Remove report".html_safe, '#', {:id => 'report', :class => 'btn btn-danger btn-small removefile'})
 		.control-group 
 			= f.label :menu
 			.controls
@@ -190,6 +192,7 @@
 				- if !@inspection.menu_file_name.nil?
 					%span.filename#inspection_menu_filename
 						= @inspection.menu_file_name
+					= link_to("<i class='icon-trash icon-white'></i> Remove menu".html_safe, '#', {:id => 'menu', :class => 'btn btn-danger btn-small removefile'})
 		.control-group 
 			= f.label :tradingstandards, 'Trading Standards Compliance'
 			.controls

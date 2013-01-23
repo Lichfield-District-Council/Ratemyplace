@@ -471,6 +471,21 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	end
   	redirect_to :matchaddress, notice: "Premises updated! Now, what's next?"
   end
+  
+  def deleteattachment
+  	inspection = Inspection.find(params[:id])
+  	if params[:type] == "image"
+  	  inspection.image = nil
+  	  @update = true
+  	elsif params[:type] == "report"
+  	  inspection.report = nil  
+  	  @update = true
+  	elsif params[:type] == "menu"
+  	  inspection.menu = nil  
+  	  @update = true
+  	end
+  	inspection.save
+  end
 
   # DELETE /inspections/1
   # DELETE /inspections/1.json

@@ -44,6 +44,7 @@ Ratemyplace::Application.routes.draw do
   match 'admin/matchaddress' => 'inspections#matchaddress', :as => :matchaddress
   match 'admin/updateaddress' => 'inspections#updateaddress', :via => [:put], :as => :updateaddress
   match 'admin/edit/:id' => 'inspections#edit', :as => :edit
+  match 'admin/deleteattachment/:id/:type' => 'inspections#deleteattachment', :as => :deleteattachment, :defaults=>{:format=>'json'}
   match 'admin/certificate/:id' => 'inspections#certificate', :as => :certificate
   match 'admin/profile' => 'users#edit', :as => :edit_current_user
   match 'admin/newuser' => 'users#new', :as => :signup

@@ -1,0 +1,5 @@
+if @update === true
+	success 'true'
+else
+	success 'false'
+end
