@@ -225,7 +225,7 @@
 				
 				You can [see the original inspection report here](http://ratings.food.gov.uk/business/en-GB/#{@inspection.internalid})
 			
-		- unless @inspection.hygiene == 99 || @inspection.reply.length > 0
+		- unless @inspection.hygiene == 99 || @inspection.reply != nil
 			%h3 Owner of this business?
 			
 			:markdown
@@ -235,7 +235,7 @@
 			
 			// = disqus_thread.html_safe
 		
-		- if @inspection.reply.length > 0
+		- if !@inspection.reply != nil
 			%h3 Response from the business
 			
 			%blockquote
