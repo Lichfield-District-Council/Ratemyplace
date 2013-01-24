@@ -195,7 +195,11 @@
 				- if !@inspection.menu_file_name.nil?
 					%span.filename#inspection_menu_filename
 						= @inspection.menu_file_name
-					= link_to("<i class='icon-trash icon-white'></i> Remove menu".html_safe, '#', {:id => 'menu', :class => 'btn btn-danger btn-small removefile'})
+					= link_to("<i class='icon-trash icon-white'></i> Remove menu".html_safe, '#', {:id => 'menu', :class => 'btn btn-danger btn-small removefile'})			
+		.control-group 
+			= f.label :reply, "Right to reply"
+			.controls
+				= f.text_area :reply, :rows => 10, :cols => 30
 		.control-group 
 			= f.label :tradingstandards, 'Trading Standards Compliance'
 			.controls

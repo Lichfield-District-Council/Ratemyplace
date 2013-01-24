@@ -225,8 +225,7 @@
 				
 				You can [see the original inspection report here](http://ratings.food.gov.uk/business/en-GB/#{@inspection.internalid})
 			
-		
-		- unless @inspection.hygiene == 99
+		- unless @inspection.hygiene == 99 || @inspection.reply.length > 0
 			%h3 Owner of this business?
 			
 			:markdown
@@ -235,6 +234,12 @@
 				You can find out [how to appeal against the rating given and find out about your right to reply](/appeals?council=#{@council.id}).
 			
 			// = disqus_thread.html_safe
+		
+		- if @inspection.reply.length > 0
+			%h3 Response from the business
+			
+			%blockquote
+				= simple_format(@inspection.reply)
 			
 				
 	.span4#rightcol

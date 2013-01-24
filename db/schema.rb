@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120906114414) do
+ActiveRecord::Schema.define(:version => 20130124110631) do
 
   create_table "addresses", :force => true do |t|
     t.text     "uprn",             :limit => 255
@@ -118,6 +118,7 @@ ActiveRecord::Schema.define(:version => 20120906114414) do
     t.string   "foursquare_tip_id"
     t.integer  "annex5"
     t.string   "foursquare_name"
+    t.text     "reply"
   end
 
   add_index "inspections", ["id"], :name => "index_inspections_on_id"
