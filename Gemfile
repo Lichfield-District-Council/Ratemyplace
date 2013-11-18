@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+#ruby=ruby-1.9.3
+#ruby-gemset=ratemyplace
+
 gem 'rails', '3.2.11'
 
 # Bundle edge Rails instead:
@@ -58,7 +61,8 @@ gem 'bcrypt-ruby', :require => 'bcrypt'
 # gem 'unicorn'
 
 # Deploy with Capistrano
-# gem 'capistrano'
+gem 'capistrano', '2.13.5'
+gem 'brightbox'
 
 # To use debugger
 # gem 'ruby-debug19', :require => 'ruby-debug'
