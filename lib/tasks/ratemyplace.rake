@@ -202,51 +202,53 @@ task :import => :environment do
 		inspections.each do |i|
 			if i["RatingValue"] != "Exempt" 
 				inspection = Inspection.find_or_create_by_internalid(i["FHRSID"])
-				if i["RatingDate"].to_date != inspection.date
-					if inspection.lat == nil
-						begin
-							postcode = Pat.get(i["PostCode"])
-							lat = postcode["geo"]["lat"]
-							lng = postcode["geo"]["lng"]
-						rescue
-							lat = 0
-							lng = 0
-						end
-					else
-						lat = inspection.lat
-						lng = inspection.lng
-					end
+				unless i["RatingDate"].nil?
+  				if i["RatingDate"].to_date != inspection.date
+  					if inspection.lat == nil
+  						begin
+  							postcode = Pat.get(i["PostCode"])
+  							lat = postcode["geo"]["lat"]
+  							lng = postcode["geo"]["lng"]
+  						rescue
+  							lat = 0
+  							lng = 0
+  						end
+  					else
+  						lat = inspection.lat
+  						lng = inspection.lng
+  					end
 					
-					address = [i["AddressLine1"], i["AddressLine2"], i["AddressLine3"], i["AddressLine4"]].compact.reject { |s| s.empty? || s == "Staffordshire" }
+  					address = [i["AddressLine1"], i["AddressLine2"], i["AddressLine3"], i["AddressLine4"]].compact.reject { |s| s.empty? || s == "Staffordshire" }
 					
-					if address.length == 4
-						town = address[3]
-						address[3] = nil
-					elsif address.length == 3
-						town = address[2]
-						address[2] = nil
-					elsif
-						town = address[1]
-						address[1] = nil
-					else
-						town = address[0]
-					end
+  					if address.length == 4
+  						town = address[3]
+  						address[3] = nil
+  					elsif address.length == 3
+  						town = address[2]
+  						address[2] = nil
+  					elsif
+  						town = address[1]
+  						address[1] = nil
+  					else
+  						town = address[0]
+  					end
 					
-					if i["PostCode"].blank?
-						i["PostCode"] = "x"
-					end
+  					if i["PostCode"].blank?
+  						i["PostCode"] = "x"
+  					end
 					
-					inspection.update_attributes(:name => i["BusinessName"].titleize, :address1 => address[0], :address2 => address[1], :address3 => address[2], :town => town, :postcode => i["PostCode"], :uprn => "x", :category => i["BusinessType"], :scope => "included", :hygiene => 99, :structure => 99, :confidence => 99, :rating => i["RatingValue"], :date => i["RatingDate"], :councilid => i["LocalAuthorityCode"], :lat => lat, :lng => lng, :published =>  1, :hours => "", :tel => "", :email => "", :website => "")
-					inspection.save
-					inspection.tweet
-					count += 1
+  					inspection.update_attributes(:name => i["BusinessName"].titleize, :address1 => address[0], :address2 => address[1], :address3 => address[2], :town => town, :postcode => i["PostCode"], :uprn => "x", :category => i["BusinessType"], :scope => "included", :hygiene => 99, :structure => 99, :confidence => 99, :rating => i["RatingValue"], :date => i["RatingDate"], :councilid => i["LocalAuthorityCode"], :lat => lat, :lng => lng, :published =>  1, :hours => "", :tel => "", :email => "", :website => "")
+  					inspection.save
+  					inspection.tweet
+  					count += 1
 					
-					if inspection.errors.any?
-						inspection.errors.full_messages.each do |msg|
-							puts msg
-						end
-					end
-				end
+  					if inspection.errors.any?
+  						inspection.errors.full_messages.each do |msg|
+  							puts msg
+  						end
+  					end
+  				end
+			  end
 			end
 		end
 		
