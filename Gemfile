@@ -68,3 +68,6 @@ gem 'brightbox'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 gem "mocha", :group => :test
+
+# Pin rake version
+gem 'rake', '10.0.3'

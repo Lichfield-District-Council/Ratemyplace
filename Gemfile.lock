@@ -173,7 +173,7 @@ GEM
       rake (>= 0.8.7)
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
-    rake (10.1.0)
+    rake (10.0.3)
     ransack (0.6.0)
       actionpack (~> 3.0)
       activerecord (~> 3.0)
@@ -255,6 +255,7 @@ DEPENDENCIES
   paperclip (~> 2.0)
   pat
   rails (= 3.2.11)
+  rake (= 10.0.3)
   ransack
   rqrcode-rails3
   sass-rails (~> 3.2.3)
