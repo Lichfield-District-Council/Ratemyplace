@@ -7,7 +7,7 @@ txt += '<p style="text-align: center; margin: 10px 0 10px 0; padding-top: 80px;"
 txt += <%= "'<img alt=\"\" src=\"#{request.protocol + request.host_with_port}/assets/fhrsweb#{@inspection.rating}.jpg\" />'".html_safe %>
 txt += '</p>'
 txt += '<p style="text-align: center; margin: 0; padding: 0; font-size: 11px; line-height: 1em;"><%= escape_javascript(@inspection.name) %></p>'
-txt += '<p style="text-align: center; margin: 0; padding: 0; font-size: 11px; line-height: 1em;"><%= escape_javascript(@inspection.address1) %>,<%= escape_javascript(@inspection.town) %></p>'
+txt += '<p style="text-align: center; margin: 0; padding: 0; font-size: 11px; line-height: 1em;"><%= escape_javascript(single_address(@inspection)) %></p>'
 txt += '</h3>'
 txt += '</div>';
 
