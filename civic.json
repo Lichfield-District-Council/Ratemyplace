@@ -5,29 +5,29 @@
   "politicalEntity":"",
   "type":"Web App",
   "categories": [
-          {"category": "Food Safety"},
-  ]
+          {"category": "Food Safety"}
+  ],
   "owner": {
       "name": "Lichfield District Council",
-      "type": "Local council"
+      "type": "Local council",
       "@id": "http://gov.uk/councils/lichfield-district-council"
-  }
+  },
   "deployments": [
       {
           "name": "Ratemyplace",
           "@id": "http://www.ratemyplace.org.uk"
       }
-  ]
-  "serviceCategories" [
+  ],
+  "serviceCategories": [
       {
           "name": "Food Safety",
-          "@id": "http://id.esd.org.uk/az/F28157",
-      },
-  ]
-  "technologies" [
+          "@id": "http://id.esd.org.uk/az/F28157"
+      }
+  ],
+  "technologies": [
       {
           "name": "Ruby on Rails",
-          "@id": "http://rubyonrails.org",
-      },
+          "@id": "http://rubyonrails.org"
+      }
   ]
 }
