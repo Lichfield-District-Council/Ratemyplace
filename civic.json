@@ -1,0 +1,33 @@
+{
+  "status": "Production",
+  "thumbnailUrl": "https://dl.dropboxusercontent.com/u/135665/Ratemyplace%20%20%20Food%20Safety%20Star%20Rating%20Scheme%20for%20Staffordshire.png",
+  "geography": "Staffordshire",
+  "politicalEntity":"",
+  "type":"Web App",
+  "categories": [
+          {"category": "Food Safety"},
+  ]
+  "owner": {
+      "name": "Lichfield District Council",
+      "type": "Local council"
+      "@id": "http://gov.uk/councils/lichfield-district-council"
+  }
+  "deployments": [
+      {
+          "name": "Ratemyplace",
+          "@id": "http://www.ratemyplace.org.uk"
+      }
+  ]
+  "serviceCategories" [
+      {
+          "name": "Food Safety",
+          "@id": "http://id.esd.org.uk/az/F28157",
+      },
+  ]
+  "technologies" [
+      {
+          "name": "Ruby on Rails",
+          "@id": "http://rubyonrails.org",
+      },
+  ]
+}
