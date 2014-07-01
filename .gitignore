@@ -14,8 +14,6 @@ config/deploy.rb
 
 lib/tasks/bbgem.rake
 
-lib/urlshortener.rb
-
 config/bufferapp.yml
 
 brightbox-key

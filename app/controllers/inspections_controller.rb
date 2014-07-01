@@ -31,7 +31,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
     @inspection = Inspection.find(params[:id])
     @council = Council.find(@inspection.councilid)
     @tags = @inspection.tags
-    
+
     if @inspection.published == false && !session[:user_id]
     	redirect_to root_url
     else
@@ -40,41 +40,33 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	      format.json
 	      format.xml
 	      format.js
-	      format.png { 
-	      	if params[:type] == "cert"
-	      		utm_campaign = "certificate"
-	      	else
-	      		utm_campaign = "usergenerated"
-	      	end
-	      	render Inspection.qrcode("http://www.ratemyplace.org.uk/inspections/#{@inspection.slug}?utm_source=qrcode&utm_medium=qrcode&utm_campaign=#{utm_campaign}") 
-	      	}
+	      format.png do
+	      	params[:type] == "cert" ? utm_campaign = "certificate" : utm_campaign = "usergenerated"
+	      	render @inspection.qrcode(utm_campaign)
+	      end
 	    end
 	end
   end
-  
+
   def qr
   	@inspection = Inspection.find(params[:id])
   	respond_to do |format|
-  		format.png {
-	      	if params[:type] == "cert"
-	      		utm_campaign = "certificate"
-	      	else
-	      		utm_campaign = "usergenerated"
-	      	end
-			render Inspection.qrcode("http://www.ratemyplace.org.uk/inspections/#{@inspection.slug}?utm_source=qrcode&utm_medium=qrcode&utm_campaign=#{utm_campaign}") 
-  		}
+  		format.png do
+        params[:type] == "cert" ? utm_campaign = "certificate" : utm_campaign = "usergenerated"
+        render @inspection.qrcode(utm_campaign)
+      end
   	end
   end
-  
+
   def redirect
   	@inspection = Inspection.find(params[:id])
-  	
+
   	respond_to do |format|
   		format.html { redirect_to inspection_url(@inspection), :status=>:moved_permanently }
   		format.js { redirect_to inspection_url(@inspection, :format => 'js'), :status=>:moved_permanently }
   	end
   end
-  
+
   # GET /inspections/search
   def search
 	if params[:q]
@@ -83,32 +75,32 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		end
 		@title = "Search results"
 	  	@search = Inspection.search(params[:q])
-	  	if params[:nearest] == "1" 
+	  	if params[:nearest] == "1"
 	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).within(5, :origin => [params[:lat], params[:lng]]).order("distance ASC")
 	  	else
 	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
 	  	end
-	else 
+	else
 	  	@search = Inspection.search(params[:search])
 	  	@inspections = Inspection.where(:published => 1).order("date DESC").limit(3)
 	end
   end
-  
+
   def tags
   	@title = "Businesses tagged '#{params[:tag]}'"
   	@inspections = Inspection.joins(:tags).where(:tags => {:tag => params[:tag]}).paginate(:page => params[:page], :per_page => 10).order("name ASC")
 
   end
-  
+
   def searchapi
-  
+
   	if params[:q]
   		params[:q][:published_eq] = 1
   		query = params[:q]
   	else
   		query = {"name_cont" => params[:name], "category_eq" => params[:category], "councilid_eq" => params[:council], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1}
   	end
-    
+
   	@search = Inspection.search(query)
   	if params[:distance]
   		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
@@ -116,10 +108,10 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10)
   	end
   end
-  
+
   def api
   	if params[:method] == "search"
-  		
+
   		if params[:top] == "true"
   			@inspections = Inspection.where(:published => 1).order("date DESC").limit(10)
   		else
@@ -135,13 +127,13 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	  		render "oldsearchapi.json_builder"
 	  	else
 	  		render "oldsearchapi.xml.builder"
-	  	end  		
+	  	end
   	end
-  	
+
   	if params[:method] == "view"
   		@inspection = Inspection.find(params[:id])
   		@council = Council.find(@inspection.councilid)
-  		
+
   		 if params[:format] == "json"
   			render "oldviewapi.json_builder"
   		else
@@ -149,13 +141,13 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   		end
   	end
   end
-  
+
   def layar
   	  distance = params[:radius].to_i / 1609.344
 	  @inspections = Inspection.search({"published_eq" => 1}).result.within(distance, :origin => [params[:lat], params[:lon]]).order("distance ASC")
 	  render "layar.json_builder"
   end
-  
+
   def atoz
   	if params[:council]
   		@council = Council.find(params[:council])
@@ -164,14 +156,14 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   		@councils = Council.all
   	end
   end
-  
+
   def fsa
   	@council = Council.find(params[:council])
   	@inspections = Inspection.where(:councilid => @council.id)
-  	stream = render_to_string(:template=>"inspections/fsa.builder" ) 
-  	send_data(stream, :type => "text/xml", :filename => "#{@council.slug}.xml",:dispostion=>'inline',:status=>'200 OK') 
+  	stream = render_to_string(:template=>"inspections/fsa.builder" )
+  	send_data(stream, :type => "text/xml", :filename => "#{@council.slug}.xml",:dispostion=>'inline',:status=>'200 OK')
   end
-  
+
   def locate
   	if params[:lat]
 	  	inspection = Inspection.within(1, :origin => [params[:lat], params[:lng]]).order('distance asc').first
@@ -184,17 +176,17 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	  	end
 	 end
   end
-  
+
   # GET /admin
-  
+
   def admin
   	@user = current_user
   	@council = Council.find(@user.councilid)
   end
-  
-  def editsearch 
+
+  def editsearch
 	if params[:q]
-	  	
+
 	  	if params[:title] == "publication"
 	  		@inspections =  Inspection.search(params[:q]).result.where('DATEDIFF(NOW(), date) <= 27 AND published = 0 AND (appeal = 0 OR appeal IS NULL) AND scope != "Sensitive"').paginate(:page => params[:page], :per_page => 10).order("name ASC")
 	  	elsif params[:title] == "dupes"
@@ -203,8 +195,8 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	  		@search = Inspection.search(params[:q])
 	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
 	  	end
-	  	
-	  	
+
+
 	  	respond_to do |format|
 	  		format.html
 	  		format.csv do
@@ -215,7 +207,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 			  	else
 	  				@inspections = @search.result
 	  			end
-	  			csv_string = CSV.generate do |csv| 
+	  			csv_string = CSV.generate do |csv|
 				csv << ["Name", "Address1", "Address2", "Address3", "Town", "Postcode", "Tel", "Email", "Website", "Operator", "Category", "Scope", "Hygiene", "Structure", "Confidence", "Rating", "Annex 5 overall rating", "Inspection Date", "Link"]
 					@inspections.each do |inspection|
 						csv << [inspection.name,
@@ -239,10 +231,10 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 								  "http://www.ratemyplace.org.uk/inspections/#{inspection.slug}" ]
 					end
 				end
-	
+
 				send_data csv_string,
-					:type => 'text/csv; charset=iso-8859-1; header=present', 
-			        :disposition => "attachment; filename=inspections.csv" 
+					:type => 'text/csv; charset=iso-8859-1; header=present',
+			        :disposition => "attachment; filename=inspections.csv"
 	  		end
 	  	end
 	else
@@ -250,7 +242,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	  	@search = Inspection.search(params[:search])
 	end
   end
-  
+
   # GET /reports
   def reports
   	if session[:user_id]
@@ -258,21 +250,21 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   		@council = Council.find(@user.councilid)
   		@search = Inspection.search(params[:search])
   	else
- 		redirect_to :login 	
+ 		redirect_to :login
   	end
   end
-  
-  def certificatesearch 
+
+  def certificatesearch
 	if params[:q]
 	  	@search = Inspection.search(params[:q])
 	  	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
-	else 
+	else
 	  	@search = Inspection.search(params[:search])
 	end
 	render "editsearch"
   end
-  
-  def foursquarecleanup 
+
+  def foursquarecleanup
   	if params[:id]
   		inspection = Inspection.find(params[:id])
   		if params[:approve] == "1"
@@ -287,12 +279,14 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	@search = Inspection.search(:foursquare_id_cont => "?")
 	@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).order("name ASC")
   end
-  
+
   def certificate
   	@inspection = Inspection.find(params[:id])
   	@council = Council.find(@inspection.councilid)
-  	system("curl http://www.ratemyplace.org.uk/inspections/qr/#{@inspection.slug}.png?type=cert -o /tmp/#{@inspection.slug}.png")
-  	@qrcode = "/tmp/#{@inspection.slug}.png"	
+    t = Tempfile.new(@inspection.slug)
+    t << open(inspection_url(@inspection, format: "png", type: "cert", host: request.host_with_port)).read
+    t.close
+  	@qrcode = t.path
   	respond_to do |format|
   		format.pdf do
 	  		render :pdf => @inspection.slug,
@@ -314,7 +308,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	    @addressclass = "hidden"
 	    user = current_user
   		@inspection.councilid = user.councilid
-	    	
+
 	    respond_to do |format|
 	      format.html # new.html.erb
 	      format.json { render json: @inspection }
@@ -339,24 +333,24 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 
   # POST /inspections
   # POST /inspections.json
-  def create 
-  	
+  def create
+
   	params[:inspection][:name] = params[:inspection][:name].titleize
-  	
+
   	if params[:inspection][:scope] == "Included and private"
 	  	params[:inspection][:lat] = 0
 	  	params[:inspection][:lng] = 0
 	end
-  	
+
 	@inspection = Inspection.new(params[:inspection])
-	
+
 	if @inspection.rating
 		if @inspection.rating < 5
 			@inspection.published = 0
 		else
 			@inspection.published = 1 unless @inspection.scope == "Sensitive"
 		end
-		
+
 		if @inspection.rating == -1
 			@inspection.hygiene = 99
 			@inspection.structure = 99
@@ -365,14 +359,14 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 	end
 
 	if @inspection.save
-	
+
 		@inspection.buildtags(params[:tags])
-	
+
 		if @inspection.rating == 5
 			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
 			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
 		end
-		
+
 		redirect_to @inspection, notice: 'Inspection was successfully created.'
 	else
 		if @inspection.address1.length == 0
@@ -386,22 +380,22 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   # PUT /inspections/1.json
   def update
 	@inspection = Inspection.find(params[:id])
-	  
+
 	  params[:inspection][:name] = params[:inspection][:name].titleize
-	  
+
 	  if params[:inspection][:scope] == "Included and private"
 	  	params[:inspection][:lat] = 0
 	  	params[:inspection][:lng] = 0
 	  end
-	
+
       if @inspection.update_attributes(params[:inspection])
-      	      
+
 	    # Destroy old tags (to make sure all tags we're adding are fresh!)
     	Tag.destroy_all(:inspection_id => @inspection.id)
     	@inspection.buildtags(params[:tags])
-      	
+
       	newdate = Date::civil(params[:inspection]["date(1i)"].to_i, params[:inspection]["date(2i)"].to_i, params[:inspection]["date(3i)"].to_i)
-      	      	
+
       	if newdate.to_s != params[:olddate].to_s
       		if @inspection.rating < 5 && @inspection.rating >= 0
       			@inspection.published = 0
@@ -419,11 +413,11 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
       		@inspection.published = 1
       		@inspection.save
       	end
-      	
+
       	if params[:inspection][:appeal] == "1"
       		@inspection.lodgeappeal(Date::civil(params[:inspection]["appealdate(1i)"].to_i, params[:inspection]["appealdate(2i)"].to_i, params[:inspection]["appealdate(3i)"].to_i))
       	end
-      	
+
       	if params[:inspection][:appeal] == "0"
       		@inspection.acceptappeal
   			@inspection.published = 1 unless @inspection.scope == "Sensitive"
@@ -431,14 +425,14 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
   			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
       	end
-      	
+
         redirect_to @inspection, notice: 'Inspection was successfully updated.'
       else
       	@findclass = 'hidden'
         render action: "edit"
       end
   end
-  
+
   # GET /inspections/1/rejectappeal
   def rejectappeal
   	@inspection = Inspection.find(params[:id])
@@ -459,7 +453,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
 		@addresses = Address.where("postcode = ? OR (fulladdress LIKE ? AND town = ?)", @inspection[0].postcode, "%#{@inspection[0].address1}%", @inspection[0].town)
 	end
   end
-  
+
   def updateaddress
   	inspection = Inspection.find(params[:inspection][:id])
   	if params[:inspection][:uprn] == "x"
@@ -473,17 +467,17 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
   	end
   	redirect_to :matchaddress, notice: "Premises updated! Now, what's next?"
   end
-  
+
   def deleteattachment
   	inspection = Inspection.find(params[:id])
   	if params[:type] == "image"
   	  inspection.image = nil
   	  @update = true
   	elsif params[:type] == "report"
-  	  inspection.report = nil  
+  	  inspection.report = nil
   	  @update = true
   	elsif params[:type] == "menu"
-  	  inspection.menu = nil  
+  	  inspection.menu = nil
   	  @update = true
   	end
   	inspection.save
