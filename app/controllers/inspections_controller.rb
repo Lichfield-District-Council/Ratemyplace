@@ -1,7 +1,7 @@
 class InspectionsController < ApplicationController
 require "csv"
 
-before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar, :qr, :redirect, :tags]
+  before_filter :login_required, :except => [:index, :show, :search, :searchapi, :atoz, :fsa, :certificate, :locate, :nearest, :api, :layar, :qr, :redirect, :tags]
 
   # GET /inspections
   # GET /inspections.json
@@ -32,7 +32,7 @@ before_filter :login_required, :except => [:index, :show, :search, :searchapi, :
     @council = Council.find(@inspection.councilid)
     @tags = @inspection.tags
 
-    if @inspection.published == false && !session[:user_id]
+    if @inspection.published == false && !session[:user_id] && params[:format] != "png"
     	redirect_to root_url
     else
 	    respond_to do |format|
