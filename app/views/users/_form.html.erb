@@ -2,39 +2,39 @@
   <%= f.error_messages %>
   <fieldset>
   <div class="control-group">
-    <%= f.label :username %>
+    <%= f.label :username, :class => "control-label" %>
     <div class="controls">
     <%= f.text_field :username %>
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :email, "Email Address" %>
+    <%= f.label :email, "Email Address", :class => "control-label" %>
     <div class="controls">
 	    <%= f.text_field :email %>
     </div>
   </div>
   <div class="control-group">
-  	<%= f.label :councilid, "Council" %>
+  	<%= f.label :councilid, "Council", :class => "control-label" %>
   	<div class="controls">
   		<%= collection_select(:user, :councilid, Council.all, :id, :name, {:prompt => '--Please Select--'}) %>
   	</div>
   </div>
   <% if current_user.role == 3 %>
 	  <div class="control-group">
-	  	<%= f.label :role, "Role" %>
+	  	<%= f.label :role, "Role", :class => "control-label" %>
 	  	<div class="controls">
 	  		<%= f.select :role, {"User" => 1, "Admin" => 2, "Superadmin" => 3}, {:prompt => '--Please Select--'} %>
 	  	</div>
 	  </div>
   <% end %>
   <div class="control-group">
-    <%= f.label :password %>
+    <%= f.label :password, :class => "control-label" %>
     <div class="controls">
     	<%= f.password_field :password %>
     </div>
   </div>
   <div class="control-group">
-    <%= f.label :password_confirmation, "Confirm Password" %>
+    <%= f.label :password_confirmation, "Confirm Password", :class => "control-label" %>
     <div class="controls">
     	<%= f.password_field :password_confirmation %>
     </div>

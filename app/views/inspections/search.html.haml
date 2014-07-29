@@ -11,32 +11,32 @@
 			%h2 Advanced Search
 			= search_form_for @search, :url => search_inspections_path,  :html => { :class => "form-horizontal well" } do |f|
 				%fieldset
-					.control-group 
-						= f.label :name_cont, "Business name:", :for => "name"
+					.control-group
+						= f.label :name_cont, "Business name:", :for => "name", :class => "control-label"
 						.controls
 							= f.text_field :name_cont, :id => "name"
-					.control-group 
-						= f.label :category_eq, "Business type:" 
+					.control-group
+						= f.label :category_eq, "Business type:", :class => "control-label"
 						.controls
 							= f.select :category_eq, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit"], {:prompt => '--Please Select--'}
-					.control-group 
-						=f.label :councilid_eq, "Local Authority:"
+					.control-group
+						=f.label :councilid_eq, "Local Authority:", :class => "control-label"
 						.controls
 							=f.select(:councilid_eq, Council.all.collect {|p| [ p.name, p.id ] }, {:prompt => '--Please Select--'})
-					.control-group 
-						=f.label :address1_cont, "Address:"
+					.control-group
+						=f.label :address1_cont, "Address:", :class => "control-label"
 						.controls
 							= f.text_field :address1_cont
-					.control-group 
-						=f.label :town_eq, "Town / Village:"
+					.control-group
+						=f.label :town_eq, "Town / Village:", :class => "control-label"
 						.controls
 							= f.text_field :town_cont
-					.control-group 
-						=f.label :postcode_eq, "Postcode:"
+					.control-group
+						=f.label :postcode_eq, "Postcode:", :class => "control-label"
 						.controls
 							= f.text_field :postcode_eq
-					.control-group 
-						= f.label :rating_eq, "Rating:"
+					.control-group
+						= f.label :rating_eq, "Rating:", :class => "control-label"
 						.controls
 							= f.select :rating_eq, {"5" => 5, "4" => 4, "3" => 3, "2" => 2, "1" => 1, "0" => 0}, {:prompt => '--Please Select--'}
 						= hidden_field_tag :lat, :id => 'lat'

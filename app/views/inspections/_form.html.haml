@@ -7,16 +7,16 @@
 	=javascript_include_tag "form.js"
 	=stylesheet_link_tag "select2.css"
 	='<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" >'.html_safe
-			
+
 =form_for(@inspection, :html => {:class => 'form-horizontal'}) do |f|
 	- if @inspection.errors.any?
 		.alert.alert-error
 			%h4.alert-heading= pluralize(@inspection.errors.count, "error") + " prevented this inspection from being saved:"
-			
+
 			%ul
 				- @inspection.errors.full_messages.each do |msg|
 					%li= msg
-	
+
 	%fieldset
 		- if params[:action] == "edit" && @inspection.appeal == true
 			.alert.alert-error#appealnote
@@ -29,25 +29,25 @@
 					= link_to '<i class="icon-white icon-remove"></i> Reject appeal'.html_safe, {:controller => 'inspections', :action => 'rejectappeal', :id => @inspection}, {confirm: 'Are you sure you reject this appeal and publish this inspection on the website?', :class => 'btn btn-danger delete'}
 
 			= f.hidden_field :appeal, :value => 1, :id => 'appeal'
-				
-		.control-group 
-			= f.label :name
+
+		.control-group
+			= f.label :name, :class => "control-label"
 			.controls
 				= f.text_field :name, :class => 'span6', :autocomplete => 'off'
-		.control-group 
-			= f.label :operator
+		.control-group
+			= f.label :operator, :class => "control-label"
 			.controls
 				= f.text_field :operator
-		.control-group 
-			= f.label :council
+		.control-group
+			= f.label :council, :class => "control-label"
 			.controls
 				= collection_select(:inspection, :councilid, Council.all, :id, :name, {:prompt => '--Please Select--'})
-		.control-group 
-			= f.label :category
+		.control-group
+			= f.label :category, :class => "control-label"
 			.controls
 				= select :inspection, :category, ["Primary Producers", "Manufacturers and Packers", "Importers/Exporters", "Distributors/Transporters", "Supermarket/Hypermarket", "Small retailer", "Retailer - other", "Restaurant/Cafe/Canteen", "Hotel/Guest house", "Pub/Club", "Take-away", "Caring premises", "School/College", "Mobile food unit", "Restaurants and Caterers - Other"], {:prompt => '--Please Select--'}
-		.control-group 
-			= f.label :scope
+		.control-group
+			= f.label :scope, :class => "control-label"
 			.controls
 				= select :inspection, :scope, ["Included", "Included and Private", "Excluded", "Exempt", "Sensitive"],{:prompt => '--Please Select--'}
 				#scopeexplain
@@ -73,40 +73,40 @@
 		#results.hidden.well
 			%h3 Select Address
 		#address{:class => @addressclass}
-			.control-group 
-				= f.label :address1
+			.control-group
+				= f.label :address1, :class => "control-label"
 				.controls
 					= f.text_field :address1
-			.control-group 
-				= f.label :address2
+			.control-group
+				= f.label :address2, :class => "control-label"
 				.controls
 					= f.text_field :address2
-			.control-group 
-				= f.label :address3
+			.control-group
+				= f.label :address3, :class => "control-label"
 				.controls
-					= f.text_field :address3					
-			.control-group 
-				= f.label :address4
+					= f.text_field :address3
+			.control-group
+				= f.label :address4, :class => "control-label"
 				.controls
 					= f.text_field :address4
-			.control-group 
-				= f.label :town
+			.control-group
+				= f.label :town, :class => "control-label"
 				.controls
 					= f.text_field :town
-			.control-group#postcode_group 
-				= f.label :postcode
+			.control-group#postcode_group
+				= f.label :postcode, :class => "control-label"
 				.controls
 					= f.text_field :postcode
 			= f.hidden_field :lat
 			= f.hidden_field :lng
-			= f.hidden_field :uprn		
-			
+			= f.hidden_field :uprn
+
 			.control-group
 				.controls
-					= link_to("<i class='icon-map-marker icon-white'></i> Change address".html_safe, '#', {:id => 'changeaddress', :class => 'btn btn-primary btn-small'})	
-					
-		.control-group 
-			= f.label :hours, "Opening Times"
+					= link_to("<i class='icon-map-marker icon-white'></i> Change address".html_safe, '#', {:id => 'changeaddress', :class => 'btn btn-primary btn-small'})
+
+		.control-group
+			= f.label :hours, "Opening Times", :class => "control-label"
 			.controls
 				.editor_toolbar
 					%a.btn.btn-small.bold{:href => "#"}
@@ -114,20 +114,20 @@
 					%a.btn.btn-small.list{:href => "#"}
 						%i.icon-list
 				= f.text_area :hours, :rows => 7
-		.control-group 
-			= f.label :tel
+		.control-group
+			= f.label :tel, :class => "control-label"
 			.controls
 				= f.text_field :tel
-		.control-group 
-			= f.label :email
+		.control-group
+			= f.label :email, :class => "control-label"
 			.controls
 				= f.text_field :email
-		.control-group 
-			= f.label :website
+		.control-group
+			= f.label :website, :class => "control-label"
 			.controls
 				= f.text_field :website
-		.control-group 
-			= f.label :tags, 'Tags (comma separated)'
+		.control-group
+			= f.label :tags, 'Tags (comma separated)', :class => "control-label"
 			.controls
 				= text_field_tag :tagwrapper, "", { :autocomplete => 'off' }
 				= hidden_field_tag :tags, @tags
@@ -136,76 +136,76 @@
 						- @tags.split(",").each do |tag|
 							= "<span class='label label-info'><i class='icon-tag icon-white'></i><span>#{tag}</span><button class='delete'>×</button></span>".html_safe
 		- if params[:action] == "edit"
-			.control-group 
-				= f.label :revisit_requested, 'Revisit requested?'
+			.control-group
+				= f.label :revisit_requested, 'Revisit requested?', :class => "control-label"
 				.controls
 					= f.check_box :revisit_requested
 		- unless @inspection.rating == -1
-			#scores	
-				.control-group 
-					= f.label :hygiene, 'Food Hygiene and Safety'
+			#scores
+				.control-group
+					= f.label :hygiene, 'Food Hygiene and Safety', :class => "control-label"
 					.controls
 						= select :inspection, :hygiene, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
-				.control-group 
-					= f.label :structure, 'Structure and Cleaning'
+				.control-group
+					= f.label :structure, 'Structure and Cleaning', :class => "control-label"
 					.controls
 						= select :inspection, :structure, [0, 5, 10, 15, 20, 25], {:prompt => '--Please Select--'}
-				.control-group 
-					= f.label :confidence, 'Confidence in Management'
+				.control-group
+					= f.label :confidence, 'Confidence in Management', :class => "control-label"
 					.controls
 						= select :inspection, :confidence, [0, 5, 10, 20, 30], {:prompt => '--Please Select--'}
-				.control-group 
-					= f.label :annex5, 'Annex 5 overall rating'
+				.control-group
+					= f.label :annex5, 'Annex 5 overall rating', :class => "control-label"
 					.controls
 						= f.text_field :annex5
 		#rating
 			- if !@inspection.rating.nil?
 				.control-group
-					= f.label :rating
+					= f.label :rating, :class => "control-label"
 					.controls
-						%span= image_tag "rating#{@inspection.rating}.png"	
+						%span= image_tag "rating#{@inspection.rating}.png"
 		= f.hidden_field :rating
-		
+
 		.control-group
-			= f.label :date, 'Date inspected'
+			= f.label :date, 'Date inspected', :class => "control-label"
 			.controls
 				= date_select(:inspection, :date, {:order => [:day, :month, :year]}, {:class => 'span2'})
 				= hidden_field_tag :olddate, @inspection.date
 
-		.control-group 
-			= f.label :image
+		.control-group
+			= f.label :image, :class => "control-label"
 			.controls
 				= f.file_field :image
 				- if !@inspection.image_file_name.nil?
 					%span.filename#inspection_image_filename
 						= @inspection.image_file_name
 					= link_to("<i class='icon-trash icon-white'></i> Remove image".html_safe, '#', {:id => 'image', :class => 'btn btn-danger btn-small removefile'})
-		.control-group 
-			= f.label :report
+		.control-group
+			= f.label :report, :class => "control-label"
 			.controls
 				= f.file_field :report
 				- if !@inspection.report_file_name.nil?
 					%span.filename#inspection_report_filename
 						= @inspection.report_file_name
 					= link_to("<i class='icon-trash icon-white'></i> Remove report".html_safe, '#', {:id => 'report', :class => 'btn btn-danger btn-small removefile'})
-		.control-group 
-			= f.label :menu
+		.control-group
+			= f.label :menu, :class => "control-label"
 			.controls
 				= f.file_field :menu
 				- if !@inspection.menu_file_name.nil?
 					%span.filename#inspection_menu_filename
 						= @inspection.menu_file_name
-					= link_to("<i class='icon-trash icon-white'></i> Remove menu".html_safe, '#', {:id => 'menu', :class => 'btn btn-danger btn-small removefile'})			
-		.control-group 
-			= f.label :reply, "Right to reply"
+					= link_to("<i class='icon-trash icon-white'></i> Remove menu".html_safe, '#', {:id => 'menu', :class => 'btn btn-danger btn-small removefile'})
+		.control-group
+			= f.label :reply, "Right to reply", :class => "control-label"
 			.controls
 				= f.text_area :reply, :rows => 10, :cols => 30
-		.control-group 
-			= f.label :tradingstandards, 'Trading Standards Compliance'
+		.control-group
+			= f.label :tradingstandards, 'Trading Standards Compliance', :class => "control-label"
 			.controls
-				= select :inspection, :tradingstandards, {"No" => 0, "Yes" => 1}, {:include_blank => '--Please Select--'}		
-		.control-group 
-			= f.label :healthy, 'Healthy Options Award?'
+				= select :inspection, :tradingstandards, {"No" => 0, "Yes" => 1}, {:include_blank => '--Please Select--'}
+		.control-group
+			= f.label :healthy, 'Healthy Options Award?', :class => "control-label"
 			.controls
 				= select :inspection, :healthy, ["Bronze", "Gold", "Silver"], {:include_blank => '--Please Select--' }
 		.control-group
@@ -215,11 +215,11 @@
 						%i.icon-white.icon-exclamation-sign
 						Start appeals procedure
 				.control-group#appealdate.hidden
-					= f.label :appealdate, 'Date of appeal'
+					= f.label :appealdate, 'Date of appeal', :class => "control-label"
 					.controls
 						= date_select(:inspection, :appealdate, {:order => [:day, :month, :year]}, {:class => 'span2'})
 						= f.hidden_field :appeal, :value => "", :id => 'appeal'
-							
+
 		.form-actions
 			- if params[:action] == "edit"
 				= link_to("Delete", @inspection, :method => :delete, :class => 'action', confirm: 'Are you sure you want to delete this business?', :class => 'btn btn-danger delete')

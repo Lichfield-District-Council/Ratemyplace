@@ -1,83 +1,83 @@
 - pagetitle "Contact Us", false
 .row#fullwidth
 	.span12
-	
+
 		%h2 Contact Us
-		
+
 		%p To get in touch with ratemyplace, please use the online form below.
-		
-		%p 
+
+		%p
 			%strong
 				Please note:
 			This form is for contacting local authorities about food safety ratings. Please do not use it to contact individual businesses. We will not be able to help you with your enquiry.
-		
+
 		= form_for(@contact, :html => {:class => 'form-horizontal'}) do |f|
 			- if @contact.errors.any?
 				.alert.alert-error
 					%h4.alert-heading= pluralize(@contact.errors.count, "error") + " prevented your message from being sent:"
-					
+
 					%ul
 						- @contact.errors.full_messages.each do |msg|
 							%li= msg
 			%fieldset
 				- if @contact.errors.messages[:name].nil?
-					.control-group 
-						= f.label "Your name"
+					.control-group
+						= f.label "Your name", :class => "control-label"
 						.controls
 							= f.text_field :name
 							%span.help-inline Required
 				- else
 					.control-group.error
-						= f.label "Your name"
+						= f.label "Your name", :class => "control-label"
 						.controls
 							= f.text_field :name
 							%span.help-inline Required
 
 				- if @contact.errors.messages[:email].nil?
 					.control-group
-						= f.label "Your email address"
+						= f.label "Your email address", :class => "control-label"
 						.controls
 							= f.text_field :email
 							%span.help-inline Required
 				- else
 					.control-group.error
-						= f.label "Your email address"
+						= f.label "Your email address", :class => "control-label"
 						.controls
 							= f.text_field :email
 							%span.help-inline Required
-						
-				.control-group 
-					= f.label "Business name"
+
+				.control-group
+					= f.label "Business name", :class => "control-label"
 					.controls
 						= f.text_field :business
-						
-				.control-group 
-					= f.label "Address"
+
+				.control-group
+					= f.label "Address", :class => "control-label"
 					.controls
 						= f.text_area :address, :rows => 6, :class => 'span4'
-						
+
 				- if @contact.errors.messages[:message].nil?
-					.control-group 
-						= f.label "Your message"
+					.control-group
+						= f.label "Your message", :class => "control-label"
 						.controls
 							= f.text_area :message, :rows => 6, :class => 'span4'
 							%span.help-inline Required
 				- else
 					.control-group.error
-						= f.label "Your message"
+						= f.label "Your message", :class => "control-label"
 						.controls
 							= f.text_area :message, :rows => 6, :class => 'span4'
 							%span.help-inline Required
 
 				.control-group.hidden
-					= f.label "Please leave this box blank"
+					= f.label "Please leave this box blank", :class => "control-label"
 					.controls
 						= f.text_field :website
-						
-				.control-group 
-					= f.label "What council does your comment relate to?"
+
+				.control-group
+					= f.label "What council does your comment relate to?", :class => "control-label"
 					.controls
 						= collection_select(:contact, :council, Council.where(:external => 0), :id, :name, {:include_blank => 'No particular council'})
-	
+
 				.form-actions
 					= f.submit "Submit", :class => "btn btn-primary btn-large"

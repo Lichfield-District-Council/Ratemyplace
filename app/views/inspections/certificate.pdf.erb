@@ -9,78 +9,78 @@
     		padding: 0;
     		font-family: "Praxis LT Regular";
     	}
-    	
+
     	img#bg {
     		width: 800px;
     		height: 1130px;
     		position: absolute;
     	}
-    	
+
     	#date p, #council p {
     		line-height: 17px;
     		font-size: 12px;
     	}
-    	
+
     	#council {
     		position: absolute;
     		top: 650px;
-    		left: 445px;		
+    		left: 445px;
     	}
-    	
+
     	#logo {
     		position: absolute;
     		top: 965px;
     		left: 98px;
     	}
-    	
+
     	#qrcode {
     		position: absolute;
     		top: 965px;
     		left: 358px;
     	}
-    	
+
     	#qrcode img {
     		height: 65px;
     	}
-    	
+
     	#logo img {
     		height: 65px;
     	}
-    	
+
     	#address {
     		position: absolute;
     		top: 425px;
     		left: 50px;
     	}
-    	
+
     	#address p {
     		font-size: 22px;
     		line-height: 27px;
     		text-align: center;
     		width: 710px;
     	}
-    	
+
     	#address p .name {
 	    	font-size: 28px;
 	    	font-weight: bold;
     	}
-    	
+
     	#date {
     		position: absolute;
     		top: 650px;
     		left: 98px;
     	}
-    	
+
     	#date p {
 	    	font-size: 18px;
     	}
-    	
+
     	#signature {
     		position: absolute;
 	    	top: 750px;
 	    	left: 98px;
     	}
-    	
+
     </style>
   </head>
   <body>
@@ -94,16 +94,16 @@
       <div id="date">
       <p><%= @inspection.date.strftime("#{@inspection.date.day.ordinalize} %B %Y") %></p>
       </div>
-      
+
       <div id="signature">
       <%= wicked_pdf_image_tag "signature#{@council.id}.png" %>
       </div>
-      
+
       <div id="council">
       <p><%= @council.address.html_safe %><br /><br />
       <strong>Tel: </strong><%= @council.tel %></p>
       </div>
-      
+
       <div id="logo">
       <%= wicked_pdf_image_tag "certificates/#{@council.logo}.png" %>
       </div>
