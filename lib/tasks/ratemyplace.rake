@@ -2,7 +2,7 @@ require 'uri'
 require 'easting_northing'
 
 namespace :upload do
-	
+
 	desc "Upload reports"
 	task :reports => :environment do
 		inspections = Inspection.all
@@ -26,8 +26,8 @@ namespace :upload do
 		else
 			puts "All reports uploaded successfully!"
 		end
-	end	
-	
+	end
+
 	desc "Upload images"
 	task :images => :environment do
 		inspections = Inspection.where("length(imageold) > 0 AND image_file_name IS NULL")
@@ -47,8 +47,8 @@ namespace :upload do
 		else
 			puts "All images uploaded successfully!"
 		end
-	end	
-	
+	end
+
 end
 
 desc "Generate and download all certificates"
@@ -91,14 +91,14 @@ namespace :foursquare do
 			inspection.getfoursquareid
 		end
 	end
-	
+
 	task :tips => :environment do
 		inspections = Inspection.where("foursquare_id != 'x'")
 		inspections.each do |inspection|
 			inspection.addfoursquaretip
 		end
 	end
-	
+
 	task :check => :environment do
 		inspections = Inspection.where("foursquare_id != 'x' AND foursquare_id != '' AND foursquare_id is not NULL AND foursquare_id not like '%?%' AND foursquare_name IS NULL")
 		inspections.each do |i|
@@ -157,101 +157,31 @@ desc "Generate reports for users"
 task :reports => :environment do
 	users = User.all
 	users.each do |user|
-			
+
 		reports = {}
-		
+
 		#No Reports
 		reports['noreports'] = Inspection.where(:report_file_name => nil, :councilid => user.councilid).count
-		
+
 		#Reports not in PDF format
 		reports['pdf'] = Inspection.where('report_file_name not LIKE ? and councilid = ?', '%pdf%', user.councilid).count
-		
+
 		#No Annex 5 score
 		reports['annex5'] = Inspection.where(:annex5 => nil, :councilid => user.councilid).count
-		
+
 		#Possible duplicates
 		reports['duplicates'] = Inspection.find_by_sql("SELECT inspections.name, inspections.councilid, inspections.address1, inspections.address2, inspections.address3, inspections.address4, inspections.town, inspections.postcode, inspections.tel, inspections.email, inspections.website, inspections.operator, inspections.category, inspections.scope, inspections.hygiene, inspections.structure, inspections.confidence, inspections.rating, inspections.annex5, inspections.date, inspections.slug FROM inspections INNER JOIN (SELECT inspections.id, inspections.name, inspections.postcode, count(*) FROM inspections WHERE councilid = #{user.councilid} GROUP BY inspections.name, inspections.postcode HAVING count(*) > 1) dup ON inspections.name = dup.name WHERE councilid = #{user.councilid} ORDER by inspections.name ASC").count
-		
+
 		total = reports.values.inject(:+)
-		
-		if total > 0			
+
+		if total > 0
 			ReportMailer.report(user, reports).deliver
 		end
-		
+
 	end
 end
 
 desc "Import external inspections"
 task :import => :environment do
-	require 'httparty'
-	require 'nokogiri'
-	require 'pat'
-	
-	councils = Council.where(:external => true)
-	councils.each do |council|
-	
-		doc = Nokogiri::XML HTTParty.get("http://ratings.food.gov.uk/OpenDataFiles/FHRS#{council.id}en-GB.xml").response.body
-		
-		inspections = []
-		count = 0
-	
-		doc.search('EstablishmentDetail').each do |i|
-			inspections << i.children.inject({}){|hsh,el| hsh[el.name] = el.inner_text;hsh}
-		end
-		
-		inspections.each do |i|
-			if i["RatingValue"] != "Exempt" 
-				inspection = Inspection.find_or_create_by_internalid(i["FHRSID"])
-				unless i["RatingDate"].nil?
-  				if i["RatingDate"].to_date != inspection.date
-  					if inspection.lat == nil
-  						begin
-  							postcode = Pat.get(i["PostCode"])
-  							lat = postcode["geo"]["lat"]
-  							lng = postcode["geo"]["lng"]
-  						rescue
-  							lat = 0
-  							lng = 0
-  						end
-  					else
-  						lat = inspection.lat
-  						lng = inspection.lng
-  					end
-					
-  					address = [i["AddressLine1"], i["AddressLine2"], i["AddressLine3"], i["AddressLine4"]].compact.reject { |s| s.empty? || s == "Staffordshire" }
-					
-  					if address.length == 4
-  						town = address[3]
-  						address[3] = nil
-  					elsif address.length == 3
-  						town = address[2]
-  						address[2] = nil
-  					elsif
-  						town = address[1]
-  						address[1] = nil
-  					else
-  						town = address[0]
-  					end
-					
-  					if i["PostCode"].blank?
-  						i["PostCode"] = "x"
-  					end
-					
-  					inspection.update_attributes(:name => i["BusinessName"].titleize, :address1 => address[0], :address2 => address[1], :address3 => address[2], :town => town, :postcode => i["PostCode"], :uprn => "x", :category => i["BusinessType"], :scope => "included", :hygiene => 99, :structure => 99, :confidence => 99, :rating => i["RatingValue"], :date => i["RatingDate"], :councilid => i["LocalAuthorityCode"], :lat => lat, :lng => lng, :published =>  1, :hours => "", :tel => "", :email => "", :website => "")
-  					inspection.save
-  					inspection.tweet
-  					count += 1
-					
-  					if inspection.errors.any?
-  						inspection.errors.full_messages.each do |msg|
-  							puts msg
-  						end
-  					end
-  				end
-			  end
-			end
-		end
-		
-		puts "#{count} inspection(s) added for #{council.name}!"
-	end
+	Import.all
 end
