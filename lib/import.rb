@@ -41,10 +41,25 @@ class Import
 
     inspection = Inspection.find_or_create_by_internalid(i["FHRSID"])
 
-    return 0 if i["RatingDate"].to_date == inspection.date
+    if inspection.lat == nil || inspection.lng == nil
+      latlng = latlng(i)
+    else
+      latlng = { lat: inspection.lat, lng: inspection.lng }
+    end
 
-    latlng = latlng(i)
     address = address(i)
+
+    if address[:line1].nil? && i["BusinessType"] == "Mobile caterer"
+      scope = "Included"
+      address[:line1] = "Mobile premises"
+      address[:postcode] = "Mobile"
+    elsif address[:line1].nil?
+      address[:line1] = "Private address"
+      address[:postcode] = "Private address"
+      scope = "Included and Private"
+    else
+      scope = "Included"
+    end
 
     inspection.update_attributes(
       internalid: i["FHRSID"],
@@ -56,7 +71,7 @@ class Import
       postcode:   address[:postcode],
       uprn:       "x",
       category:   i["BusinessType"],
-      scope:      "included",
+      scope:      scope,
       hygiene:    99,
       structure:  99,
       confidence: 99,
@@ -68,7 +83,7 @@ class Import
       published:  1
     )
 
-    inspection.tweet
+    #inspection.tweet
     if inspection.errors.any?
       puts inspection.name
       inspection.errors.full_messages.each { |msg| puts msg }
@@ -81,7 +96,7 @@ class Import
 
   def self.latlng(i)
     begin
-      postcode = Pat.get(i["PostCode"])
+      postcode = JSON.parse Pat.get(i["PostCode"]).body
       lat = postcode["geo"]["lat"]
       lng = postcode["geo"]["lng"]
     rescue
@@ -116,7 +131,7 @@ class Import
       line2: address[1],
       line3: address[2],
       town: town,
-      postcode: i["PostCode"] || "x"
+      postcode: i["PostCode"]
     }
   end
 
