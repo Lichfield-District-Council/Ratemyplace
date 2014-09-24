@@ -70,7 +70,7 @@ class Import
       town:       address[:town],
       postcode:   address[:postcode],
       uprn:       "x",
-      category:   i["BusinessType"],
+      category:   category(i["BusinessType"]),
       scope:      scope,
       hygiene:    99,
       structure:  99,
@@ -133,6 +133,25 @@ class Import
       town: town,
       postcode: i["PostCode"]
     }
+  end
+
+  def self.category(name)
+  	{
+      "Distributors/Transporters" => "Distributors/Transporters",
+  	  "Farmers/growers" => "Primary Producers",
+  	  "Hospitals/Childcare/Caring Premises" => "Caring premises",
+  	  "Hotel/bed & breakfast/guest house" => "Hotel/Guest house",
+  	  "Importers/Exporters" => "Importers/Exporters",
+  	  "Manufacturers/packers" => "Manufacturers and Packers",
+  	  "Mobile caterer" => "Mobile food unit",
+  	  "Other catering premises" => "Retailer - other",
+  	  "Pub/bar/nightclub" => "Pub/Club",
+  	  "Restaurant/Cafe/Canteen" => "Restaurant/Cafe/Canteen",
+  	  "Retailers - other" => "Retailer - other",
+  	  "Retailers - supermarkets/hypermarkets" => "Supermarket/Hypermarket",
+  	  "School/college/university" => "School/College",
+  	  "Takeaway/sandwich shop" => "Take-away"
+    }[name]
   end
 
 end
