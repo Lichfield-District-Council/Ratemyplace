@@ -34,23 +34,23 @@
 						(Mobile premises)
 			%p.address.adr.label= full_address(@inspection)
 		%p
-			%strong 
+			%strong
 				Inspected on:
-			%span.dtreviewed{:title => @inspection.date} 
+			%span.dtreviewed{:title => @inspection.date}
 				= @inspection.date.strftime("%d/%m/%Y")
 		%p
 			%strong Reference:
-			= "#{@council.code}-#{@inspection.id}" 
-			
+			= "#{@council.code}-#{@inspection.id}"
+
 		%p
 			%strong Local Authority:
 			%span.reviewer
 				= @council.name
 		- unless @inspection.hygiene == 99
-			%h3 
+			%h3
 				Scores
 				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#how"} How are these calculated?
-	
+
 			#how.modal.fade{"style" => "display:none;"}
 				.modal-header
 					%a.close{"data-dismiss" => "modal"} x
@@ -59,7 +59,7 @@
 					%div
 						%p At the end of each inspection the business is given a food hazard rating. This reflects how well the business complies with food law and how much confidence we have in the food operator's ability to manage the business safely. The higher hazard rating, the higher the risk and the more often inspections are carried out.
 						%p The premises recieves a score in three areas. The lower the score the better the premises is in terms of legal compliance and the higher the rating. Ratings are awarded as follows:
-						
+
 						%table.table-condensed.table.table-bordered
 							%tr
 								%th.row{"scope" => "row"}
@@ -121,7 +121,7 @@
 									Major improvement necessary
 								%td
 									Urgent improvement necessary
-	
+
 			%p
 				%strong Food Hygiene and Safety:
 				= showrating(@inspection.hygiene, "hygiene")
@@ -146,25 +146,25 @@
 				= link_to 'View inspection report', @inspection.report.url, :id => 'dlreport'
 				= @inspection.reportsize
 				= image_tag "pdf.png", :alt => "PDF file"
-				
+
 			#report.modal.fade
 				.modal-header
 					%a.close{"data-dismiss" => "modal"} x
 					%h3 Inspection report
-					%a.btn.btn-info{:href => @inspection.report.url, :style => "position: absolute; left: 220px; top: 9px;"} 
+					%a.btn.btn-info{:href => @inspection.report.url, :style => "position: absolute; left: 220px; top: 9px;"}
 						%i.icon-download-alt.icon-white
 						Download
 				.modal-body
 					= "<iframe src=\"http://docs.google.com/viewer?url=#{url_encode("http://www.ratemyplace.org.uk/" + @inspection.report.url)}&embedded=true\" style=\"width:100%; height:440px;\" frameborder=\"0\" style=\"border: none;\"></iframe>".html_safe
-				
-				
+
+
 		- if @inspection.tradingstandards == true
 			%p
 				%strong Trading Standards Compliance [
 				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#trading"} What's this?
 				]
 				= image_tag "tradingstandards.png", :alt => "Trading standards compliance tick"
-				
+
 			#trading.modal.hide.fade{"style" => "display:none;"}
 				.modal-header
 					%a.close{"data-dismiss" => "modal"} x
@@ -172,18 +172,18 @@
 				.modal-body
 					%p Businesses are offered a Trading Standards Compliance Certificate when they are found to be complying with relevant Trading Standards law during an inspection.
 					%p During an inspection checks are made to ensure that menu descriptions of food are not misleading, prices are appropriately displayed and that equipment used for serving beer wine and spirits is accurate, along with other checks for legal compliance.
-					%p 
-						For more information on Trading Standards, visit the 
+					%p
+						For more information on Trading Standards, visit the
 						%a{:href => 'http://www.staffordshire.gov.uk/business/tradingstandards/home.aspx'} Trading Standards section of the Staffordshire County Council Website.
-		
+
 		- unless @inspection.healthy.blank?
-			
+
 			%p
 				%strong Healthy Options Award [
 				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#healthy"} What's this?
 				]
 				= image_tag "#{@inspection.healthy}.gif", :alt => @inspection.healthy
-				
+
 			#healthy.modal.hide.fade{"style" => "display:none;"}
 				.modal-header
 					%a.close{"data-dismiss" => "modal"} x
@@ -191,71 +191,71 @@
 				.modal-body
 					%p Premises in possession of a food hygiene award are eligible to be assessed for a Healthy Options Award. The award, which has three tiers – bronze, silver and gold – recognises and encourages catering premises to provide healthier options to their customers.
 					%p Premises achieve the award by offering a large range of dishes that have a high level of fruits, vegetables and complex carbohydrates and a low level of saturated fat, sugar and salt.
-					
+
 					%p The award also recognises provision of healthy options for children, and rewards staff training and promotion and marketing of these healthier options.
-					
-					%p 
-						For more information, visit the 
+
+					%p
+						For more information, visit the
 						%a{:href => 'http://www.eaststaffsbc.gov.uk/Services/FoodTeam/Pages/HealthyOptionsAward.aspx'} Healthy Options Award section of the East Staffordshire Borough Council website
 
-		- if @inspection.hours.length > 0
+		- if @inspection.hours.present?
 			%h3 Opening hours
 			= @inspection.hours.html_safe
 
-		- if @inspection.tel.length > 0 || @inspection.email.length > 0 || @inspection.website.length > 0
+		- if @inspection.tel.present? || @inspection.email.present? || @inspection.website.present?
 			%h3 Contacts
-			- if @inspection.tel.length > 0
+			- if @inspection.tel.present?
 				%p
 					%strong Tel:
 					= @inspection.tel
-			- if @inspection.email.length > 0
+			- if @inspection.email.present?
 				%p
 					%strong Email:
 					= mail_to @inspection.email, @inspection.email
-			- if @inspection.website.length > 0
+			- if @inspection.website.present?
 				%p
 					%strong Website:
 					= link_to @inspection.website, (@inspection.website.include?("http://") ? @inspection.website : "http://" + @inspection.website)
-					
+
 		- if @inspection.internalid
 			%h3 About this inspection
-			
+
 			:markdown
-				These inspection details are taken from the [Food Standards Agency's Food hygiene Ratings site](http://ratings.food.gov.uk/). 
-				
+				These inspection details are taken from the [Food Standards Agency's Food hygiene Ratings site](http://ratings.food.gov.uk/).
+
 				You can [see the original inspection report here](http://ratings.food.gov.uk/business/en-GB/#{@inspection.internalid})
-			
+
 		- unless @inspection.hygiene == 99
-			- if @inspection.reply.blank?
+			- if @inspection.reply && @inspection.reply.blank?
 				%h3 Owner of this business?
-				
+
 				:markdown
 					If any information on this page is incorrect you can email the correct information to your local authority via our [contact form](/contact-us?council=#{@council.id}).
-				
+
 					You can find out [how to appeal against the rating given and find out about your right to reply](/appeals?council=#{@council.id}).
-				
+
 				// = disqus_thread.html_safe
-				
+
 			- else
-			
+
 				%h3 Response from the business
-				
+
 				%blockquote
 					= simple_format(@inspection.reply)
-				
-				
+
+
 	.span4#rightcol
 		- unless @inspection.postcode == "Mobile" || @inspection.scope == "Included and Private" || @inspection.postcode == "x"
 			%h3 Location
 			#mapcontainer
 				#map
-		
+
 		%h3 Display this score online
 		#scorewidget
 			%p.blurb If you are the owner of this business, you can also display your score on your website, simply copy the code below and paste it onto your website.
 			%textarea= "<script src='#{request.protocol + request.host_with_port + "/inspections/" + @inspection.slug}.js' type='text/javascript'></script>"
 			%p.preview
-				%a.btn.btn-primary.btn-large{:href => "#preview", "data-toggle" => "modal"} Preview your badge 
+				%a.btn.btn-primary.btn-large{:href => "#preview", "data-toggle" => "modal"} Preview your badge
 
 		#preview.modal.hide.fade{"style" => "display:none;"}
 			.modal-header
@@ -264,8 +264,8 @@
 			.modal-body
 				#widgetpreview
 					="<script src='#{request.protocol + request.host_with_port + "/inspections/" + @inspection.slug}.js' type='text/javascript'></script>".html_safe
-		
-		- if @tags.length > 0
+
+		- if @tags.present?
 			%h3 Tags
 			- meta_keywords @tags
 			#tags
