@@ -121,9 +121,9 @@ task :makelive => :environment do
 	@inspections.each do |inspection|
 		puts "Publishing..."
 		inspection.update_attributes(:published => 1)
-		puts "Tweeting..."
+		puts "Buffering..."
 
-		inspection.tweet
+		inspection.buffer
 		puts "Foursquareing..."
 
 		inspection.addfoursquaretip

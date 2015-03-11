@@ -198,7 +198,7 @@ class Inspection < ActiveRecord::Base
 		return rating
   	end
 
-  	def tweet(now = false)
+  	def buffer(now = false)
   		if self.rating >= 0
   			text = "New Inspection: #{self.name} #{self.town} #{self.rating}/5 #{"http://www.ratemyplace.org.uk/inspections/" + self.slug}"
   		else

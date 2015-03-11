@@ -363,7 +363,7 @@ require "csv"
 		@inspection.buildtags(params[:tags])
 
 		if @inspection.rating == 5
-			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+			@inspection.buffer('true') unless @inspection.scope == "Sensitive"
 			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
 		end
 
@@ -403,7 +403,7 @@ require "csv"
       		else
       			@inspection.published = 1 unless @inspection.scope == "Sensitive"
       			@inspection.save
-      			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+      			@inspection.buffer('true') unless @inspection.scope == "Sensitive"
       			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
       		end
       	elsif (Date.today - newdate).to_i < 27 && @inspection.rating < 5
@@ -422,7 +422,7 @@ require "csv"
       		@inspection.acceptappeal
   			@inspection.published = 1 unless @inspection.scope == "Sensitive"
   			@inspection.save
-  			@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+  			@inspection.buffer('true') unless @inspection.scope == "Sensitive"
   			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
       	end
 
@@ -440,7 +440,7 @@ require "csv"
   	@inspection.appealdate = 0
   	@inspection.published = 1 unless @inspection.scope == "Sensitive"
   	@inspection.save
-  	@inspection.tweet('true') unless @inspection.scope == "Sensitive"
+  	@inspection.buffer('true') unless @inspection.scope == "Sensitive"
   	@inspection.rejectappeal
   	redirect_to @inspection, notice: 'The appeal was rejected and the inspection is now live.'
   end

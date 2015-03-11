@@ -83,7 +83,7 @@ class Import
       published:  1
     )
 
-    #inspection.tweet
+    #inspection.buffer
     if inspection.errors.any?
       puts inspection.name
       inspection.errors.full_messages.each { |msg| puts msg }
