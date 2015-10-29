@@ -22,8 +22,12 @@
 			.well
 				= link_to '<i class="icon-pencil icon-white"></i>'.html_safe + ' Edit', { :controller => "inspections", :action => "edit", :id => @inspection }, :class => 'btn btn-primary'
 				= link_to '<i class="icon-print icon-white"></i>'.html_safe + ' Print Certificate', { :controller => "inspections", :action => "certificate", :id => @inspection, :format => :pdf }, :class => 'btn btn-info'
-		.fhrsrating{:class => "rating#{@inspection.rating}"}
-			= image_tag "fhrsweb#{@inspection.rating}.jpg", :alt => "#{@inspection.ratingtext}"
+		- if @inspection.appeal === true
+			.fhrsrating{:class => "rating#{@inspection.rating}"}
+				= image_tag "awaitingpublication.png", :alt => "Awaiting Publication"
+		- else
+			.fhrsrating{:class => "rating#{@inspection.rating}"}
+				= image_tag "fhrsweb#{@inspection.rating}.jpg", :alt => "#{@inspection.ratingtext}"
 		- if @inspection.image_file_name != nil
 			=image_tag @inspection.image.url(:medium), :id => 'reportimage'
 		.item.vcard
@@ -133,13 +137,19 @@
 				= showrating(@inspection.confidence, "confidence")
 		%p
 			%strong Rating:
-			%span.rating.hidden
-				= "#{@inspection.rating}"
-			= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating} - #{@inspection.ratingtext}"
-			%em= "(#{@inspection.ratingtext})"
-			- if @inspection.revisit_requested === true
-				%em
-					Revisit requested
+			- if @inspection.appeal === true
+				%span.rating.hidden
+					Awaiting publication
+				= image_tag "awaitingpublication.png", :alt => "Awaiting Publication"
+				%em= "(Awaiting Publication)"
+			- else
+				%span.rating.hidden
+					= "#{@inspection.rating}"
+				= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating} - #{@inspection.ratingtext}"
+				%em= "(#{@inspection.ratingtext})"
+				- if @inspection.revisit_requested === true
+					%em
+						Revisit requested
 		- if @inspection.report_file_name != nil
 			%p
 				%strong Inspection Report:
