@@ -4,25 +4,25 @@
 		%name= inspection.name
 		%url= "http://www.ratemyplace.org.uk/inspections/#{inspection.slug}"
 		%address= full_address(inspection)
-		- unless inspection.scope = "Included and private"
+		- unless inspection.private?
 			%postcode= inspection.postcode
 			%lat inspection.lat
-			%lng @inspection.lng	
+			%lng @inspection.lng
 		%opening_times= inspection.hours
 		%email= inspection.email
 		%website= inspection.website
 	%authority
-		%name= council.name	
+		%name= council.name
 		%snac= council.snac
 	%inspection
 		%inspection_date= inspection.date
 		- unless inspection.hygiene == 99
 			%hygiene= inspection.hygiene
 			%structure= inspection.structure
-			%confidence= inspection.confidence	
-		%rating= inspection.rating	
-		- if inspection.report_file_name != nil	
-			%report= "http://www.ratemyplace.org.uk#{inspection.report.url}"	
+			%confidence= inspection.confidence
+		%rating= inspection.rating
+		- if inspection.report_file_name != nil
+			%report= "http://www.ratemyplace.org.uk#{inspection.report.url}"
 	%other
 		%trading_standards= inspection.tradingstandards
 		%healthy_options= inspection.healthy

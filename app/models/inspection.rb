@@ -58,7 +58,7 @@ class Inspection < ActiveRecord::Base
   	end
 
   	def address(seperator = ", ")
-  		if self.scope == "Included and Private"
+  		if self.private?
   			address = self.postcode.split(" ")[0]
   			return address
   		else
@@ -230,5 +230,9 @@ class Inspection < ActiveRecord::Base
   		system "PHANTOMJS_EXECUTABLE=\"/usr/local/bin/phantomjs\" /usr/local/bin/casperjs lib/acceptrejectappeal.js #{FSA_CONFIG[:url]} #{"%03d" % council.fsaid} #{council.username} #{council.password} #{self.id} \"#{date}\" reject"
   		#todo - upload the latest fsa xml file - might be best to schedule this???
   	end
+
+		def private?
+			["Included and Private", "Exempt and Private", "Awaiting Inspection and Private"].include?(self.scope)
+		end
 
 end

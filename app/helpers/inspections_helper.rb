@@ -1,7 +1,7 @@
 module InspectionsHelper
 
 	def full_address(inspection)
-		 if inspection.scope != "Included and Private"
+		 unless inspection.private?
 			 address = [inspection.address1, inspection.address2, inspection.address3, inspection.address4, inspection.town, inspection.postcode].compact.reject { |s| s.empty? }
 			 return address.join(", ")
 		else
@@ -11,7 +11,7 @@ module InspectionsHelper
 	end
 
 	def single_address(inspection)
-		if inspection.scope == "Included and Private"
+		if inspection.private?
 			"#{inspection.town} #{inspection.postcode.split(" ")[0]}"
 		else
 			"#{inspection.address1}, #{inspection.town}"

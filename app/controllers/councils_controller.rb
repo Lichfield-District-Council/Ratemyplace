@@ -1,7 +1,7 @@
 class CouncilsController < ApplicationController
   # GET /councils
   # GET /councils.json
-  def index    
+  def index
     redirect_to :action => "show", :id => params[:id]
   end
 
@@ -37,7 +37,7 @@ class CouncilsController < ApplicationController
       end
     end
   end
-  
+
   def redirect
   	if params[:council]
   		@council = Council.find(params[:council])
@@ -45,12 +45,12 @@ class CouncilsController < ApplicationController
   	else
   		url = "/councils/all.rss"
   	end
-  	
+
   	respond_to do |format|
   		format.rss { redirect_to url, :status=>:moved_permanently }
   	end
   end
-  
+
   def download
   	if params[:id] == "all"
   		@inspections = Inspection.where(:published => 1).order("date DESC")
@@ -58,18 +58,18 @@ class CouncilsController < ApplicationController
   		@council = Council.find(params[:id])
   		@inspections = Inspection.where(:councilid => @council.id, :published => 1).order("date DESC")
   	end
-  	
+
   	if params[:format] == "xml"
-  		stream = render_to_string(:template=>"inspections/download.builder" ) 
-  		send_data(stream, :type => "text/xml", :filename => "#{params[:id]}.xml",:dispostion=>'inline',:status=>'200 OK') 
+  		stream = render_to_string(:template=>"inspections/download.builder" )
+  		send_data(stream, :type => "text/xml", :filename => "#{params[:id]}.xml",:dispostion=>'inline',:status=>'200 OK')
   	elsif params[:format] == "json"
   		stream = render_to_string(:template=>"inspections/download.json_builder" )
-  		send_data(stream, :type => "application/json", :filename => "#{params[:id]}.json",:dispostion=>'inline',:status=>'200 OK') 
+  		send_data(stream, :type => "application/json", :filename => "#{params[:id]}.json",:dispostion=>'inline',:status=>'200 OK')
   	elsif params[:format] == "csv"
-  		csv_string = CSV.generate do |csv| 
+  		csv_string = CSV.generate do |csv|
 			csv << ["id", "Name", "Url", "Address", "Postcode", "Latitude", "Longitude", "Opening Times", "Email", "Website", "Category", "Council Name", "Council Snac ID", "Inspection Date", "Hygiene", "Structure", "Confidence", "Rating", "Report File Name"]
 			@inspections.each do |inspection|
-				if inspection.scope == "Included and Private"
+				if inspection.private?
 					inspection.postcode = "Private"
 					inspection.lat = "Private"
 					inspection.lng = "Private"
@@ -107,8 +107,8 @@ class CouncilsController < ApplicationController
 			end
 	end
 	send_data csv_string,
-		:type => 'text/csv; charset=iso-8859-1; header=present', 
-        :disposition => "attachment; filename=inspections.csv" 
+		:type => 'text/csv; charset=iso-8859-1; header=present',
+        :disposition => "attachment; filename=inspections.csv"
   	end
   end
 end

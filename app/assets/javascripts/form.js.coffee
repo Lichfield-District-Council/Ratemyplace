@@ -114,7 +114,7 @@ $(document).ready ->
  		$('#postcode_group').addClass('hidden')
  
  $("#inspection_scope").bind 'change', ->
- 	if $("#inspection_scope").val() == "Exempt"
+ 	if $("#inspection_scope").val() == "Exempt" || $("#inspection_scope").val() == "Exempt and Private"
  		$('#scores').addClass('hidden')
  		$('#inspection_rating').val("-1")
  		$('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><strong>Exempt</strong></div></div></div>")

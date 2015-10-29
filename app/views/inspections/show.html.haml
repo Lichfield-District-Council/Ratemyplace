@@ -5,7 +5,7 @@
 		<!--[if lte IE 8]>
 		= stylesheet_link_tag "leaflet.ie"
 		<![endif]-->
-		- unless @inspection.postcode == "Mobile" || @inspection.scope == "Included and Private"
+		- unless @inspection.postcode == "Mobile" || @inspection.private?
 			= javascript_tag do
 				= "var lat = " + @inspection.lat.to_json
 				= "var lng = " + @inspection.lng.to_json
@@ -245,7 +245,7 @@
 
 
 	.span4#rightcol
-		- unless @inspection.postcode == "Mobile" || @inspection.scope == "Included and Private" || @inspection.postcode == "x"
+		- unless @inspection.postcode == "Mobile" || @inspection.private? || @inspection.postcode == "x"
 			%h3 Location
 			#mapcontainer
 				#map

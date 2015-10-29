@@ -7,7 +7,7 @@ inspections	@inspections do |i|
 			name i.name
 			url "/inspections/#{i.slug}"
 			address full_address(i)
-			unless i.scope = "Included and private"
+			unless i.private?
 				postcode i.postcode
 				lat i.lat
 				lng i.lng

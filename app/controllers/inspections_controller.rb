@@ -337,43 +337,43 @@ require "csv"
 
   	params[:inspection][:name] = params[:inspection][:name].titleize
 
-  	if params[:inspection][:scope] == "Included and private"
-	  	params[:inspection][:lat] = 0
-	  	params[:inspection][:lng] = 0
-	end
+  	@inspection = Inspection.new(params[:inspection])
 
-	@inspection = Inspection.new(params[:inspection])
+    if @inspection.private?
+      @inspection.lat = 0
+      @inspection.lng = 0
+    end
 
-	if @inspection.rating
-		if @inspection.rating < 5
-			@inspection.published = 0
-		else
-			@inspection.published = 1 unless @inspection.scope == "Sensitive"
-		end
+  	if @inspection.rating
+  		if @inspection.rating < 5
+  			@inspection.published = 0
+  		else
+  			@inspection.published = 1 unless @inspection.scope == "Sensitive"
+  		end
 
-		if @inspection.rating == -1
-			@inspection.hygiene = 99
-			@inspection.structure = 99
-			@inspection.confidence = 99
-		end
-	end
+  		if @inspection.rating == -1 || @inspection.rating == -2
+  			@inspection.hygiene = 99
+  			@inspection.structure = 99
+  			@inspection.confidence = 99
+  		end
+  	end
 
-	if @inspection.save
+  	if @inspection.save
 
-		@inspection.buildtags(params[:tags])
+  		@inspection.buildtags(params[:tags])
 
-		if @inspection.rating == 5
-			@inspection.buffer('true') unless @inspection.scope == "Sensitive"
-			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
-		end
+  		if @inspection.rating == 5
+  			@inspection.buffer('true') unless @inspection.scope == "Sensitive"
+  			@inspection.addfoursquaretip unless @inspection.scope == "Sensitive"
+  		end
 
-		redirect_to @inspection, notice: 'Inspection was successfully created.'
-	else
-		if @inspection.address1.length == 0
-			@addressclass = "hidden"
-		end
-		render action: "new"
-	end
+  		redirect_to @inspection, notice: 'Inspection was successfully created.'
+  	else
+  		if @inspection.address1.length == 0
+  			@addressclass = "hidden"
+  		end
+  		render action: "new"
+  	end
   end
 
   # PUT /inspections/1
@@ -383,12 +383,12 @@ require "csv"
 
 	  params[:inspection][:name] = params[:inspection][:name].titleize
 
-	  if params[:inspection][:scope] == "Included and private"
-	  	params[:inspection][:lat] = 0
-	  	params[:inspection][:lng] = 0
-	  end
-
       if @inspection.update_attributes(params[:inspection])
+
+        if @inspection.private?
+          @inspection.lat = 0
+          @inspection.lng = 0
+        end
 
 	    # Destroy old tags (to make sure all tags we're adding are fresh!)
     	Tag.destroy_all(:inspection_id => @inspection.id)
