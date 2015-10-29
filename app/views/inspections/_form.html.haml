@@ -140,6 +140,18 @@
 				= f.label :revisit_requested, 'Revisit requested?', :class => "control-label"
 				.controls
 					= f.check_box :revisit_requested
+		- if params[:action] == "edit" && @inspection.appeal != true && @inspection.published == false
+			.control-group
+				= f.label :appeals_procedure, 'Appeal'
+				.controls
+					%a.btn.btn-danger#appeals
+						%i.icon-white.icon-exclamation-sign
+						Start appeals procedure
+			.control-group#appealdate.hidden
+				= f.label :appealdate, 'Date of appeal', :class => "control-label"
+				.controls
+					= date_select(:inspection, :appealdate, {:order => [:day, :month, :year]}, {:class => 'span2'})
+					= f.hidden_field :appeal, :value => "", :id => 'appeal'
 		- unless @inspection.rating == -1
 			#scores
 				.control-group
@@ -208,17 +220,6 @@
 			= f.label :healthy, 'Healthy Options Award?', :class => "control-label"
 			.controls
 				= select :inspection, :healthy, ["Bronze", "Gold", "Silver"], {:include_blank => '--Please Select--' }
-		.control-group
-			- if params[:action] == "edit" && @inspection.appeal != true && @inspection.published == false
-				.controls
-					%a.btn.btn-danger#appeals
-						%i.icon-white.icon-exclamation-sign
-						Start appeals procedure
-				.control-group#appealdate.hidden
-					= f.label :appealdate, 'Date of appeal', :class => "control-label"
-					.controls
-						= date_select(:inspection, :appealdate, {:order => [:day, :month, :year]}, {:class => 'span2'})
-						= f.hidden_field :appeal, :value => "", :id => 'appeal'
 
 		.form-actions
 			- if params[:action] == "edit"
