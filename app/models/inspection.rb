@@ -122,6 +122,10 @@ class Inspection < ActiveRecord::Base
 
   	def ratingtext
   		case self.rating
+			when -3
+				"Awaiting Inspection"
+			when -2
+				"Excluded"
   		when -1
   			"Supplies food direct to customers but is not rated on the basis that it is 'low risk' and consumers would not generally recognise is as being a food business"
   		when 0

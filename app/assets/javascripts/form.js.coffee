@@ -122,6 +122,10 @@ $(document).ready ->
     $('#scores').addClass('hidden')
     $('#inspection_rating').val("-2")
     $('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><strong>Excluded</strong></div></div></div>")
+  if $("#inspection_scope").val() == "Awaiting Inspection" || $("#inspection_scope").val() == "Awaiting Inspection and Private"
+    $('#scores').addClass('hidden')
+    $('#inspection_rating').val("-3")
+    $('#rating').replaceWith("<div id='rating'><div class='control-group'><label for='inspection_rating'>Rating</label><div class='controls'><strong>Awaiting Inspection</strong></div></div></div>")
 
  $("#addedtags .delete").bind 'click', ->
         tag = $(this).parent().find('span').html()

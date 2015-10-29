@@ -345,13 +345,13 @@ require "csv"
     end
 
   	if @inspection.rating
-  		if @inspection.rating < 5
+      if [-3, -1, 5].include?(@inspection.rating)
+        @inspection.published = 1 unless @inspection.scope == "Sensitive"
+      else
   			@inspection.published = 0
-  		else
-  			@inspection.published = 1 unless @inspection.scope == "Sensitive"
-  		end
+      end
 
-  		if @inspection.rating == -1 || @inspection.rating == -2
+  		if @inspection.rating < 0
   			@inspection.hygiene = 99
   			@inspection.structure = 99
   			@inspection.confidence = 99

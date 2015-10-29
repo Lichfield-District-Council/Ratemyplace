@@ -49,7 +49,7 @@
 		.control-group
 			= f.label :scope, :class => "control-label"
 			.controls
-				= select :inspection, :scope, ["Included", "Included and Private", "Excluded", "Exempt", "Exempt and Private", "Sensitive"],{:prompt => '--Please Select--'}
+				= select :inspection, :scope, ["Included", "Included and Private", "Excluded", "Exempt", "Exempt and Private", "Sensitive", "Awaiting Inspection", "Awaiting Inspection and Private"],{:prompt => '--Please Select--'}
 				#scopeexplain
 					&nbsp;
 		#findaddress.well{:class => @findclass}
