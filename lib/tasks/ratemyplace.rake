@@ -77,7 +77,7 @@ end
 
 desc "Make non live premises live"
 task :live => :environment do
-	@inspections = Inspection.where('DATEDIFF(NOW(), date) > 27 AND scope != "Sensitive"')
+	@inspections = Inspection.where('DATEDIFF(NOW(), date) > 27 AND scope != "Sensitive" AND scope != "Excluded"')
 	@inspections.each do |inspection|
 		inspection.update_attributes(:published => 1)
 	end
