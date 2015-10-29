@@ -37,11 +37,13 @@
 					%em
 						(Mobile premises)
 			%p.address.adr.label= full_address(@inspection)
-		%p
-			%strong
-				Inspected on:
-			%span.dtreviewed{:title => @inspection.date}
-				= @inspection.date.strftime("%d/%m/%Y")
+			- if @inspection.appeal === false
+				- if @inspection.rating >= 0
+					%p
+						%strong
+							Inspected on:
+						%span.dtreviewed{:title => @inspection.date}
+							= @inspection.date.strftime("%d/%m/%Y")
 		%p
 			%strong Reference:
 			= "#{@council.code}-#{@inspection.id}"
