@@ -52,7 +52,7 @@
 			%strong Local Authority:
 			%span.reviewer
 				= @council.name
-		- unless @inspection.hygiene == 99
+		- unless @inspection.hygiene == 99 || @inspection.not_rated?
 			%h3
 				Scores
 				%a{"data-toggle" => "modal", "data-keyboard" => "true", :href => "#how"} How are these calculated?

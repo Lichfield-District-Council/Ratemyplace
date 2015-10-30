@@ -143,6 +143,10 @@ class Inspection < ActiveRecord::Base
   		end
   	end
 
+		def not_rated?
+			self.rating < 0
+		end
+
   	def getrating
   		stars = self.hygiene + self.structure + self.confidence
 
