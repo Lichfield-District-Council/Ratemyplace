@@ -13,7 +13,7 @@ require "csv"
 		@rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(10)
 	end
     @search = Inspection.search(params[:search])
-    feed = Feedzirra::Feed.fetch_and_parse("http://www.food.gov.uk/news/?view=rss", :timeout => 10)
+    feed = Feedzirra::Feed.fetch_and_parse("http://www.food.gov.uk/news-updates/news-rss", :timeout => 10)
     @entries = feed.entries rescue nil
 
     respond_to do |format|
