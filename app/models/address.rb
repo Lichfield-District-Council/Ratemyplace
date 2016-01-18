@@ -12,8 +12,12 @@ class Address < ActiveRecord::Base
     return results
   end
 
-  def self.address_endpoint(query, layer = "POSTCODE")
-    "http://gis.lichfielddc.gov.uk/arcgis/rest/services/PUBLIC/County_NLPG/MapServer/find?searchText=#{query}&contains=true&layers=#{layer}&returnGeometry=true&f=pjson"
+  def self.address_endpoint(query, layer = :postcode)
+    template = {
+      postcode: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/UPRN_SEARCH/TAG/GeocodeServer/findAddressCandidates?LH_TAG=%s&SingleLine=&Fuzzy=false&outFields=LOCATOR_DESCRIPTION&maxLocations=2000&outSR=27700&f=json",
+      uprn: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/NLPG/ADDRESS/GeocodeServer/findAddressCandidates?LH_ADDRESS=%s&SingleLine=&Fuzzy=false&outFields=LOCATOR_DESCRIPTION&maxLocations=2000&outSR=27700&f=json"
+    }[layer]
+    template % [query]
   end
 
   def self.coerce_address(address)
@@ -48,28 +52,28 @@ class Address < ActiveRecord::Base
   end
 
 	def self.build_address(item)
-		address = coerce_address(item["attributes"])
+    address = coerce_address(item["attributes"])
 		address["FIRST_LINE"] = first_line(address)
 
-		result = Hash.new
-		result[:uprn] = address["UPRN"].to_i
-		result[:address] = full_address(address)
-		result[:address1] = address["FIRST_LINE"]
-		result[:address2] = address["LOCALITY_NAME"]
-		result[:address3] = nil
-		result[:address4] = nil
-		result[:town] = address["POST_TOWN"]
-		result[:postcode] = address["POSTCODE"]
-		result[:easting] = item["geometry"]["x"].to_i
-		result[:northing] = item["geometry"]["y"].to_i
+    result = Hash.new
+    result[:uprn] = address["UPRN"].to_i
+    result[:address] = Address.full_address(address)
+    result[:address1] = address["FIRST_LINE"]
+    result[:address2] = address["LOCALITY_NAME"]
+    result[:address3] = nil
+    result[:address4] = nil
+    result[:town] = address["POST_TOWN"]
+    result[:postcode] = address["POSTCODE"]
+    result[:easting] = item["location"]["x"].to_i
+    result[:northing] = item["location"]["y"].to_i
 
-		easting = item["geometry"]["x"].to_i
-		northing = item["geometry"]["y"].to_i
+    easting = item["location"]["x"].to_i
+    northing = item["location"]["y"].to_i
 
-		latlng = EastingNorthing.eastingNorthingToLatLong(easting, northing)
+    latlng = EastingNorthing.eastingNorthingToLatLong(easting, northing)
 
-		result[:lat] = latlng["lat"]
-		result[:lng] = latlng["long"]
+    result[:lat] = latlng["lat"]
+    result[:lng] = latlng["long"]
 
 		result
 	end
@@ -83,7 +87,7 @@ class Address < ActiveRecord::Base
     num = 0
     results = []
 
-    addresses["results"].each do |item|
+    addresses["candidates"].each do |item|
 			results[num] = build_address(item)
       num += 1
     end
@@ -93,7 +97,7 @@ class Address < ActiveRecord::Base
 
   def self.GetAddressFromUprn(uprn)
 
-		url = address_endpoint(uprn, "UPRN")
+		url = address_endpoint(uprn, :uprn)
 
     address = JSON.parse HTTParty.get(url).response.body
 
@@ -102,7 +106,7 @@ class Address < ActiveRecord::Base
     if address.length == 0
       result = nil
     else
-      result = build_address(address["results"].first)
+      result = build_address(address["candidates"].first)
     end
 
     return result
