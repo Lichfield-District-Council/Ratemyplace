@@ -14,8 +14,8 @@ class Address < ActiveRecord::Base
 
   def self.address_endpoint(query, layer = :postcode)
     template = {
-      uprn: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/UPRN_SEARCH/TAG/GeocodeServer/findAddressCandidates?LH_TAG=%s&SingleLine=&Fuzzy=false&outFields=LOCATOR_DESCRIPTION&maxLocations=2000&outSR=27700&f=json",
-      postcode: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/NLPG/ADDRESS/GeocodeServer/findAddressCandidates?LH_ADDRESS=%s&SingleLine=&Fuzzy=false&outFields=LOCATOR_DESCRIPTION&maxLocations=2000&outSR=27700&f=json"
+      uprn: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/UPRN_SEARCH/TAG/GeocodeServer/findAddressCandidates?LH_TAG=%s&SingleLine=&Fuzzy=false&outFields=*&maxLocations=2000&outSR=27700&f=json",
+      postcode: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/NLPG/ADDRESS/GeocodeServer/findAddressCandidates?LH_ADDRESS=%s&SingleLine=&Fuzzy=false&outFields=*&maxLocations=2000&outSR=27700&f=json"
     }[layer]
     template % [query]
   end
@@ -83,6 +83,7 @@ class Address < ActiveRecord::Base
     url = address_endpoint(postcode)
 
     addresses = JSON.parse HTTParty.get(url).response.body
+    return nil if addresses["candidates"].blank?
 
     num = 0
     results = []
@@ -92,11 +93,10 @@ class Address < ActiveRecord::Base
       num += 1
     end
 
-    return results.uniq! { |a| a[:address] }.sort_by { |a| a[:address] }
+    return results.uniq { |a| a[:address] }.sort_by { |a| a[:address] }
   end
 
   def self.GetAddressFromUprn(uprn)
-
 		url = address_endpoint(uprn, :uprn)
 
     address = JSON.parse HTTParty.get(url).response.body
@@ -106,7 +106,9 @@ class Address < ActiveRecord::Base
     if address.length == 0
       result = nil
     else
-      result = build_address(address["candidates"].first)
+      url = address_endpoint(CGI::escape address["candidates"].first["address"])
+      address = JSON.parse HTTParty.get(url).response.body
+      result = build_address(address['candidates'].first)
     end
 
     return result
