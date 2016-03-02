@@ -10,7 +10,7 @@ class ContactUs < ActionMailer::Base
   		subject = "Ratemyplace Feedback Form for #{@council.name}"
   	else
   		name = "No particular council"
-  		email = "dean.epton@lichfielddc.gov.uk"
+  		email = "food.safety@lichfielddc.gov.uk"
   		subject = "Ratemyplace Feedback Form"
   	end
 
