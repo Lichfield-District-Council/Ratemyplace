@@ -1,6 +1,7 @@
 - @extras = capture do
 	- if @inspection.postcode != "Mobile"
 		= javascript_include_tag "leaflet"
+		<script src="https://www.mapquestapi.com/sdk/leaflet/v2.2/mq-map.js?key=gMi0CA6jCKmCsRkmP3We93gnHFfR1K8F"></script>
 		= stylesheet_link_tag "leaflet"
 		<!--[if lte IE 8]>
 		= stylesheet_link_tag "leaflet.ie"

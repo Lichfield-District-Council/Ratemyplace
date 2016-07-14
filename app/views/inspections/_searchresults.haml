@@ -12,20 +12,21 @@
 		- @inspections.each do |inspection|
 			- if inspection.lat != 0
 				= "points[#{num}] = {lat: #{inspection.lat.to_json}, lng: #{inspection.lng.to_json}, name: '#{inspection.name.gsub(/['"\\\x0]/,'\\\\\0')}', url: '#{url_for(inspection)}', rating: #{inspection.rating} }"
-				- num = num + 1	
-	= javascript_include_tag "searchmap"				
+				- num = num + 1
+	<script src="https://www.mapquestapi.com/sdk/leaflet/v2.2/mq-map.js?key=gMi0CA6jCKmCsRkmP3We93gnHFfR1K8F"></script>
+	= javascript_include_tag "searchmap"
 - pagetitle @title, false
 - if @inspections.length == 0
 	.row#fullwidth
 		.span12
-			%h2 
+			%h2
 				= @title
 			%p
 				%strong Sorry, there were no results for your search
 - else
 	.row
 		#resultview.span7
-			%h2 
+			%h2
 				= @title
 			%table.table.table-bordered#searchresults
 				%thead
