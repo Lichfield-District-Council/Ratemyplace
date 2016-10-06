@@ -140,7 +140,7 @@
 				= f.label :revisit_requested, 'Revisit requested?', :class => "control-label"
 				.controls
 					= f.check_box :revisit_requested
-		- if params[:action] == "edit" && @inspection.appeal != true && @inspection.published == false
+		- if params[:action] == "edit" && @inspection.in_appeals_period?
 			.control-group
 				= f.label :appeals_procedure, 'Appeal'
 				.controls

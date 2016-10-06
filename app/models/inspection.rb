@@ -239,6 +239,10 @@ class Inspection < ActiveRecord::Base
   		#todo - upload the latest fsa xml file - might be best to schedule this???
   	end
 
+    def in_appeals_period?
+      appeal != true && published == false && (Date.today - Inspection.last.date).to_i <= 35
+    end
+
 		def private?
 			["Included and Private", "Exempt and Private", "Awaiting Inspection and Private"].include?(self.scope)
 		end
