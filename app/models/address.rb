@@ -14,8 +14,8 @@ class Address < ActiveRecord::Base
 
   def self.address_endpoint(query, layer = :postcode)
     template = {
-      uprn: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/UPRN_SEARCH/TAG/GeocodeServer/findAddressCandidates?LH_TAG=%s&SingleLine=&Fuzzy=false&outFields=*&maxLocations=2000&outSR=27700&f=json",
-      postcode: "http://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/NLPG/ADDRESS/GeocodeServer/findAddressCandidates?LH_ADDRESS=%s&SingleLine=&Fuzzy=false&outFields=*&maxLocations=2000&outSR=27700&f=json"
+      uprn: "https://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/UPRN_SEARCH/TAG/GeocodeServer/findAddressCandidates?LH_TAG=%s&SingleLine=&Fuzzy=false&outFields=*&maxLocations=2000&outSR=27700&f=json",
+      postcode: "https://addresses.lichfielddc.gov.uk/LocatorHub/ArcGIS/rest/services/NLPG/ADDRESS/GeocodeServer/findAddressCandidates?LH_ADDRESS=%s&SingleLine=&Fuzzy=false&outFields=*&maxLocations=2000&outSR=27700&f=json"
     }[layer]
     template % [query]
   end
