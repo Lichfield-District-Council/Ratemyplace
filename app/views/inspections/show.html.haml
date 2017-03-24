@@ -146,8 +146,9 @@
 				= image_tag "awaitingpublication.png", :alt => "Awaiting Publication"
 				%em= "(Awaiting Publication)"
 			- else
-				%span.rating.hidden
-					= "#{@inspection.rating}"
+				- if @inspection.rating >= 0
+					%span.rating.hidden
+						= "#{@inspection.rating}"
 				= image_tag "rating#{@inspection.rating}.png", :alt => "#{@inspection.rating} - #{@inspection.ratingtext}"
 				%em= "(#{@inspection.ratingtext})"
 				- if @inspection.revisit_requested === true
