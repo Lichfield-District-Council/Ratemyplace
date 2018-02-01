@@ -6,14 +6,14 @@ require "csv"
   # GET /inspections
   # GET /inspections.json
   def index
-    @inspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(3)
+    @inspections = Inspection.published.order("date DESC").limit(3)
     if params[:layar]
-	    @rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC")
+	    @rssinspections = Inspection.published.order("date DESC")
 	else
-		@rssinspections = Inspection.where("DATEDIFF(NOW(), date) >= 27 AND published = 1").order("date DESC").limit(10)
+		@rssinspections = Inspection.published.order("date DESC").limit(10)
 	end
-    @search = Inspection.search(params[:search])
-    feed = Feedzirra::Feed.fetch_and_parse("http://www.food.gov.uk/news-updates/news-rss", :timeout => 10)
+    @search = Inspection.published.search(params[:search])
+    feed = Feedjira::Feed.fetch_and_parse("http://www.food.gov.uk/news-updates/news-rss", :timeout => 10)
     @entries = feed.entries rescue nil
 
     respond_to do |format|
@@ -28,7 +28,11 @@ require "csv"
   # GET /inspections/1
   # GET /inspections/1.json
   def show
-    @inspection = Inspection.find(params[:id])
+    if session[:user_id] || params[:format] == 'png'
+      @inspection = Inspection.find(params[:id])
+    else
+      @inspection = Inspection.published.find(params[:id])
+    end
     @council = Council.find(@inspection.councilid)
     @tags = @inspection.tags
 
@@ -70,11 +74,12 @@ require "csv"
   # GET /inspections/search
   def search
 	if params[:q]
-		if !session[:user_id]
-			params[:q][:published_eq] = 1
-		end
 		@title = "Search results"
-	  	@search = Inspection.search(params[:q])
+    if session[:user_id]
+      @search = Inspection.search(params[:q])
+    else
+	  	@search = Inspection.published.search(params[:q])
+    end
 	  	if params[:nearest] == "1"
 	  		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).within(5, :origin => [params[:lat], params[:lng]]).order("distance ASC")
 	  	else
@@ -101,7 +106,7 @@ require "csv"
   		query = {"name_cont" => params[:name], "category_eq" => params[:category], "councilid_eq" => params[:council], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1}
   	end
 
-  	@search = Inspection.search(query)
+  	@search = Inspection.published.search(query)
   	if params[:distance]
   		@inspections = @search.result.paginate(:page => params[:page], :per_page => 10).within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
   	else
@@ -113,9 +118,9 @@ require "csv"
   	if params[:method] == "search"
 
   		if params[:top] == "true"
-  			@inspections = Inspection.where(:published => 1).order("date DESC").limit(10)
+  			@inspections = Inspection.published.where(:published => 1).order("date DESC").limit(10)
   		else
-	  		@search = Inspection.search({"name_cont" => params[:name], "councilid_eq" => params[:authority], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1})
+	  		@search = Inspection.published.search({"name_cont" => params[:name], "councilid_eq" => params[:authority], "town_cont" => params[:town], "rating_eq" => params[:rating], "published_eq" => 1})
 	  		if params[:lat]
 	  			@inspections = @search.result.within(params[:distance], :origin => [params[:lat], params[:lng]]).order("distance ASC")
 	  		else
@@ -131,7 +136,7 @@ require "csv"
   	end
 
   	if params[:method] == "view"
-  		@inspection = Inspection.find(params[:id])
+  		@inspection = Inspection.published.find(params[:id])
   		@council = Council.find(@inspection.councilid)
 
   		 if params[:format] == "json"
@@ -144,14 +149,14 @@ require "csv"
 
   def layar
   	  distance = params[:radius].to_i / 1609.344
-	  @inspections = Inspection.search({"published_eq" => 1}).result.within(distance, :origin => [params[:lat], params[:lon]]).order("distance ASC")
+	  @inspections = Inspection.published.search({"published_eq" => 1}).result.within(distance, :origin => [params[:lat], params[:lon]]).order("distance ASC")
 	  render "layar.json_builder"
   end
 
   def atoz
   	if params[:council]
   		@council = Council.find(params[:council])
-  		@inspections = Inspection.where("councilid = ? AND name LIKE ? AND published = 1", @council.id, "#{params[:letter]}%").order("name ASC")
+  		@inspections = Inspection.published.where("councilid = ? AND name LIKE ? AND published = 1", @council.id, "#{params[:letter]}%").order("name ASC")
   	else
   		@councils = Council.all
   	end
@@ -159,14 +164,14 @@ require "csv"
 
   def fsa
   	@council = Council.find(params[:council])
-  	@inspections = Inspection.where(:councilid => @council.id)
+  	@inspections = Inspection.published.where(:councilid => @council.id)
   	stream = render_to_string(:template=>"inspections/fsa.builder" )
   	send_data(stream, :type => "text/xml", :filename => "#{@council.slug}.xml",:dispostion=>'inline',:status=>'200 OK')
   end
 
   def locate
   	if params[:lat]
-	  	inspection = Inspection.within(1, :origin => [params[:lat], params[:lng]]).order('distance asc').first
+	  	inspection = Inspection.published.within(1, :origin => [params[:lat], params[:lng]]).order('distance asc').first
 	  	respond_to do |format|
 	  		format.html { redirect_to inspection_url(inspection, :utm_source => 'qrcode', :utm_medium => 'qrcode', :utm_campaign => 'window_sticker') }
 	  	end

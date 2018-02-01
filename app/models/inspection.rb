@@ -23,6 +23,10 @@ class Inspection < ActiveRecord::Base
 	validates_attachment_content_type :report, :content_type => ["application/pdf"], :message => "must be PDF format"
 	validates_attachment_content_type :image, :content_type => ["image/jpeg", "image/png", "image/gif"], :message => "must be jpeg, png or gif format"
 
+  def self.published
+    where("DATEDIFF(NOW(), date) >= 36 AND published = 1")
+  end
+
   	extend FriendlyId
   	friendly_id :name_and_town, use: :slugged
 
